@@ -1,0 +1,7 @@
+<svg width="220" height="42" viewBox="0 0 220 42" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Monogram -->
+  <rect x="2" y="2" width="38" height="38" rx="8" stroke="#FAFAFA" stroke-width="2" fill="none"/>
+  <text x="10" y="30" font-family="Inter, -apple-system, sans-serif" font-weight="800" font-size="26" fill="#FAFAFA">cb</text>
+  <!-- Wordmark -->
+  <text x="56" y="30" font-family="Inter, -apple-system, sans-serif" font-weight="800" font-size="26" letter-spacing="-1" fill="#FAFAFA">ClientBridge</text>
+</svg>

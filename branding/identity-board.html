@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ClientBridge — Visual Identity Options</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700;800&family=Sora:wght@300;400;500;600;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: #09090B;
+    color: #FAFAFA;
+    line-height: 1.6;
+  }
+
+  .container { max-width: 1200px; margin: 0 auto; padding: 0 40px; }
+
+  /* Header */
+  .hero {
+    padding: 80px 0 60px;
+    border-bottom: 1px solid #1C1C22;
+  }
+  .hero .label {
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #52525B;
+    margin-bottom: 16px;
+  }
+  .hero h1 {
+    font-size: 48px;
+    font-weight: 800;
+    letter-spacing: -1.5px;
+    margin-bottom: 12px;
+    background: linear-gradient(135deg, #FAFAFA 0%, #71717A 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .hero p {
+    font-size: 18px;
+    color: #71717A;
+    max-width: 600px;
+  }
+
+  /* Section */
+  .section {
+    padding: 60px 0;
+    border-bottom: 1px solid #1C1C22;
+  }
+  .section-label {
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #52525B;
+    margin-bottom: 8px;
+  }
+  .section h2 {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    margin-bottom: 32px;
+  }
+  .section-desc {
+    color: #A1A1AA;
+    font-size: 15px;
+    margin-top: -20px;
+    margin-bottom: 36px;
+    max-width: 700px;
+  }
+
+  /* Logo Concepts Grid */
+  .logo-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+  .logo-card {
+    background: #111113;
+    border: 1px solid #1C1C22;
+    border-radius: 16px;
+    padding: 40px;
+    transition: border-color 0.2s;
+  }
+  .logo-card:hover { border-color: #27272A; }
+  .logo-card.featured {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    align-items: center;
+  }
+  .logo-card .concept-num {
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: #52525B;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+  .logo-card .concept-name {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  .logo-card .concept-desc {
+    font-size: 14px;
+    color: #71717A;
+    line-height: 1.7;
+  }
+
+  /* Logo Renders */
+  .logo-render {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 120px;
+    margin-bottom: 24px;
+    border-radius: 12px;
+  }
+  .logo-render.dark-bg { background: #09090B; }
+  .logo-render.light-bg { background: #FAFAFA; border-radius: 12px; }
+
+  /* SVG Logo Marks */
+  .logo-mark { display: flex; align-items: center; gap: 14px; }
+  .logo-mark .wordmark {
+    font-weight: 700;
+    font-size: 28px;
+    letter-spacing: -0.5px;
+  }
+
+  /* Concept A - Bridge Icon */
+  .concept-a .icon {
+    width: 40px; height: 40px;
+    position: relative;
+  }
+  .concept-a .icon svg { width: 100%; height: 100%; }
+
+  /* Typography */
+  .type-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+  .type-card {
+    background: #111113;
+    border: 1px solid #1C1C22;
+    border-radius: 16px;
+    padding: 36px;
+  }
+  .type-card .label-sm {
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #52525B;
+    margin-bottom: 16px;
+  }
+  .type-card .sample {
+    font-size: 36px;
+    font-weight: 700;
+    letter-spacing: -1px;
+    margin-bottom: 8px;
+  }
+  .type-card .meta {
+    font-size: 13px;
+    color: #52525B;
+  }
+  .type-card .body-sample {
+    font-size: 15px;
+    color: #A1A1AA;
+    margin-top: 16px;
+    line-height: 1.7;
+  }
+  .type-card.recommended {
+    border-color: #27272A;
+    position: relative;
+  }
+  .type-card.recommended::after {
+    content: 'RECOMMENDED';
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: #22C55E;
+    background: rgba(34,197,94,0.1);
+    padding: 4px 10px;
+    border-radius: 4px;
+  }
+
+  /* Color Palettes */
+  .palette-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 24px;
+  }
+  .palette-card {
+    background: #111113;
+    border: 1px solid #1C1C22;
+    border-radius: 16px;
+    overflow: hidden;
+  }
+  .palette-card.recommended {
+    border-color: #27272A;
+    position: relative;
+  }
+  .palette-card.recommended::after {
+    content: 'RECOMMENDED';
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: #22C55E;
+    background: rgba(34,197,94,0.1);
+    padding: 4px 10px;
+    border-radius: 4px;
+    z-index: 1;
+  }
+  .palette-strip {
+    display: flex;
+    height: 80px;
+  }
+  .palette-strip div { flex: 1; }
+  .palette-info {
+    padding: 24px;
+  }
+  .palette-info h3 {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .palette-info .palette-desc {
+    font-size: 13px;
+    color: #71717A;
+    margin-bottom: 16px;
+  }
+  .color-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .color-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    color: #A1A1AA;
+  }
+  .color-swatch {
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+    border: 1px solid #27272A;
+    flex-shrink: 0;
+  }
+
+  /* Application Mockups */
+  .mockup-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  .mockup-card {
+    background: #111113;
+    border: 1px solid #1C1C22;
+    border-radius: 16px;
+    overflow: hidden;
+  }
+  .mockup-header {
+    padding: 16px 24px;
+    border-bottom: 1px solid #1C1C22;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .mockup-dot { width: 12px; height: 12px; border-radius: 50%; }
+  .mockup-body { padding: 0; }
+
+  /* Nav mockup */
+  .nav-mockup {
+    display: flex;
+    align-items: center;
+    padding: 16px 24px;
+    background: #0C0C0E;
+    border-bottom: 1px solid #1C1C22;
+    gap: 32px;
+  }
+  .nav-mockup .nav-brand {
+    font-weight: 700;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .nav-mockup .nav-links {
+    display: flex;
+    gap: 24px;
+    font-size: 14px;
+    color: #71717A;
+  }
+  .nav-mockup .nav-links .active { color: #FAFAFA; }
+  .nav-mockup .nav-user {
+    margin-left: auto;
+    font-size: 13px;
+    color: #52525B;
+  }
+
+  /* Dashboard mockup content */
+  .dash-content {
+    padding: 32px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+  }
+  .stat-card-mock {
+    background: #18181B;
+    border: 1px solid #27272A;
+    border-radius: 12px;
+    padding: 20px;
+  }
+  .stat-card-mock .stat-label {
+    font-size: 12px;
+    color: #52525B;
+    margin-bottom: 8px;
+  }
+  .stat-card-mock .stat-value {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+  }
+  .stat-card-mock .stat-change {
+    font-size: 12px;
+    margin-top: 4px;
+  }
+  .stat-card-mock .stat-change.up { color: #F59E0B; }
+
+  /* Feedback mockup */
+  .feedback-row {
+    display: flex;
+    align-items: center;
+    padding: 16px 32px;
+    border-bottom: 1px solid #1C1C22;
+    gap: 16px;
+    font-size: 14px;
+  }
+  .feedback-row:last-child { border-bottom: none; }
+  .fb-type {
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-weight: 500;
+    min-width: 50px;
+    text-align: center;
+  }
+  .fb-type.bug { background: rgba(239,68,68,0.15); color: #EF4444; }
+  .fb-type.ux { background: rgba(168,85,247,0.15); color: #A855F7; }
+  .fb-type.feature { background: rgba(59,130,246,0.15); color: #3B82F6; }
+  .fb-title { flex: 1; }
+  .fb-status {
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 100px;
+    background: #27272A;
+    color: #A1A1AA;
+  }
+  .fb-status.new { background: rgba(245,158,11,0.15); color: #F59E0B; }
+
+  /* Logo concept details */
+  .concept-variants {
+    display: flex;
+    gap: 32px;
+    margin-top: 20px;
+  }
+  .variant {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+  .variant-label {
+    font-size: 11px;
+    color: #52525B;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  /* Full width featured */
+  .full-width {
+    grid-column: 1 / -1;
+  }
+
+  /* Accent color demos */
+  .accent-demo {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 16px;
+    margin-top: 24px;
+  }
+  .accent-chip {
+    height: 48px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 500;
+  }
+
+  /* Wordmark variants showcase */
+  .wordmark-showcase {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    margin-bottom: 24px;
+  }
+  .wordmark-row {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
+  .wordmark-variant {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 20px 28px;
+    border-radius: 12px;
+    flex: 1;
+  }
+  .wordmark-variant.on-dark { background: #09090B; border: 1px solid #1C1C22; }
+  .wordmark-variant.on-light { background: #FAFAFA; border: 1px solid #E4E4E7; }
+
+  /* Recommendations */
+  .rec-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 24px;
+    margin-top: 32px;
+  }
+  .rec-card {
+    background: #111113;
+    border: 1px solid #1C1C22;
+    border-radius: 16px;
+    padding: 32px;
+  }
+  .rec-card h3 {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  .rec-card p {
+    font-size: 14px;
+    color: #71717A;
+    line-height: 1.7;
+  }
+  .rec-num {
+    font-size: 48px;
+    font-weight: 800;
+    color: #1C1C22;
+    margin-bottom: 12px;
+    line-height: 1;
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="label">Visual Identity Exploration</div>
+    <h1>ClientBridge</h1>
+    <p>Dark, technical, monochrome with a single accent. Five identity directions built for clientbridge.dev.</p>
+  </div>
+
+  <!-- SECTION: Logo Concepts -->
+  <div class="section">
+    <div class="section-label">01 / Logos</div>
+    <h2>Logo Mark Concepts</h2>
+    <p class="section-desc">Five directions ranging from abstract to literal. Each works at favicon size (16px), nav bar size (32px), and marketing size (120px+).</p>
+
+    <div class="logo-grid">
+
+      <!-- Concept A: The Bridge -->
+      <div class="logo-card">
+        <div class="concept-num">Concept A</div>
+        <div class="logo-render dark-bg">
+          <div class="logo-mark">
+            <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+              <path d="M4 28 L12 12 L20 20 L28 12 L36 28" stroke="#FAFAFA" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+              <line x1="12" y1="12" x2="12" y2="28" stroke="#FAFAFA" stroke-width="2" stroke-linecap="round" opacity="0.3"/>
+              <line x1="28" y1="12" x2="28" y2="28" stroke="#FAFAFA" stroke-width="2" stroke-linecap="round" opacity="0.3"/>
+              <line x1="4" y1="28" x2="36" y2="28" stroke="#FAFAFA" stroke-width="2" stroke-linecap="round" opacity="0.5"/>
+            </svg>
+            <span class="wordmark" style="font-family: 'Inter'; color: #FAFAFA;">Client<span style="color: #71717A;">Bridge</span></span>
+          </div>
+        </div>
+        <div class="concept-name">The Bridge</div>
+        <div class="concept-desc">Literal bridge silhouette. Two pillars represent client and developer; the span is the connection. Clean geometric lines. Works as a favicon by simplifying to just the arch.</div>
+      </div>
+
+      <!-- Concept B: The Bracket -->
+      <div class="logo-card">
+        <div class="concept-num">Concept B</div>
+        <div class="logo-render dark-bg">
+          <div class="logo-mark">
+            <svg width="38" height="38" viewBox="0 0 38 38" fill="none">
+              <path d="M10 6 L4 19 L10 32" stroke="#FAFAFA" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+              <path d="M28 6 L34 19 L28 32" stroke="#FAFAFA" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+              <line x1="14" y1="19" x2="24" y2="19" stroke="#FAFAFA" stroke-width="2.5" stroke-linecap="round"/>
+              <circle cx="14" cy="19" r="2" fill="#FAFAFA"/>
+              <circle cx="24" cy="19" r="2" fill="#FAFAFA"/>
+            </svg>
+            <span class="wordmark" style="font-family: 'Space Grotesk'; color: #FAFAFA;">Client<span style="color: #71717A;">Bridge</span></span>
+          </div>
+        </div>
+        <div class="concept-name">The Bracket</div>
+        <div class="concept-desc">Code brackets { } with a connecting bridge line between two nodes. Speaks to developers instantly while remaining abstract enough for clients. The dots represent the two users being connected.</div>
+      </div>
+
+      <!-- Concept C: The Relay -->
+      <div class="logo-card">
+        <div class="concept-num">Concept C</div>
+        <div class="logo-render dark-bg">
+          <div class="logo-mark">
+            <svg width="38" height="38" viewBox="0 0 38 38" fill="none">
+              <rect x="4" y="10" width="12" height="18" rx="3" stroke="#FAFAFA" stroke-width="2" fill="none"/>
+              <rect x="22" y="10" width="12" height="18" rx="3" stroke="#FAFAFA" stroke-width="2" fill="none"/>
+              <path d="M16 16 L22 16" stroke="#FAFAFA" stroke-width="1.5" stroke-linecap="round" opacity="0.6"/>
+              <path d="M16 22 L22 22" stroke="#FAFAFA" stroke-width="1.5" stroke-linecap="round" opacity="0.6"/>
+              <path d="M16 19 L22 19" stroke="#FAFAFA" stroke-width="2" stroke-linecap="round"/>
+              <circle cx="19" cy="19" r="2.5" fill="#FAFAFA"/>
+            </svg>
+            <span class="wordmark" style="font-family: 'Outfit'; color: #FAFAFA; font-weight: 600;">Client<span style="color: #71717A; font-weight: 400;">Bridge</span></span>
+          </div>
+        </div>
+        <div class="concept-name">The Relay</div>
+        <div class="concept-desc">Two screens (client app and developer dashboard) with data flowing between them. The center node is the bridge — the point where feedback, context, and progress converge. Communicates the product function directly.</div>
+      </div>
+
+      <!-- Concept D: The Chevron -->
+      <div class="logo-card">
+        <div class="concept-num">Concept D</div>
+        <div class="logo-render dark-bg">
+          <div class="logo-mark">
+            <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+              <path d="M6 18 L18 8 L18 14 L30 14 L30 22 L18 22 L18 28 Z" fill="#FAFAFA"/>
+            </svg>
+            <span class="wordmark" style="font-family: 'Sora'; color: #FAFAFA; font-weight: 700; letter-spacing: -1px;">client<span style="font-weight: 400; color: #71717A;">bridge</span></span>
+          </div>
+        </div>
+        <div class="concept-name">The Arrow</div>
+        <div class="concept-desc">Bold directional arrow — feedback flows one way, progress flows back. The merged arrow-and-bar shape is confident and minimal. Works beautifully as a solid favicon. Strongest at small sizes.</div>
+      </div>
+
+      <!-- Concept E: Featured / The Monogram -->
+      <div class="logo-card featured">
+        <div>
+          <div class="concept-num">Concept E &mdash; Recommended</div>
+          <div style="display:flex; flex-direction:column; gap: 24px;">
+            <div class="logo-render dark-bg" style="padding: 24px;">
+              <div class="logo-mark">
+                <svg width="42" height="42" viewBox="0 0 42 42" fill="none">
+                  <rect x="2" y="2" width="38" height="38" rx="8" stroke="#FAFAFA" stroke-width="2" fill="none"/>
+                  <text x="10" y="30" font-family="Inter" font-weight="800" font-size="26" fill="#FAFAFA">cb</text>
+                </svg>
+                <span class="wordmark" style="font-family: 'Inter'; color: #FAFAFA; font-weight: 800; letter-spacing: -1px;">ClientBridge</span>
+              </div>
+            </div>
+            <div class="logo-render light-bg" style="padding: 24px;">
+              <div class="logo-mark">
+                <svg width="42" height="42" viewBox="0 0 42 42" fill="none">
+                  <rect x="2" y="2" width="38" height="38" rx="8" fill="#09090B"/>
+                  <text x="10" y="30" font-family="Inter" font-weight="800" font-size="26" fill="#FAFAFA">cb</text>
+                </svg>
+                <span class="wordmark" style="font-family: 'Inter'; color: #09090B; font-weight: 800; letter-spacing: -1px;">ClientBridge</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="concept-name" style="font-size: 20px;">The Monogram</div>
+          <div class="concept-desc" style="font-size: 15px; line-height: 1.8;">
+            Lowercase "cb" in a rounded square. This is the Linear/Vercel approach — dead simple, instantly recognizable, works at every size from browser tab to billboard. The rounded square becomes the app icon on every platform. No metaphor to decode, no cleverness that ages poorly. Just a mark that becomes synonymous with the product through usage.
+            <br><br>
+            This is the direction I'd push toward. It's the most scalable, the most modern, and the hardest to get wrong in implementation.
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- SECTION: Typography -->
+  <div class="section">
+    <div class="section-label">02 / Typography</div>
+    <h2>Type System</h2>
+    <p class="section-desc">Four typeface pairings. Each uses a display/heading font with Inter as the body standard (what your app already uses via Geist/Inter).</p>
+
+    <div class="type-grid">
+      <div class="type-card recommended">
+        <div class="label-sm">Option A &mdash; Inter Only</div>
+        <div class="sample" style="font-family: 'Inter';">ClientBridge</div>
+        <div class="meta">Inter 800 / Display &bull; Inter 400 / Body</div>
+        <div class="body-sample" style="font-family: 'Inter';">Ship feedback, not emails. ClientBridge connects your clients to the live application so every piece of feedback arrives with full screen context attached.</div>
+      </div>
+
+      <div class="type-card">
+        <div class="label-sm">Option B &mdash; Space Grotesk + Inter</div>
+        <div class="sample" style="font-family: 'Space Grotesk';">ClientBridge</div>
+        <div class="meta">Space Grotesk 700 / Display &bull; Inter 400 / Body</div>
+        <div class="body-sample" style="font-family: 'Inter';">Ship feedback, not emails. ClientBridge connects your clients to the live application so every piece of feedback arrives with full screen context attached.</div>
+      </div>
+
+      <div class="type-card">
+        <div class="label-sm">Option C &mdash; Outfit + Inter</div>
+        <div class="sample" style="font-family: 'Outfit';">ClientBridge</div>
+        <div class="meta">Outfit 700 / Display &bull; Inter 400 / Body</div>
+        <div class="body-sample" style="font-family: 'Inter';">Ship feedback, not emails. ClientBridge connects your clients to the live application so every piece of feedback arrives with full screen context attached.</div>
+      </div>
+
+      <div class="type-card">
+        <div class="label-sm">Option D &mdash; Sora + Inter</div>
+        <div class="sample" style="font-family: 'Sora';">ClientBridge</div>
+        <div class="meta">Sora 700 / Display &bull; Inter 400 / Body</div>
+        <div class="body-sample" style="font-family: 'Inter';">Ship feedback, not emails. ClientBridge connects your clients to the live application so every piece of feedback arrives with full screen context attached.</div>
+      </div>
+    </div>
+
+    <div style="margin-top: 24px; padding: 24px; background: #111113; border: 1px solid #1C1C22; border-radius: 12px;">
+      <div style="font-size: 13px; color: #52525B; margin-bottom: 8px;">MONOSPACE ACCENT</div>
+      <div style="font-family: 'JetBrains Mono'; font-size: 15px; color: #A1A1AA;">
+        JetBrains Mono for code snippets, timestamps, token IDs, and technical UI elements like <span style="background: #1C1C22; padding: 2px 8px; border-radius: 4px; color: #FAFAFA;">review_token: abc123-def456</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION: Color Palettes -->
+  <div class="section">
+    <div class="section-label">03 / Color</div>
+    <h2>Palette Directions</h2>
+    <p class="section-desc">Three monochrome-forward palettes, each with a different single accent color. The base grays are shared across all three.</p>
+
+    <div class="palette-grid">
+
+      <!-- Palette 1: Green accent -->
+      <div class="palette-card">
+        <div class="palette-strip">
+          <div style="background: #09090B;"></div>
+          <div style="background: #18181B;"></div>
+          <div style="background: #27272A;"></div>
+          <div style="background: #22C55E;"></div>
+          <div style="background: #FAFAFA;"></div>
+        </div>
+        <div class="palette-info">
+          <h3>Terminal Green</h3>
+          <div class="palette-desc">Monochrome base with a green accent. Active states, success, and CTAs. Developer-native — green means "go," "success," "active."</div>
+          <div class="color-list">
+            <div class="color-item"><div class="color-swatch" style="background:#09090B;"></div>#09090B Background</div>
+            <div class="color-item"><div class="color-swatch" style="background:#18181B;"></div>#18181B Surface</div>
+            <div class="color-item"><div class="color-swatch" style="background:#27272A;"></div>#27272A Border</div>
+            <div class="color-item"><div class="color-swatch" style="background:#22C55E;"></div>#22C55E Accent</div>
+            <div class="color-item"><div class="color-swatch" style="background:#FAFAFA;"></div>#FAFAFA Text</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Palette 2: Blue accent -->
+      <div class="palette-card">
+        <div class="palette-strip">
+          <div style="background: #09090B;"></div>
+          <div style="background: #18181B;"></div>
+          <div style="background: #27272A;"></div>
+          <div style="background: #3B82F6;"></div>
+          <div style="background: #FAFAFA;"></div>
+        </div>
+        <div class="palette-info">
+          <h3>Signal Blue</h3>
+          <div class="palette-desc">Classic tech blue accent. Trustworthy, professional, familiar. Works especially well for billing and invoice UI where trust matters.</div>
+          <div class="color-list">
+            <div class="color-item"><div class="color-swatch" style="background:#09090B;"></div>#09090B Background</div>
+            <div class="color-item"><div class="color-swatch" style="background:#18181B;"></div>#18181B Surface</div>
+            <div class="color-item"><div class="color-swatch" style="background:#27272A;"></div>#27272A Border</div>
+            <div class="color-item"><div class="color-swatch" style="background:#3B82F6;"></div>#3B82F6 Accent</div>
+            <div class="color-item"><div class="color-swatch" style="background:#FAFAFA;"></div>#FAFAFA Text</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Palette 3: Amber accent -->
+      <div class="palette-card recommended">
+        <div class="palette-strip">
+          <div style="background: #09090B;"></div>
+          <div style="background: #18181B;"></div>
+          <div style="background: #27272A;"></div>
+          <div style="background: #F59E0B;"></div>
+          <div style="background: #FAFAFA;"></div>
+        </div>
+        <div class="palette-info">
+          <h3>Warm Signal</h3>
+          <div class="palette-desc">Amber accent adds warmth to the dark UI. Feels premium and distinctive — less common in dev tools, which helps you stand out. Great for notification and attention states.</div>
+          <div class="color-list">
+            <div class="color-item"><div class="color-swatch" style="background:#09090B;"></div>#09090B Background</div>
+            <div class="color-item"><div class="color-swatch" style="background:#18181B;"></div>#18181B Surface</div>
+            <div class="color-item"><div class="color-swatch" style="background:#27272A;"></div>#27272A Border</div>
+            <div class="color-item"><div class="color-swatch" style="background:#F59E0B;"></div>#F59E0B Accent</div>
+            <div class="color-item"><div class="color-swatch" style="background:#FAFAFA;"></div>#FAFAFA Text</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Semantic colors note -->
+    <div style="margin-top: 24px; padding: 24px; background: #111113; border: 1px solid #1C1C22; border-radius: 12px;">
+      <div style="font-size: 13px; color: #52525B; margin-bottom: 12px;">SEMANTIC COLORS (SHARED ACROSS ALL PALETTES)</div>
+      <div style="display: flex; gap: 24px; flex-wrap: wrap;">
+        <div class="color-item"><div class="color-swatch" style="background:#EF4444;"></div><span style="color:#A1A1AA;">#EF4444</span> Error / Bug / Critical</div>
+        <div class="color-item"><div class="color-swatch" style="background:#F59E0B;"></div><span style="color:#A1A1AA;">#F59E0B</span> Warning / High</div>
+        <div class="color-item"><div class="color-swatch" style="background:#22C55E;"></div><span style="color:#A1A1AA;">#22C55E</span> Success / Resolved</div>
+        <div class="color-item"><div class="color-swatch" style="background:#3B82F6;"></div><span style="color:#A1A1AA;">#3B82F6</span> Info / Feature</div>
+        <div class="color-item"><div class="color-swatch" style="background:#A855F7;"></div><span style="color:#A1A1AA;">#A855F7</span> UX / Enhancement</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION: Application Mockup -->
+  <div class="section">
+    <div class="section-label">04 / In Context</div>
+    <h2>Dashboard Preview</h2>
+    <p class="section-desc">How the recommended identity (Monogram logo + Inter + Warm Signal amber) looks applied to your existing dashboard layout.</p>
+
+    <div class="mockup-card">
+      <div class="mockup-header">
+        <div class="mockup-dot" style="background: #EF4444;"></div>
+        <div class="mockup-dot" style="background: #F59E0B;"></div>
+        <div class="mockup-dot" style="background: #22C55E;"></div>
+        <span style="font-size: 13px; color: #52525B; margin-left: 12px;">clientbridge.dev/dashboard</span>
+      </div>
+      <div class="mockup-body">
+        <!-- Nav -->
+        <div class="nav-mockup">
+          <div class="nav-brand">
+            <svg width="28" height="28" viewBox="0 0 42 42" fill="none">
+              <rect x="2" y="2" width="38" height="38" rx="8" fill="#FAFAFA"/>
+              <text x="10" y="30" font-family="Inter" font-weight="800" font-size="26" fill="#09090B">cb</text>
+            </svg>
+            ClientBridge
+          </div>
+          <div class="nav-links">
+            <span class="active">Dashboard</span>
+            <span>Clients</span>
+            <span>Time</span>
+            <span>Reports</span>
+          </div>
+          <div class="nav-user">mkoepkeci@gmail.com</div>
+        </div>
+
+        <!-- Stats -->
+        <div class="dash-content">
+          <div class="stat-card-mock">
+            <div class="stat-label">Active Clients</div>
+            <div class="stat-value">4</div>
+            <div class="stat-change up">+1 this month</div>
+          </div>
+          <div class="stat-card-mock">
+            <div class="stat-label">Open Feedback</div>
+            <div class="stat-value">12</div>
+            <div class="stat-change up">3 new today</div>
+          </div>
+          <div class="stat-card-mock">
+            <div class="stat-label">Hours This Week</div>
+            <div class="stat-value">18.5</div>
+            <div class="stat-change up">+4.2 vs last week</div>
+          </div>
+          <div class="stat-card-mock">
+            <div class="stat-label">Billable</div>
+            <div class="stat-value" style="color: #F59E0B;">$2,775</div>
+            <div class="stat-change up">$150/hr avg</div>
+          </div>
+        </div>
+
+        <!-- Feedback list -->
+        <div style="padding: 0 32px 8px; font-size: 12px; color: #52525B; letter-spacing: 1px; text-transform: uppercase;">Recent Feedback</div>
+        <div class="feedback-row">
+          <span class="fb-type bug">Bug</span>
+          <span class="fb-title">Login form not validating email format</span>
+          <span style="color: #52525B; font-size: 13px;">/auth/login</span>
+          <span class="fb-status new">New</span>
+        </div>
+        <div class="feedback-row">
+          <span class="fb-type ux">UX</span>
+          <span class="fb-title">Navigation feels cluttered on mobile</span>
+          <span style="color: #52525B; font-size: 13px;">/dashboard</span>
+          <span class="fb-status">Reviewed</span>
+        </div>
+        <div class="feedback-row">
+          <span class="fb-type feature">Feature</span>
+          <span class="fb-title">Add export to CSV for patient records</span>
+          <span style="color: #52525B; font-size: 13px;">/patients</span>
+          <span class="fb-status">In Progress</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION: Recommendations -->
+  <div class="section" style="border-bottom: none;">
+    <div class="section-label">05 / Summary</div>
+    <h2>Recommended Stack</h2>
+
+    <div class="rec-grid">
+      <div class="rec-card">
+        <div class="rec-num">01</div>
+        <h3>Logo: The Monogram</h3>
+        <p>Lowercase "cb" in a rounded square. Scales from favicon to invoice header. No metaphor to explain — it just becomes the mark through usage. Add the wordmark "ClientBridge" next to it for full lockup.</p>
+      </div>
+      <div class="rec-card">
+        <div class="rec-num">02</div>
+        <h3>Type: Inter Everything</h3>
+        <p>One typeface, multiple weights. Inter 800 for display, 600 for headings, 400 for body. JetBrains Mono for technical elements. No font loading complexity, no pairing to get wrong.</p>
+      </div>
+      <div class="rec-card">
+        <div class="rec-num">03</div>
+        <h3>Color: Warm Signal</h3>
+        <p>Monochrome base (#09090B through #FAFAFA) with #F59E0B as the single accent. Amber is warm, premium, and distinctive — it stands out from every other dev tool using green or blue. It says "attention here" without shouting.</p>
+      </div>
+    </div>
+
+    <div style="margin-top: 40px; padding: 32px; background: #111113; border: 1px solid #1C1C22; border-radius: 16px;">
+      <p style="color: #A1A1AA; font-size: 15px; line-height: 1.8;">Pick the directions that resonate and I can build it out — update the codebase, generate actual logo files (SVG + PNG at all sizes), create a favicon, and apply the brand across the dashboard, review interface, invoice template, and landing page.</p>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

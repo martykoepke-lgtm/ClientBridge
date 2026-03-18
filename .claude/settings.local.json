@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run:*)",
+      "mcp__Claude_Preview__preview_start",
+      "Bash(npx --yes kill-port 3000)",
+      "Bash(netstat -ano)",
+      "Bash(taskkill //F //IM node.exe)",
+      "Bash(find /c/Users/marty/ClientBridge/src -type f \\\\\\(-name *.tsx -o -name *.ts \\\\\\))",
+      "Bash(xargs grep:*)",
+      "Bash(ls -la /c/Users/marty/ClientBridge/src/app/\\\\\\(dashboard\\\\\\)/)",
+      "Bash(find /c/Users/marty/ClientBridge -name *.env* -o -name *.config.*)",
+      "Bash(node -e \":*)",
+      "Bash(npx supabase:*)"
+    ]
+  }
+}

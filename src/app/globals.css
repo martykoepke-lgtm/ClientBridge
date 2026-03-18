@@ -1,0 +1,54 @@
+@import "tailwindcss";
+
+:root {
+  /* ClientBridge — Warm Signal palette */
+  --cb-background: #09090B;
+  --cb-surface: #18181B;
+  --cb-surface-hover: #1C1C22;
+  --cb-border: #27272A;
+  --cb-border-subtle: #1C1C22;
+  --cb-text-primary: #FAFAFA;
+  --cb-text-secondary: #A1A1AA;
+  --cb-text-muted: #71717A;
+  --cb-text-faint: #52525B;
+  --cb-accent: #F59E0B;
+  --cb-accent-hover: #D97706;
+  --cb-accent-muted: rgba(245, 158, 11, 0.15);
+  --cb-error: #EF4444;
+  --cb-success: #22C55E;
+  --cb-info: #3B82F6;
+  --cb-purple: #A855F7;
+
+  --background: var(--cb-background);
+  --foreground: var(--cb-text-primary);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-jetbrains-mono);
+
+  /* Brand colors for Tailwind utility classes */
+  --color-cb-background: #09090B;
+  --color-cb-surface: #18181B;
+  --color-cb-surface-hover: #1C1C22;
+  --color-cb-border: #27272A;
+  --color-cb-border-subtle: #1C1C22;
+  --color-cb-text-primary: #FAFAFA;
+  --color-cb-text-secondary: #A1A1AA;
+  --color-cb-text-muted: #71717A;
+  --color-cb-text-faint: #52525B;
+  --color-cb-accent: #F59E0B;
+  --color-cb-accent-hover: #D97706;
+  --color-cb-error: #EF4444;
+  --color-cb-success: #22C55E;
+  --color-cb-info: #3B82F6;
+  --color-cb-purple: #A855F7;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-inter), 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
