@@ -245,10 +245,7 @@ export default function ReviewPage({ params }: { params: Promise<{ token: string
       setFeedbackType('general')
       setSeverity('normal')
 
-      setTimeout(() => {
-        setSubmitted(false)
-        setViewMode('my-feedback')
-      }, 2000)
+      // No auto-redirect — let the client choose to add more or view feedback
     }
 
     setSubmitting(false)
@@ -454,6 +451,20 @@ export default function ReviewPage({ params }: { params: Promise<{ token: string
                 <div className="bg-green-900/30 border border-green-800 text-green-300 px-4 py-6 rounded-lg text-center">
                   <p className="font-medium">Feedback submitted!</p>
                   <p className="text-sm mt-1 text-green-400">Your developer will review it shortly.</p>
+                  <div className="flex gap-3 mt-4 justify-center">
+                    <button
+                      onClick={() => setSubmitted(false)}
+                      className="px-4 py-2 bg-[#F59E0B] hover:bg-[#D97706] text-[#09090B] text-sm font-semibold rounded-lg transition-colors"
+                    >
+                      Add More Feedback
+                    </button>
+                    <button
+                      onClick={() => setViewMode('my-feedback')}
+                      className="px-4 py-2 bg-[#18181B] hover:bg-[#27272A] text-[#A1A1AA] text-sm font-medium rounded-lg border border-[#27272A] transition-colors"
+                    >
+                      View My Feedback
+                    </button>
+                  </div>
                 </div>
               ) : (
                 <form onSubmit={handleFeedbackSubmit} className="space-y-4">
