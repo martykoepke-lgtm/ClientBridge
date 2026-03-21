@@ -606,6 +606,27 @@ export async function GET(request: NextRequest) {
     return buildErrorPage('Invalid Link', 'This review link appears to be broken. Contact your developer for a new link.', false)
   }
 
+  // Safety: reject self-referencing URLs to prevent circular fetch loops.
+  // If a project accidentally has vercel_url set to the ClientBridge domain,
+  // the proxy would fetch itself infinitely.
+  const selfDomains = ['clientbridge.dev', 'www.clientbridge.dev', 'clientbridge.vercel.app']
+  const requestHost = request.nextUrl.hostname
+  if (selfDomains.includes(parsed.hostname) || parsed.hostname === requestHost) {
+    console.error(`Proxy blocked self-referencing URL: ${targetUrl}`)
+    await logProxyError(
+      'proxy_self_reference',
+      `Blocked circular fetch: proxy tried to fetch its own domain (${parsed.hostname}). A project likely has vercel_url misconfigured.`,
+      targetUrl,
+      'Self-referencing URL detected — check projects table for vercel_url pointing to clientbridge.dev',
+      request.headers.get('user-agent')
+    )
+    return buildErrorPage(
+      'Configuration Error',
+      'This project\'s review URL points to ClientBridge itself instead of the deployed app. Please contact your developer to update the project URL.',
+      false
+    )
+  }
+
   // Security: only proxy URLs belonging to registered projects
   const allowed = await isAllowedUrl(parsed.origin)
   if (!allowed) {
