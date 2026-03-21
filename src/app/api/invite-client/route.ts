@@ -53,7 +53,7 @@ export async function POST(req: NextRequest) {
   await supabase.from('clients').update({ invited_at: new Date().toISOString() }).eq('id', clientId)
 
   // Send email via Resend (if API key is configured)
-  const portalUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/portal/accept/${invitation.token}`
+  const portalUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/portal/signup?token=${invitation.token}`
 
   let emailStatus = 'skipped'
   let emailError = null
@@ -66,18 +66,18 @@ export async function POST(req: NextRequest) {
       const result = await resend.emails.send({
         from: process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev',
         to: email,
-        subject: `${companyName} has invited you to the project portal`,
+        subject: `${companyName} — Your project portal is ready`,
         html: `
           <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 500px; margin: 0 auto; padding: 40px 20px;">
-            <h2 style="color: #1a1a1a; margin-bottom: 8px;">You've been invited</h2>
+            <h2 style="color: #1a1a1a; margin-bottom: 8px;">Your project portal is ready</h2>
             <p style="color: #666; font-size: 14px; line-height: 1.6;">
-              <strong>${companyName}</strong> has invited you to their project portal where you can review your project, sign contracts, and track progress.
+              <strong>${companyName}</strong> has set up a project portal for you. Create your account to view your project details, review contracts, and track progress.
             </p>
             <a href="${portalUrl}" style="display: inline-block; margin: 24px 0; padding: 12px 32px; background: #F59E0B; color: #09090B; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 14px;">
-              Accept Invitation
+              Create Your Account
             </a>
             <p style="color: #999; font-size: 12px;">
-              This invitation expires in 7 days. If you didn't expect this, you can safely ignore it.
+              This link expires in 7 days. If you didn't expect this, you can safely ignore it.
             </p>
           </div>
         `,
