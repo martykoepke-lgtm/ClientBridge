@@ -2,6 +2,7 @@
 
 import { useState, useEffect, use } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import type { Feedback, Project, ComplexityProfile } from '@/lib/types'
 
@@ -61,7 +62,10 @@ export default function FeedbackDetailPage({
     // Build tech context from complexity profile
     const techContext: string[] = []
     if (cp.app_type) techContext.push(`App Type: ${cp.app_type.replace('_', ' ')}`)
-    if (cp.audience) techContext.push(`Audience: ${cp.audience.toUpperCase()}`)
+    if (cp.audience) {
+      const aud = Array.isArray(cp.audience) ? cp.audience : [cp.audience]
+      techContext.push(`Audience: ${aud.map((a: string) => a.toUpperCase()).join(', ')}`)
+    }
     if (cp.auth_level && cp.auth_level !== 'none') techContext.push(`Auth: ${cp.auth_level.toUpperCase()}`)
     if (cp.database_complexity) techContext.push(`Database: ${cp.database_complexity}`)
     if (cp.multi_tenant) techContext.push(`Multi-tenant: yes`)
@@ -160,6 +164,22 @@ Based on this ${feedback.feedback_type.replace('_', ' ')} feedback${feedback.sev
 
   return (
     <div>
+      {/* Back to Dashboard button */}
+      <div className="flex items-center gap-4 mb-4">
+        <Link
+          href="/dashboard"
+          className="flex items-center gap-1.5 px-3 py-1.5 text-sm bg-gray-800 border border-gray-700 hover:border-gray-600 text-gray-400 hover:text-white rounded-lg transition-colors"
+        >
+          ← Dashboard
+        </Link>
+        <Link
+          href={`/projects/${id}`}
+          className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-white transition-colors"
+        >
+          ← Project
+        </Link>
+      </div>
+
       {/* Breadcrumb */}
       <div className="flex items-center gap-2 text-sm text-gray-400 mb-6">
         <Link href="/clients" className="hover:text-white transition-colors">Clients</Link>

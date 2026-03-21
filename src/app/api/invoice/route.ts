@@ -6,17 +6,95 @@ import { InvoiceDocument } from './invoice-template'
 export async function GET(req: NextRequest) {
   const url = new URL(req.url)
   const projectId = url.searchParams.get('projectId')
+  const milestoneId = url.searchParams.get('milestoneId')
   const from = url.searchParams.get('from')
   const to = url.searchParams.get('to')
 
-  if (!projectId) {
-    return NextResponse.json({ error: 'projectId is required' }, { status: 400 })
+  if (!projectId && !milestoneId) {
+    return NextResponse.json({ error: 'projectId or milestoneId is required' }, { status: 400 })
   }
 
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
   )
+
+  // ── Milestone-based invoice ──
+  if (milestoneId) {
+    const { data: milestone } = await supabase
+      .from('milestones')
+      .select('*, contract:contracts(*, project:projects(*, client:clients(*)))')
+      .eq('id', milestoneId)
+      .single()
+
+    if (!milestone) {
+      return NextResponse.json({ error: 'Milestone not found' }, { status: 404 })
+    }
+
+    const contract = Array.isArray(milestone.contract) ? milestone.contract[0] : milestone.contract
+    const project = Array.isArray(contract.project) ? contract.project[0] : contract.project
+    const client = Array.isArray(project.client) ? project.client[0] : project.client
+
+    // Fetch scope items linked to this milestone
+    const { data: scopeItems } = await supabase
+      .from('scope_items')
+      .select('*')
+      .eq('milestone_id', milestoneId)
+      .eq('in_scope', true)
+      .order('sort_order')
+
+    const invoiceData = {
+      invoiceNumber: `INV-${Date.now().toString(36).toUpperCase()}`,
+      date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
+      projectName: project.name,
+      clientName: client?.name ?? 'Client',
+      clientCompany: client?.company ?? '',
+      clientEmail: client?.email ?? '',
+      billingType: 'milestone',
+      rate: 0,
+      totalHours: 0,
+      totalAmount: milestone.amount ?? 0,
+      categories: [],
+      sessions: [],
+      dateRange: milestone.due_date
+        ? `Due: ${new Date(milestone.due_date + 'T00:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`
+        : 'Milestone payment',
+      // Milestone-specific fields
+      milestone: {
+        title: milestone.title,
+        description: milestone.description,
+        amount: milestone.amount,
+        scopeItems: (scopeItems ?? []).map((s: { label: string; is_complete: boolean }) => ({
+          label: s.label,
+          complete: s.is_complete,
+        })),
+      },
+      paymentTerms: contract.net_terms ? `Net ${contract.net_terms} days` : null,
+    }
+
+    try {
+      const { MilestoneInvoiceDocument } = await import('./invoice-template')
+      const pdfStream = await ReactPDF.renderToStream(MilestoneInvoiceDocument(invoiceData))
+      const chunks: Uint8Array[] = []
+      for await (const chunk of pdfStream as AsyncIterable<Uint8Array>) {
+        chunks.push(chunk)
+      }
+      return new NextResponse(Buffer.concat(chunks), {
+        headers: {
+          'Content-Type': 'application/pdf',
+          'Content-Disposition': `attachment; filename="invoice-milestone-${milestone.title?.replace(/\s+/g, '-').toLowerCase() ?? 'payment'}.pdf"`,
+        },
+      })
+    } catch (err) {
+      console.error('PDF generation error:', err)
+      return NextResponse.json({ error: 'Failed to generate PDF' }, { status: 500 })
+    }
+  }
+
+  // ── Time-based invoice ──
+  if (!projectId) {
+    return NextResponse.json({ error: 'projectId is required for time-based invoices' }, { status: 400 })
+  }
 
   // Fetch project with client info
   const { data: project } = await supabase

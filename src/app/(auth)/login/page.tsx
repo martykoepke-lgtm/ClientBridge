@@ -36,10 +36,15 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center bg-gray-950 px-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
+          <div className="flex justify-center mb-4">
+            <svg width="48" height="48" viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="2" y="2" width="38" height="38" rx="8" stroke="#FAFAFA" strokeWidth="2" fill="none"/>
+              <text x="10" y="30" fontFamily="Inter, sans-serif" fontWeight="800" fontSize="26" fill="#FAFAFA">cb</text>
+            </svg>
+          </div>
           <h1 className="text-3xl font-bold text-white tracking-tight">
-            Practical Informatics
+            ClientBridge
           </h1>
-          <p className="text-lg text-gray-300 mt-1">Project Collaboration Center</p>
           <p className="text-gray-400 mt-2">Sign in to your dashboard</p>
         </div>
 

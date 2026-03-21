@@ -21,6 +21,7 @@ export function DashboardNav({ user }: { user: User }) {
     { href: '/clients', label: 'Clients' },
     { href: '/time', label: 'Time' },
     { href: '/reports', label: 'Reports' },
+    { href: '/settings', label: 'Settings' },
   ]
 
   return (

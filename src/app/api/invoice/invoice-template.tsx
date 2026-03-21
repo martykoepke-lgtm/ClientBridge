@@ -24,6 +24,98 @@ const styles = StyleSheet.create({
   footer: { position: 'absolute' as const, bottom: 30, left: 40, right: 40, textAlign: 'center' as const, fontSize: 8, color: '#999' },
 })
 
+interface MilestoneInvoiceData {
+  invoiceNumber: string
+  date: string
+  projectName: string
+  clientName: string
+  clientCompany: string
+  clientEmail: string
+  billingType: string
+  totalAmount: number
+  dateRange: string
+  milestone: {
+    title: string
+    description: string | null
+    amount: number
+    scopeItems: { label: string; complete: boolean }[]
+  }
+  paymentTerms: string | null
+}
+
+export function MilestoneInvoiceDocument(data: MilestoneInvoiceData) {
+  return (
+    <Document>
+      <Page size="A4" style={styles.page}>
+        {/* Header */}
+        <View style={styles.header}>
+          <View>
+            <Text style={styles.brand}>Practical Informatics</Text>
+            <Text style={styles.brandSub}>Software Development Services</Text>
+          </View>
+          <View>
+            <Text style={styles.invoiceTitle}>INVOICE</Text>
+            <Text style={styles.invoiceNumber}>{data.invoiceNumber}</Text>
+            <Text style={styles.invoiceNumber}>{data.date}</Text>
+          </View>
+        </View>
+
+        <View style={styles.divider} />
+
+        {/* Client & Project Info */}
+        <View style={[styles.row, { marginBottom: 20 }]}>
+          <View>
+            <Text style={styles.label}>Bill To</Text>
+            <Text style={[styles.value, { fontFamily: 'Helvetica-Bold' }]}>{data.clientName}</Text>
+            {data.clientCompany ? <Text style={styles.value}>{data.clientCompany}</Text> : null}
+            {data.clientEmail ? <Text style={[styles.value, { color: '#666' }]}>{data.clientEmail}</Text> : null}
+          </View>
+          <View style={{ alignItems: 'flex-end' as const }}>
+            <Text style={styles.label}>Project</Text>
+            <Text style={[styles.value, { fontFamily: 'Helvetica-Bold' }]}>{data.projectName}</Text>
+            <Text style={[styles.value, { color: '#666' }]}>Milestone Payment</Text>
+            <Text style={[styles.value, { color: '#666' }]}>{data.dateRange}</Text>
+          </View>
+        </View>
+
+        {/* Milestone details */}
+        <Text style={styles.sectionTitle}>Milestone: {data.milestone.title}</Text>
+        {data.milestone.description && (
+          <Text style={[styles.value, { marginBottom: 10, color: '#555' }]}>{data.milestone.description}</Text>
+        )}
+
+        {/* Scope items delivered */}
+        {data.milestone.scopeItems.length > 0 && (
+          <View style={{ marginBottom: 15 }}>
+            <Text style={[styles.label, { marginBottom: 6 }]}>Deliverables</Text>
+            {data.milestone.scopeItems.map((item, i) => (
+              <View key={i} style={{ flexDirection: 'row', marginBottom: 3, paddingLeft: 8 }}>
+                <Text style={[styles.tableCell, { width: 14 }]}>{item.complete ? '✓' : '○'}</Text>
+                <Text style={[styles.tableCell, { color: item.complete ? '#333' : '#999' }]}>{item.label}</Text>
+              </View>
+            ))}
+          </View>
+        )}
+
+        {/* Total */}
+        <View style={styles.totalRow}>
+          <Text style={styles.totalLabel}>Amount Due</Text>
+          <Text style={styles.totalValue}>${data.totalAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</Text>
+        </View>
+
+        {data.paymentTerms && (
+          <Text style={[styles.value, { marginTop: 8, color: '#666' }]}>Terms: {data.paymentTerms}</Text>
+        )}
+
+        {/* Footer */}
+        <Text style={styles.footer}>
+          Practical Informatics · Generated via ClientBridge · {data.date}
+        </Text>
+      </Page>
+    </Document>
+  )
+}
+
 interface InvoiceData {
   invoiceNumber: string
   date: string

@@ -364,7 +364,7 @@ function ProjectDeepDive({
                   <Tag label={project.complexity_profile.app_type.replace(/_/g, ' ')} />
                 )}
                 {project.complexity_profile.audience && (
-                  <Tag label={project.complexity_profile.audience.toUpperCase()} />
+                  (Array.isArray(project.complexity_profile.audience) ? project.complexity_profile.audience : [project.complexity_profile.audience]).map((a: string) => <Tag key={a} label={a.toUpperCase()} />)
                 )}
                 {project.complexity_profile.multi_tenant && <Tag label="Multi-tenant" color="blue" />}
                 {project.complexity_profile.auth_level && project.complexity_profile.auth_level !== 'none' && (
@@ -744,7 +744,7 @@ function QuotingAssistant({
 
   const newProfile: ComplexityProfile = {
     app_type: appType as ComplexityProfile['app_type'] || undefined,
-    audience: audience as ComplexityProfile['audience'] || undefined,
+    audience: audience ? [audience] : undefined,
     auth_level: authLevel as ComplexityProfile['auth_level'] || undefined,
     database_complexity: dbComplexity as ComplexityProfile['database_complexity'] || undefined,
     multi_tenant: multiTenant,

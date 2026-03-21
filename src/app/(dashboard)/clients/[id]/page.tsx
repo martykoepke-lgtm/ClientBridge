@@ -2,11 +2,13 @@
 
 import { useState, useEffect, use } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import type { Client, Project } from '@/lib/types'
 
 export default function ClientDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params)
+  const router = useRouter()
   const [client, setClient] = useState<Client | null>(null)
   const [projects, setProjects] = useState<Project[]>([])
   const [showForm, setShowForm] = useState(false)
@@ -16,6 +18,19 @@ export default function ClientDetailPage({ params }: { params: Promise<{ id: str
   const [hourlyRate, setHourlyRate] = useState('')
   const [saving, setSaving] = useState(false)
   const [loading, setLoading] = useState(true)
+  // Edit state
+  const [editing, setEditing] = useState(false)
+  const [editName, setEditName] = useState('')
+  const [editEmail, setEditEmail] = useState('')
+  const [editCompany, setEditCompany] = useState('')
+  const [editPhone, setEditPhone] = useState('')
+  const [editStreet, setEditStreet] = useState('')
+  const [editCity, setEditCity] = useState('')
+  const [editState, setEditState] = useState('')
+  const [editZip, setEditZip] = useState('')
+  const [confirmDelete, setConfirmDelete] = useState(false)
+  const [inviting, setInviting] = useState(false)
+  const [inviteUrl, setInviteUrl] = useState<string | null>(null)
   const supabase = createClient()
 
   useEffect(() => {
@@ -30,7 +45,61 @@ export default function ClientDetailPage({ params }: { params: Promise<{ id: str
 
     setClient(clientRes.data)
     setProjects(projectsRes.data ?? [])
+    if (clientRes.data) {
+      setEditName(clientRes.data.name)
+      setEditEmail(clientRes.data.email ?? '')
+      setEditCompany(clientRes.data.company ?? '')
+      setEditPhone(clientRes.data.phone ?? '')
+      setEditStreet(clientRes.data.street ?? '')
+      setEditCity(clientRes.data.city ?? '')
+      setEditState(clientRes.data.state ?? '')
+      setEditZip(clientRes.data.zip ?? '')
+    }
     setLoading(false)
+  }
+
+  async function handleSaveClient() {
+    if (!client) return
+    setSaving(true)
+    const updates = {
+      name: editName,
+      email: editEmail || null,
+      company: editCompany || null,
+      phone: editPhone || null,
+      street: editStreet || null,
+      city: editCity || null,
+      state: editState || null,
+      zip: editZip || null,
+    }
+    await supabase.from('clients').update(updates).eq('id', client.id)
+    setClient({ ...client, ...updates })
+    setEditing(false)
+    setSaving(false)
+  }
+
+  async function handleDeleteClient() {
+    await supabase.from('clients').delete().eq('id', id)
+    router.push('/clients')
+  }
+
+  async function handleInviteClient() {
+    if (!client?.email) return
+    setInviting(true)
+    try {
+      const res = await fetch('/api/invite-client', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ clientId: client.id, email: client.email }),
+      })
+      const data = await res.json()
+      if (data.portalUrl) {
+        setInviteUrl(data.portalUrl)
+        setClient({ ...client, invited_at: new Date().toISOString() })
+      }
+    } catch (err) {
+      console.error('Invite error:', err)
+    }
+    setInviting(false)
   }
 
   async function handleCreateProject(e: React.FormEvent) {
@@ -86,19 +155,163 @@ export default function ClientDetailPage({ params }: { params: Promise<{ id: str
       </div>
 
       {/* Client Header */}
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <h1 className="text-2xl font-bold text-white">{client.name}</h1>
-          <p className="text-gray-400 mt-1">
-            {[client.company, client.email].filter(Boolean).join(' · ')}
-          </p>
-        </div>
-        <button
-          onClick={() => setShowForm(!showForm)}
-          className="px-4 py-2 bg-[#F59E0B] hover:bg-[#D97706] text-[#09090B] text-sm font-semibold rounded-lg transition-colors"
-        >
-          {showForm ? 'Cancel' : 'Add Project'}
-        </button>
+      <div className="bg-gray-900 border border-gray-800 rounded-xl p-6 mb-6">
+        {editing ? (
+          <div className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs text-gray-500 mb-1.5">Name *</label>
+                <input
+                  type="text"
+                  value={editName}
+                  onChange={(e) => setEditName(e.target.value)}
+                  className="w-full px-3 py-2 text-sm bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
+                />
+              </div>
+              <div>
+                <label className="block text-xs text-gray-500 mb-1.5">Company</label>
+                <input
+                  type="text"
+                  value={editCompany}
+                  onChange={(e) => setEditCompany(e.target.value)}
+                  className="w-full px-3 py-2 text-sm bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
+                />
+              </div>
+              <div>
+                <label className="block text-xs text-gray-500 mb-1.5">Email</label>
+                <input
+                  type="email"
+                  value={editEmail}
+                  onChange={(e) => setEditEmail(e.target.value)}
+                  className="w-full px-3 py-2 text-sm bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
+                />
+              </div>
+              <div>
+                <label className="block text-xs text-gray-500 mb-1.5">Phone</label>
+                <input
+                  type="tel"
+                  value={editPhone}
+                  onChange={(e) => setEditPhone(e.target.value)}
+                  placeholder="e.g. (555) 123-4567"
+                  className="w-full px-3 py-2 text-sm bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                />
+              </div>
+            </div>
+            <div>
+              <label className="block text-xs text-gray-500 mb-1.5">Street Address</label>
+              <input
+                type="text"
+                value={editStreet}
+                onChange={(e) => setEditStreet(e.target.value)}
+                placeholder="123 Main St, Suite 100"
+                className="w-full px-3 py-2 text-sm bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              />
+            </div>
+            <div className="grid grid-cols-3 gap-4">
+              <div>
+                <label className="block text-xs text-gray-500 mb-1.5">City</label>
+                <input
+                  type="text"
+                  value={editCity}
+                  onChange={(e) => setEditCity(e.target.value)}
+                  placeholder="City"
+                  className="w-full px-3 py-2 text-sm bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                />
+              </div>
+              <div>
+                <label className="block text-xs text-gray-500 mb-1.5">State</label>
+                <input
+                  type="text"
+                  value={editState}
+                  onChange={(e) => setEditState(e.target.value)}
+                  placeholder="e.g. Virginia"
+                  className="w-full px-3 py-2 text-sm bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                />
+              </div>
+              <div>
+                <label className="block text-xs text-gray-500 mb-1.5">ZIP</label>
+                <input
+                  type="text"
+                  value={editZip}
+                  onChange={(e) => setEditZip(e.target.value)}
+                  placeholder="ZIP"
+                  className="w-full px-3 py-2 text-sm bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                />
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <button onClick={handleSaveClient} disabled={saving || !editName} className="px-4 py-2 text-sm font-medium bg-[#F59E0B] hover:bg-[#D97706] disabled:bg-gray-700 text-[#09090B] rounded-lg transition-colors">
+                {saving ? 'Saving...' : 'Save'}
+              </button>
+              <button onClick={() => setEditing(false)} className="px-4 py-2 text-sm text-gray-400 hover:text-white transition-colors">
+                Cancel
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="flex items-start justify-between">
+            <div>
+              <h1 className="text-2xl font-bold text-white">{client.name}</h1>
+              <p className="text-gray-400 mt-1">
+                {[client.company, client.email, client.phone].filter(Boolean).join(' · ')}
+              </p>
+              {(client.street || client.city || client.state) && (
+                <p className="text-gray-500 text-sm mt-1">
+                  {[client.street, [client.city, client.state, client.zip].filter(Boolean).join(', ')].filter(Boolean).join(', ')}
+                </p>
+              )}
+            </div>
+            <div className="flex items-center gap-2 flex-wrap">
+              {client.email && !client.invite_accepted_at && (
+                inviteUrl ? (
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-green-400">Invited!</span>
+                    <button
+                      onClick={() => { navigator.clipboard.writeText(inviteUrl); }}
+                      className="text-xs text-blue-400 hover:text-blue-300"
+                    >
+                      Copy Link
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    onClick={handleInviteClient}
+                    disabled={inviting}
+                    className="px-4 py-2 text-sm bg-blue-600 hover:bg-blue-500 disabled:bg-gray-700 text-white font-medium rounded-lg transition-colors"
+                  >
+                    {inviting ? 'Sending...' : client.invited_at ? 'Resend Invite' : 'Invite to Portal'}
+                  </button>
+                )
+              )}
+              {client.invite_accepted_at && (
+                <span className="px-3 py-1.5 text-xs bg-green-900/50 text-green-300 rounded-full">Portal Active</span>
+              )}
+              <button
+                onClick={() => setEditing(true)}
+                className="px-4 py-2 text-sm bg-gray-800 border border-gray-700 hover:border-gray-600 text-gray-300 hover:text-white rounded-lg transition-colors"
+              >
+                Edit
+              </button>
+              <button
+                onClick={() => setShowForm(!showForm)}
+                className="px-4 py-2 bg-[#F59E0B] hover:bg-[#D97706] text-[#09090B] text-sm font-semibold rounded-lg transition-colors"
+              >
+                {showForm ? 'Cancel' : 'Add Project'}
+              </button>
+              {confirmDelete ? (
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-red-400">Delete client + all projects?</span>
+                  <button onClick={handleDeleteClient} className="px-3 py-1.5 text-xs font-medium bg-red-600 hover:bg-red-500 text-white rounded-lg">Yes</button>
+                  <button onClick={() => setConfirmDelete(false)} className="px-3 py-1.5 text-xs text-gray-400 hover:text-white">No</button>
+                </div>
+              ) : (
+                <button onClick={() => setConfirmDelete(true)} className="px-4 py-2 text-sm text-gray-500 hover:text-red-400 transition-colors">
+                  Delete
+                </button>
+              )}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Add Project Form */}
@@ -118,7 +331,7 @@ export default function ClientDetailPage({ params }: { params: Promise<{ id: str
                 onChange={(e) => setProjectName(e.target.value)}
                 required
                 className="w-full px-4 py-2.5 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="e.g., ÆSCULA Platform"
+                placeholder="e.g., AESCULA Platform"
               />
             </div>
             <div>
