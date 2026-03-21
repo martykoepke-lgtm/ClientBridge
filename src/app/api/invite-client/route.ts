@@ -55,12 +55,15 @@ export async function POST(req: NextRequest) {
   // Send email via Resend (if API key is configured)
   const portalUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/portal/accept/${invitation.token}`
 
+  let emailStatus = 'skipped'
+  let emailError = null
+
   if (process.env.RESEND_API_KEY) {
     try {
       const { Resend } = await import('resend')
       const resend = new Resend(process.env.RESEND_API_KEY)
 
-      await resend.emails.send({
+      const result = await resend.emails.send({
         from: process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev',
         to: email,
         subject: `${companyName} has invited you to the project portal`,
@@ -79,14 +82,21 @@ export async function POST(req: NextRequest) {
           </div>
         `,
       })
-    } catch (err) {
+      emailStatus = 'sent'
+      console.log('Resend result:', JSON.stringify(result))
+    } catch (err: any) {
+      emailStatus = 'error'
+      emailError = err?.message || String(err)
       console.error('Email send error:', err)
-      // Don't fail the request — invitation is still created
     }
+  } else {
+    emailStatus = 'no_api_key'
   }
 
   return NextResponse.json({
     invitation,
-    portalUrl, // Return URL so developer can copy it if email fails
+    portalUrl,
+    emailStatus,
+    emailError,
   })
 }
