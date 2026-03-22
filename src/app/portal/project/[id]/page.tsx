@@ -515,23 +515,75 @@ export default function PortalProjectPage({ params }: { params: Promise<{ id: st
               {milestones.length > 0 && (
                 <div className="bg-gray-900 border border-gray-800 rounded-xl p-6">
                   <h3 className="text-sm font-semibold text-gray-300 uppercase tracking-wide mb-3">Milestones</h3>
-                  <div className="space-y-2">
-                    {milestones.map((m, i) => (
-                      <div key={m.id} className="flex items-center justify-between py-2 border-b border-gray-800 last:border-0">
-                        <div className="flex items-center gap-3">
-                          <span className="w-6 h-6 rounded-full bg-gray-800 border border-gray-700 flex items-center justify-center text-xs text-gray-500">{i + 1}</span>
-                          <span className="text-sm text-gray-300">{m.title || 'Untitled'}</span>
+
+                  {/* Milestone progress bar */}
+                  {(() => {
+                    const total = milestones.reduce((s, m) => s + (m.amount || 0), 0)
+                    const paidAmt = milestones.filter(m => m.status === 'paid').reduce((s, m) => s + (m.amount || 0), 0)
+                    const invoicedAmt = milestones.filter(m => m.status === 'invoiced').reduce((s, m) => s + (m.amount || 0), 0)
+                    const paidCount = milestones.filter(m => m.status === 'paid').length
+                    return (
+                      <div className="mb-4">
+                        <div className="flex items-center justify-between text-xs text-gray-500 mb-1.5">
+                          <span>{paidCount} of {milestones.length} milestones complete</span>
+                          <span>${paidAmt.toLocaleString()} / ${total.toLocaleString()}</span>
                         </div>
-                        <div className="flex items-center gap-3">
-                          <span className="text-sm font-medium text-white">${(m.amount || 0).toLocaleString()}</span>
-                          <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${
-                            m.status === 'paid' ? 'bg-green-900/50 text-green-300' :
-                            m.status === 'invoiced' ? 'bg-blue-900/50 text-blue-300' :
-                            'bg-gray-800 text-gray-500'
-                          }`}>{m.status}</span>
+                        <div className="h-2 bg-gray-800 rounded-full overflow-hidden flex">
+                          {total > 0 && (
+                            <>
+                              <div className="h-full bg-green-500 transition-all" style={{ width: `${(paidAmt / total) * 100}%` }} />
+                              <div className="h-full bg-blue-500 transition-all" style={{ width: `${(invoicedAmt / total) * 100}%` }} />
+                            </>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-4 mt-1.5 text-[10px] text-gray-600">
+                          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-green-500 inline-block" /> Paid</span>
+                          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-blue-500 inline-block" /> Invoiced</span>
+                          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-gray-700 inline-block" /> Pending</span>
                         </div>
                       </div>
-                    ))}
+                    )
+                  })()}
+
+                  <div className="space-y-2">
+                    {milestones.map((m, i) => {
+                      const assignedScope = scopeItems.filter(s => s.milestone_id === m.id)
+                      const completedCount = assignedScope.filter(s => s.is_complete).length
+                      return (
+                        <div key={m.id} className="py-2 border-b border-gray-800 last:border-0">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                              <span className={`w-6 h-6 rounded-full border flex items-center justify-center text-xs ${
+                                m.status === 'paid' ? 'bg-green-900/50 border-green-700 text-green-400' :
+                                m.status === 'invoiced' ? 'bg-blue-900/50 border-blue-700 text-blue-400' :
+                                'bg-gray-800 border-gray-700 text-gray-500'
+                              }`}>{m.status === 'paid' ? '✓' : i + 1}</span>
+                              <div>
+                                <span className="text-sm text-gray-300">{m.title || 'Untitled'}</span>
+                                {assignedScope.length > 0 && (
+                                  <span className="text-xs text-gray-600 ml-2">{completedCount}/{assignedScope.length} items complete</span>
+                                )}
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-3">
+                              <span className="text-sm font-medium text-white">${(m.amount || 0).toLocaleString()}</span>
+                              <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${
+                                m.status === 'paid' ? 'bg-green-900/50 text-green-300' :
+                                m.status === 'invoiced' ? 'bg-blue-900/50 text-blue-300' :
+                                'bg-gray-800 text-gray-500'
+                              }`}>{m.status}</span>
+                            </div>
+                          </div>
+                          {assignedScope.length > 0 && (
+                            <div className="ml-9 mt-1.5">
+                              <div className="h-1 bg-gray-800 rounded-full overflow-hidden mb-1">
+                                <div className="h-full bg-green-500 rounded-full" style={{ width: `${(completedCount / assignedScope.length) * 100}%` }} />
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      )
+                    })}
                   </div>
                 </div>
               )}
@@ -775,26 +827,70 @@ export default function PortalProjectPage({ params }: { params: Promise<{ id: st
 
           {/* Activity Tab */}
           {activeTab === 'activity' && (
-            <div className="bg-gray-900 border border-gray-800 rounded-xl p-6">
-              <h3 className="text-sm font-semibold text-gray-300 uppercase tracking-wide mb-4">Recent Work Sessions</h3>
-              {sessions.length === 0 ? (
-                <p className="text-gray-500 text-center py-8">No work sessions recorded yet.</p>
-              ) : (
-                <div className="space-y-1">
-                  {sessions.map(s => (
-                    <div key={s.id} className="flex items-center justify-between py-2 border-b border-gray-800/50 last:border-0 text-sm">
-                      <div className="flex items-center gap-3">
-                        <span className="text-xs text-gray-600 w-16">
-                          {new Date(s.start_time).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                        </span>
-                        <span className="text-gray-400">{s.category_name}</span>
-                        {s.ai_summary && <span className="text-gray-600 text-xs truncate max-w-md hidden md:inline">{s.ai_summary}</span>}
+            <div className="space-y-6">
+              <div className="bg-gray-900 border border-gray-800 rounded-xl p-6">
+                <h3 className="text-sm font-semibold text-gray-300 uppercase tracking-wide mb-4">Recent Work Sessions</h3>
+                {sessions.length === 0 ? (
+                  <p className="text-gray-500 text-center py-8">No work sessions recorded yet.</p>
+                ) : (
+                  <div className="space-y-1">
+                    {sessions.map(s => (
+                      <div key={s.id} className="flex items-center justify-between py-2 border-b border-gray-800/50 last:border-0 text-sm">
+                        <div className="flex items-center gap-3">
+                          <span className="text-xs text-gray-600 w-16">
+                            {new Date(s.start_time).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                          </span>
+                          <span className="text-gray-400">{s.category_name}</span>
+                          {s.ai_summary && <span className="text-gray-600 text-xs truncate max-w-md hidden md:inline">{s.ai_summary}</span>}
+                        </div>
+                        <span className="text-white font-medium">{((s.duration_minutes ?? 0) / 60).toFixed(1)}h</span>
                       </div>
-                      <span className="text-white font-medium">{((s.duration_minutes ?? 0) / 60).toFixed(1)}h</span>
+                    ))}
+                    <div className="pt-3 flex justify-end">
+                      <span className="text-sm text-gray-400">Total: <strong className="text-white">{totalHours.toFixed(1)} hours</strong></span>
                     </div>
-                  ))}
-                  <div className="pt-3 flex justify-end">
-                    <span className="text-sm text-gray-400">Total: <strong className="text-white">{totalHours.toFixed(1)} hours</strong></span>
+                  </div>
+                )}
+              </div>
+
+              {/* Milestone Updates */}
+              {milestones.length > 0 && (
+                <div className="bg-gray-900 border border-gray-800 rounded-xl p-6">
+                  <h3 className="text-sm font-semibold text-gray-300 uppercase tracking-wide mb-4">Milestone Updates</h3>
+                  <div className="space-y-3">
+                    {milestones.map((m, i) => (
+                      <div key={m.id} className="flex items-start gap-3">
+                        <div className="flex flex-col items-center">
+                          <div className={`w-3 h-3 rounded-full flex-shrink-0 mt-0.5 ${
+                            m.status === 'paid' ? 'bg-green-500' :
+                            m.status === 'invoiced' ? 'bg-blue-500' :
+                            'bg-gray-700'
+                          }`} />
+                          {i < milestones.length - 1 && <div className="w-px h-8 bg-gray-800 mt-1" />}
+                        </div>
+                        <div className="flex-1 min-w-0 pb-1">
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm text-gray-300">{m.title || 'Untitled'}</span>
+                            <span className="text-sm font-medium text-white">${(m.amount || 0).toLocaleString()}</span>
+                          </div>
+                          <div className="flex items-center gap-2 mt-0.5">
+                            <span className={`text-xs ${
+                              m.status === 'paid' ? 'text-green-400' :
+                              m.status === 'invoiced' ? 'text-blue-400' :
+                              'text-gray-500'
+                            }`}>
+                              {m.status === 'paid' && m.paid_at
+                                ? `Paid on ${new Date(m.paid_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`
+                                : m.status === 'invoiced'
+                                ? 'Invoiced — awaiting payment'
+                                : m.due_date
+                                ? `Pending — due ${new Date(m.due_date + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`
+                                : 'Pending'}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
               )}

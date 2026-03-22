@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, use } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import type { Project, Feedback, Category, TimeSession, ComplexityProfile, ScopeItem, Contract } from '@/lib/types'
+import type { Project, Feedback, Category, TimeSession, ComplexityProfile, ScopeItem, Contract, Milestone } from '@/lib/types'
 
 export default function ProjectDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params)
@@ -40,6 +40,8 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
   const [customScopeInput, setCustomScopeInput] = useState('')
   const [customOutScopeInput, setCustomOutScopeInput] = useState('')
   const [contract, setContract] = useState<Contract | null>(null)
+  const [milestones, setMilestones] = useState<Milestone[]>([])
+  const [showProgress, setShowProgress] = useState(false)
   const [syncing, setSyncing] = useState(false)
   const supabase = createClient()
 
@@ -105,6 +107,8 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
     }
     if (contractRes.data && !contractRes.error) {
       setContract(contractRes.data)
+      const { data: ms } = await supabase.from('milestones').select('*').eq('contract_id', contractRes.data.id).order('sort_order')
+      if (ms) setMilestones(ms)
     }
     setLoading(false)
   }
@@ -339,6 +343,13 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
   async function deleteScopeItem(item: ScopeItem) {
     await supabase.from('scope_items').delete().eq('id', item.id)
     setScopeItems(scopeItems.filter(s => s.id !== item.id))
+  }
+
+  async function markMilestoneStatus(milestoneId: string, status: 'invoiced' | 'paid') {
+    const updates: Partial<Milestone> = { status }
+    if (status === 'paid') updates.paid_at = new Date().toISOString()
+    await supabase.from('milestones').update(updates).eq('id', milestoneId)
+    setMilestones(milestones.map(m => m.id === milestoneId ? { ...m, ...updates } : m))
   }
 
   function startEditSession(s: TimeSession) {
@@ -1073,6 +1084,202 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
           </div>
         )}
       </div>
+
+      {/* Project Progress Section */}
+      {contract && milestones.length > 0 && (
+        <div className="bg-gray-900 border border-gray-800 rounded-xl mb-6">
+          <button
+            onClick={() => setShowProgress(!showProgress)}
+            className="w-full px-6 py-4 flex items-center justify-between text-left"
+          >
+            <div className="flex items-center gap-3">
+              <h3 className="text-sm font-semibold text-gray-300 uppercase tracking-wide">Project Progress</h3>
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-gray-500">
+                  {milestones.filter(m => m.status === 'paid').length}/{milestones.length} milestones paid
+                </span>
+                <span className="text-xs text-gray-600">·</span>
+                <span className="text-xs text-gray-500">
+                  ${milestones.reduce((s, m) => s + (m.amount || 0), 0).toLocaleString()} total
+                </span>
+              </div>
+            </div>
+            <span className="text-gray-600 text-sm">{showProgress ? '▾' : '▸'}</span>
+          </button>
+
+          {showProgress && (
+            <div className="px-6 pb-6 border-t border-gray-800 pt-4">
+              {/* Overall progress */}
+              {(() => {
+                const inScope = scopeItems.filter(s => s.in_scope)
+                const completedScopeCount = inScope.filter(s => s.is_complete).length
+                const total = milestones.reduce((s, m) => s + (m.amount || 0), 0)
+                const paidTotal = milestones.filter(m => m.status === 'paid').reduce((s, m) => s + (m.amount || 0), 0)
+                const invoicedTotal = milestones.filter(m => m.status === 'invoiced').reduce((s, m) => s + (m.amount || 0), 0)
+                return (
+                  <>
+                    <div className="flex items-center gap-4 mb-4 text-xs text-gray-400">
+                      <span>{milestones.filter(m => m.status === 'paid').length} of {milestones.length} milestones paid</span>
+                      {inScope.length > 0 && (
+                        <>
+                          <span className="text-gray-700">·</span>
+                          <span>{completedScopeCount} of {inScope.length} scope items complete</span>
+                        </>
+                      )}
+                    </div>
+
+                    {/* Progress bar */}
+                    <div className="h-2 bg-gray-800 rounded-full overflow-hidden mb-6 flex">
+                      {total > 0 && (
+                        <>
+                          <div className="h-full bg-green-500 transition-all" style={{ width: `${(paidTotal / total) * 100}%` }} />
+                          <div className="h-full bg-blue-500 transition-all" style={{ width: `${(invoicedTotal / total) * 100}%` }} />
+                        </>
+                      )}
+                    </div>
+
+                    {/* Summary cards */}
+                    <div className="grid grid-cols-4 gap-3 mb-6">
+                      <div className="bg-gray-800 rounded-lg p-3">
+                        <div className="text-xs text-gray-500">Total Value</div>
+                        <div className="text-lg font-semibold text-white">${total.toLocaleString()}</div>
+                      </div>
+                      <div className="bg-gray-800 rounded-lg p-3">
+                        <div className="text-xs text-gray-500">Invoiced</div>
+                        <div className="text-lg font-semibold text-blue-400">${invoicedTotal.toLocaleString()}</div>
+                      </div>
+                      <div className="bg-gray-800 rounded-lg p-3">
+                        <div className="text-xs text-gray-500">Paid</div>
+                        <div className="text-lg font-semibold text-green-400">${paidTotal.toLocaleString()}</div>
+                      </div>
+                      <div className="bg-gray-800 rounded-lg p-3">
+                        <div className="text-xs text-gray-500">Remaining</div>
+                        <div className="text-lg font-semibold text-amber-400">${(total - paidTotal).toLocaleString()}</div>
+                      </div>
+                    </div>
+                  </>
+                )
+              })()}
+
+              {/* Milestone cards */}
+              <div className="space-y-3">
+                {milestones.map((m, i) => {
+                  const assignedScope = scopeItems.filter(s => s.milestone_id === m.id && s.in_scope)
+                  const completedScope = assignedScope.filter(s => s.is_complete).length
+                  return (
+                    <div key={m.id} className="border border-gray-800 rounded-lg p-4 bg-gray-800/50">
+                      <div className="flex items-start gap-3">
+                        <div className={`w-7 h-7 rounded-full border flex items-center justify-center text-xs font-semibold flex-shrink-0 mt-0.5 ${
+                          m.status === 'paid' ? 'bg-green-900/50 border-green-700 text-green-400' :
+                          m.status === 'invoiced' ? 'bg-blue-900/50 border-blue-700 text-blue-400' :
+                          'bg-gray-700 border-gray-600 text-gray-400'
+                        }`}>
+                          {m.status === 'paid' ? '✓' : i + 1}
+                        </div>
+
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between gap-3 mb-1">
+                            <div className="flex items-center gap-2 min-w-0">
+                              <span className="text-sm font-medium text-white truncate">{m.title || 'Untitled'}</span>
+                              <span className={`text-xs font-medium px-2 py-0.5 rounded-full flex-shrink-0 ${
+                                m.status === 'paid' ? 'bg-green-900/50 text-green-300' :
+                                m.status === 'invoiced' ? 'bg-blue-900/50 text-blue-300' :
+                                'bg-gray-700 text-gray-400'
+                              }`}>{m.status}</span>
+                            </div>
+                            <div className="flex items-center gap-2 flex-shrink-0">
+                              <span className="text-sm font-semibold text-white">${(m.amount || 0).toLocaleString()}</span>
+                              {m.due_date && (
+                                <span className="text-xs text-gray-500">
+                                  Due {new Date(m.due_date + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+
+                          {m.description && (
+                            <p className="text-xs text-gray-500 mb-2">{m.description}</p>
+                          )}
+
+                          {/* Scope items for this milestone */}
+                          {assignedScope.length > 0 && (
+                            <div className="mb-2">
+                              <div className="flex items-center gap-2 mb-1.5">
+                                <div className="h-1.5 flex-1 bg-gray-700 rounded-full overflow-hidden">
+                                  <div className="h-full bg-green-500 rounded-full" style={{ width: `${(completedScope / assignedScope.length) * 100}%` }} />
+                                </div>
+                                <span className="text-xs text-gray-500">{completedScope}/{assignedScope.length}</span>
+                              </div>
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-0.5">
+                                {assignedScope.map(s => (
+                                  <div key={s.id} className="flex items-center gap-1.5 text-xs">
+                                    <span className={s.is_complete ? 'text-green-500' : 'text-gray-600'}>{s.is_complete ? '✓' : '○'}</span>
+                                    <span className={s.is_complete ? 'text-gray-500 line-through' : 'text-gray-400'}>{s.label}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Actions */}
+                          <div className="flex items-center gap-3">
+                            {m.status === 'pending' && (
+                              <button onClick={() => markMilestoneStatus(m.id, 'invoiced')} className="text-xs text-blue-400 hover:text-blue-300">
+                                Mark Invoiced
+                              </button>
+                            )}
+                            {m.status === 'invoiced' && (
+                              <button onClick={() => markMilestoneStatus(m.id, 'paid')} className="text-xs text-green-400 hover:text-green-300">
+                                Mark Paid
+                              </button>
+                            )}
+                            {m.status !== 'paid' && m.amount > 0 && (
+                              <a href={`/api/invoice?milestoneId=${m.id}`} target="_blank" rel="noopener noreferrer" className="text-xs text-gray-400 hover:text-white">
+                                Generate Invoice
+                              </a>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+
+              {/* Unassigned scope items */}
+              {(() => {
+                const unassigned = scopeItems.filter(s => s.in_scope && !s.milestone_id)
+                if (unassigned.length === 0) return null
+                return (
+                  <div className="mt-4 pt-4 border-t border-gray-800">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-xs font-medium text-gray-500 uppercase">Unassigned Scope Items</span>
+                      <Link href={`/projects/${id}/contract`} className="text-xs text-blue-400 hover:text-blue-300">
+                        Assign to milestones →
+                      </Link>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-1">
+                      {unassigned.map(s => (
+                        <div key={s.id} className="flex items-center gap-1.5 text-xs">
+                          <span className={s.is_complete ? 'text-green-500' : 'text-gray-600'}>{s.is_complete ? '✓' : '○'}</span>
+                          <span className={s.is_complete ? 'text-gray-500 line-through' : 'text-gray-400'}>{s.label}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )
+              })()}
+
+              {/* Footer link */}
+              <div className="mt-4 pt-4 border-t border-gray-800 flex justify-end">
+                <Link href={`/projects/${id}/contract`} className="text-xs text-blue-400 hover:text-blue-300">
+                  Edit milestones on contract page →
+                </Link>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Time Tracking Section */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
