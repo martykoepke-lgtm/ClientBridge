@@ -4,6 +4,40 @@ import { createClient as createServerClient } from '@/lib/supabase/server'
 
 const MAX_FILE_SIZE = 25 * 1024 * 1024 // 25MB
 
+export async function GET(req: NextRequest) {
+  const serverSupabase = await createServerClient()
+  const { data: { user } } = await serverSupabase.auth.getUser()
+  if (!user) {
+    return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
+  }
+
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  )
+
+  let storagePath = req.nextUrl.searchParams.get('path')
+  if (!storagePath) {
+    return NextResponse.json({ error: 'path is required' }, { status: 400 })
+  }
+
+  // Handle old records that stored a full URL instead of just the path
+  if (storagePath.includes('/project-documents/')) {
+    const parts = storagePath.split('/project-documents/')
+    storagePath = decodeURIComponent(parts[parts.length - 1])
+  }
+
+  const { data, error } = await supabase.storage
+    .from('project-documents')
+    .createSignedUrl(storagePath, 60 * 60) // 1 hour expiry
+
+  if (error || !data) {
+    return NextResponse.json({ error: 'Failed to generate download URL' }, { status: 500 })
+  }
+
+  return NextResponse.json({ url: data.signedUrl })
+}
+
 export async function POST(req: NextRequest) {
   const serverSupabase = await createServerClient()
   const { data: { user } } = await serverSupabase.auth.getUser()
@@ -74,10 +108,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: `Upload failed: ${uploadError.message}` }, { status: 500 })
   }
 
-  // Get public URL
-  const { data: urlData } = supabase.storage
-    .from('project-documents')
-    .getPublicUrl(storagePath)
+  // Store the storage path (not a public URL — bucket is private)
+  // We'll generate signed URLs when serving documents
 
   // Create database record
   const { data: doc, error: insertError } = await supabase
@@ -87,7 +119,7 @@ export async function POST(req: NextRequest) {
       uploaded_by_user_id: user.id,
       uploaded_by_role: role,
       file_name: file.name,
-      file_url: urlData.publicUrl,
+      file_url: storagePath,
       file_size: file.size,
       file_type: file.type || 'application/octet-stream',
       description: description || null,
@@ -142,12 +174,13 @@ export async function DELETE(req: NextRequest) {
     return NextResponse.json({ error: 'Not authorized to delete this document' }, { status: 403 })
   }
 
-  // Delete from storage - extract path from URL
-  const url = new URL(doc.file_url)
-  const pathParts = url.pathname.split('/project-documents/')
-  if (pathParts[1]) {
-    await supabase.storage.from('project-documents').remove([decodeURIComponent(pathParts[1])])
+  // Delete from storage — file_url may be a path or a full URL (legacy)
+  let deletePath = doc.file_url
+  if (deletePath.includes('/project-documents/')) {
+    const parts = deletePath.split('/project-documents/')
+    deletePath = decodeURIComponent(parts[parts.length - 1])
   }
+  await supabase.storage.from('project-documents').remove([deletePath])
 
   // Delete record
   await supabase.from('project_documents').delete().eq('id', documentId)

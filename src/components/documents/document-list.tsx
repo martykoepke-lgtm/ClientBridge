@@ -43,6 +43,17 @@ export default function DocumentList({ projectId, documents, onDocumentsChange, 
   const [error, setError] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
+  async function handleDownload(doc: ProjectDocument) {
+    try {
+      const res = await fetch(`/api/project-documents?path=${encodeURIComponent(doc.file_url)}`)
+      if (!res.ok) { setError('Failed to get download link'); return }
+      const { url } = await res.json()
+      window.open(url, '_blank')
+    } catch {
+      setError('Failed to download file')
+    }
+  }
+
   async function handleUpload(files: FileList | null) {
     if (!files || files.length === 0) return
     setUploading(true)
@@ -157,14 +168,12 @@ export default function DocumentList({ projectId, documents, onDocumentsChange, 
 
               {/* File info */}
               <div className="flex-1 min-w-0">
-                <a
-                  href={doc.file_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-sm text-white hover:text-amber-400 transition-colors truncate block"
+                <button
+                  onClick={() => handleDownload(doc)}
+                  className="text-sm text-white hover:text-amber-400 transition-colors truncate block text-left"
                 >
                   {doc.file_name}
-                </a>
+                </button>
                 <div className="flex items-center gap-2 mt-0.5">
                   <span className="text-[11px] text-gray-500">{formatFileSize(doc.file_size)}</span>
                   <span className="text-gray-700">·</span>
@@ -182,14 +191,12 @@ export default function DocumentList({ projectId, documents, onDocumentsChange, 
 
               {/* Actions */}
               <div className="flex items-center gap-1 flex-shrink-0">
-                <a
-                  href={doc.file_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <button
+                  onClick={() => handleDownload(doc)}
                   className="px-2.5 py-1.5 text-xs text-gray-400 hover:text-white bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors"
                 >
                   Download
-                </a>
+                </button>
                 {canDelete(doc) && (
                   <button
                     onClick={() => handleDelete(doc)}
