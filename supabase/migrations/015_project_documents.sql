@@ -91,10 +91,21 @@ create policy "Clients can delete own documents"
   );
 
 -- Storage bucket for project documents
--- Note: Run this via Supabase dashboard or CLI:
--- insert into storage.buckets (id, name, public) values ('project-documents', 'project-documents', false);
---
--- Storage RLS policies (apply via dashboard):
--- SELECT: authenticated users can read files in their project folders
--- INSERT: authenticated users can upload to their project folders (max 25MB)
--- DELETE: developers can delete any file in their projects; clients can delete their own
+insert into storage.buckets (id, name, public, file_size_limit)
+values ('project-documents', 'project-documents', false, 26214400)
+on conflict (id) do nothing;
+
+-- Storage RLS: authenticated users can read files
+create policy "Authenticated users can read project documents"
+  on storage.objects for select
+  using (bucket_id = 'project-documents' and auth.role() = 'authenticated');
+
+-- Storage RLS: authenticated users can upload files
+create policy "Authenticated users can upload project documents"
+  on storage.objects for insert
+  with check (bucket_id = 'project-documents' and auth.role() = 'authenticated');
+
+-- Storage RLS: authenticated users can delete files they have access to
+create policy "Authenticated users can delete project documents"
+  on storage.objects for delete
+  using (bucket_id = 'project-documents' and auth.role() = 'authenticated');
