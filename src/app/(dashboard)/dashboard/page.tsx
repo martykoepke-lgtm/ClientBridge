@@ -56,6 +56,13 @@ export default async function DashboardPage() {
     return sum + ((s.duration_minutes ?? 0) / 60) * rate
   }, 0)
 
+  // Contracts awaiting counter-signature
+  const { data: pendingContracts } = await supabase
+    .from('contracts')
+    .select('id, project_id, client_signature_name, client_signature_date, project:projects(id, name, client:clients(name))')
+    .eq('status', 'client_signed')
+    .order('client_signature_date', { ascending: false })
+
   // Error monitoring
   const { data: recentErrors, count: errorCount } = await supabase
     .from('error_log')
@@ -70,6 +77,43 @@ export default async function DashboardPage() {
 
       {/* Error Management Panel */}
       <ErrorPanel initialErrors={recentErrors ?? []} initialCount={errorCount ?? 0} />
+
+      {/* Contracts Awaiting Counter-Signature */}
+      {pendingContracts && pendingContracts.length > 0 && (
+        <div className="mb-8 bg-blue-950/40 border border-blue-900 rounded-xl overflow-hidden">
+          <div className="px-4 py-3 border-b border-blue-900/50 flex items-center gap-2">
+            <span className="w-2 h-2 bg-blue-400 rounded-full animate-pulse" />
+            <h2 className="text-sm font-semibold text-blue-200 uppercase tracking-wide">
+              Contracts Awaiting Your Counter-Signature
+            </h2>
+            <span className="text-xs bg-blue-900/60 text-blue-300 px-2 py-0.5 rounded-full ml-auto">{pendingContracts.length}</span>
+          </div>
+          <div className="divide-y divide-blue-900/30">
+            {pendingContracts.map((c: any) => {
+              const proj = Array.isArray(c.project) ? c.project[0] : c.project
+              const clientName = proj?.client ? (Array.isArray(proj.client) ? proj.client[0]?.name : proj.client.name) : null
+              return (
+                <Link
+                  key={c.id}
+                  href={`/projects/${c.project_id}/contract`}
+                  className="flex items-center justify-between px-4 py-3 hover:bg-blue-900/20 transition-colors"
+                >
+                  <div>
+                    <span className="text-white text-sm font-medium">{proj?.name ?? 'Unknown Project'}</span>
+                    {clientName && <span className="text-blue-400 text-sm ml-2">· {clientName}</span>}
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="text-xs text-blue-300">
+                      Signed by {c.client_signature_name}{c.client_signature_date ? ` on ${new Date(c.client_signature_date).toLocaleDateString()}` : ''}
+                    </span>
+                    <span className="text-xs text-blue-400 font-medium">Counter-sign →</span>
+                  </div>
+                </Link>
+              )
+            })}
+          </div>
+        </div>
+      )}
 
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-8">

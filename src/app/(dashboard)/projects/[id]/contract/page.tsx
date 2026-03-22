@@ -47,7 +47,7 @@ export default function ContractPage({ params }: { params: Promise<{ id: string 
       .from('contracts')
       .select('*')
       .eq('project_id', id)
-      .in('status', ['draft', 'active'])
+      .in('status', ['draft', 'sent', 'client_signed', 'active'])
       .order('created_at', { ascending: false })
       .limit(1)
       .single()
@@ -228,10 +228,14 @@ export default function ContractPage({ params }: { params: Promise<{ id: string 
           )}
           <span className={`text-xs font-medium px-3 py-1 rounded-full ${
             contract.status === 'active' ? 'bg-green-900/50 text-green-300' :
+            contract.status === 'client_signed' ? 'bg-blue-900/50 text-blue-300' :
+            contract.status === 'sent' ? 'bg-purple-900/50 text-purple-300' :
             contract.status === 'draft' ? 'bg-amber-900/50 text-amber-300' :
             'bg-gray-800 text-gray-400'
           }`}>
-            {contract.status}
+            {contract.status === 'client_signed' ? 'Awaiting Counter-Signature' :
+             contract.status === 'sent' ? 'Sent for Signature' :
+             contract.status}
           </span>
           <button onClick={handlePrint} className="px-4 py-2 text-sm bg-gray-800 border border-gray-700 hover:border-gray-600 text-gray-300 hover:text-white rounded-lg transition-colors">
             Print / Export
@@ -281,6 +285,44 @@ export default function ContractPage({ params }: { params: Promise<{ id: string 
           )}
         </div>
       </div>
+
+      {/* Counter-signature banner */}
+      {contract.status === 'client_signed' && (
+        <div className="mb-6 p-4 bg-blue-900/30 border border-blue-800 rounded-xl flex items-center justify-between">
+          <div>
+            <p className="text-blue-200 font-medium text-sm">Client has signed this contract</p>
+            <p className="text-blue-400 text-xs mt-0.5">
+              Signed by {contract.client_signature_name} on {contract.client_signature_date ? new Date(contract.client_signature_date).toLocaleDateString() : 'unknown date'}.
+              Counter-sign to activate the contract.
+            </p>
+          </div>
+          <button
+            onClick={async () => {
+              const name = prompt('Type your full name to counter-sign:')
+              if (!name) return
+              await supabase.from('contracts').update({
+                status: 'active',
+                contractor_signature_name: name,
+                contractor_signature_date: new Date().toISOString(),
+              }).eq('id', contract.id)
+              setContract({ ...contract, status: 'active' as const, contractor_signature_name: name, contractor_signature_date: new Date().toISOString() })
+            }}
+            className="px-5 py-2 text-sm font-medium bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition-colors whitespace-nowrap"
+          >
+            Counter-sign & Activate
+          </button>
+        </div>
+      )}
+
+      {/* Sent banner */}
+      {contract.status === 'sent' && (
+        <div className="mb-6 p-4 bg-purple-900/30 border border-purple-800 rounded-xl">
+          <p className="text-purple-200 font-medium text-sm">Contract sent for client signature</p>
+          <p className="text-purple-400 text-xs mt-0.5">
+            Sent {contract.sent_for_signature_at ? new Date(contract.sent_for_signature_at).toLocaleDateString() : ''}. Waiting for the client to review and sign.
+          </p>
+        </div>
+      )}
 
       {/* Tabs */}
       <div className="flex gap-1 bg-gray-900 rounded-xl p-1 mb-6 border border-gray-800">

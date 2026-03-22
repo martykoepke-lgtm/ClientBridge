@@ -77,7 +77,7 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
       supabase.from('time_sessions').select('duration_minutes').eq('project_id', id).gte('start_time', weekStart.toISOString()).not('duration_minutes', 'is', null),
       supabase.from('time_sessions').select('*, project:projects(*)').eq('project_id', id).order('start_time', { ascending: false }).limit(5),
       supabase.from('scope_items').select('*').eq('project_id', id).order('sort_order'),
-      supabase.from('contracts').select('*').eq('project_id', id).in('status', ['draft', 'active']).order('created_at', { ascending: false }).limit(1).single(),
+      supabase.from('contracts').select('*').eq('project_id', id).in('status', ['draft', 'sent', 'client_signed', 'active']).order('created_at', { ascending: false }).limit(1).single(),
     ])
 
     setProject(projectRes.data)
@@ -509,11 +509,26 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
         )}
         <Link
           href={`/projects/${id}/contract`}
-          className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-gray-900 border border-gray-800 hover:border-gray-700 rounded-lg text-gray-300 hover:text-white transition-colors flex-shrink-0"
+          className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-colors flex-shrink-0 ${
+            contract?.status === 'client_signed'
+              ? 'bg-blue-950/50 border border-blue-800 text-blue-200 hover:border-blue-600'
+              : 'bg-gray-900 border border-gray-800 hover:border-gray-700 text-gray-300 hover:text-white'
+          }`}
         >
-          <span>{contract ? (contract.status === 'active' ? '●' : '○') : '+'}</span>
-          <span>{contract ? (contract.status === 'active' ? 'Active Contract' : 'Draft Contract') : 'Create Contract'}</span>
+          <span>{contract ? (
+            contract.status === 'active' ? '●' :
+            contract.status === 'client_signed' ? '⬤' :
+            contract.status === 'sent' ? '◎' :
+            '○'
+          ) : '+'}</span>
+          <span>{contract ? (
+            contract.status === 'active' ? 'Active Contract' :
+            contract.status === 'client_signed' ? 'Counter-sign Contract' :
+            contract.status === 'sent' ? 'Awaiting Client Signature' :
+            'Draft Contract'
+          ) : 'Create Contract'}</span>
           {contract?.status === 'active' && <span className="w-2 h-2 bg-green-400 rounded-full" />}
+          {contract?.status === 'client_signed' && <span className="w-2 h-2 bg-blue-400 rounded-full animate-pulse" />}
         </Link>
       </div>
 
