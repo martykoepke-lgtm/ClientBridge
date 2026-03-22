@@ -507,29 +507,30 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
             )}
           </div>
         )}
-        <Link
-          href={`/projects/${id}/contract`}
-          className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-colors flex-shrink-0 ${
-            contract?.status === 'client_signed'
-              ? 'bg-blue-950/50 border border-blue-800 text-blue-200 hover:border-blue-600'
-              : 'bg-gray-900 border border-gray-800 hover:border-gray-700 text-gray-300 hover:text-white'
-          }`}
-        >
-          <span>{contract ? (
-            contract.status === 'active' ? '●' :
-            contract.status === 'client_signed' ? '⬤' :
-            contract.status === 'sent' ? '◎' :
-            '○'
-          ) : '+'}</span>
-          <span>{contract ? (
-            contract.status === 'active' ? 'Active Contract' :
-            contract.status === 'client_signed' ? 'Counter-sign Contract' :
-            contract.status === 'sent' ? 'Awaiting Client Signature' :
-            'Draft Contract'
-          ) : 'Create Contract'}</span>
-          {contract?.status === 'active' && <span className="w-2 h-2 bg-green-400 rounded-full" />}
-          {contract?.status === 'client_signed' && <span className="w-2 h-2 bg-blue-400 rounded-full animate-pulse" />}
-        </Link>
+        {/* Contract status indicator — navigate via tabs above */}
+        {contract && (
+          <Link
+            href={`/projects/${id}/contract`}
+            className={`flex items-center gap-2 px-3 py-1.5 text-xs font-medium rounded-lg transition-colors flex-shrink-0 ${
+              contract.status === 'client_signed'
+                ? 'bg-blue-950/50 border border-blue-800 text-blue-200 hover:border-blue-600'
+                : contract.status === 'active'
+                ? 'bg-green-900/30 border border-green-800 text-green-300'
+                : 'bg-gray-900 border border-gray-800 hover:border-gray-700 text-gray-400 hover:text-white'
+            }`}
+          >
+            <span className={`w-1.5 h-1.5 rounded-full ${
+              contract.status === 'active' ? 'bg-green-400' :
+              contract.status === 'client_signed' ? 'bg-blue-400 animate-pulse' :
+              contract.status === 'sent' ? 'bg-purple-400' :
+              'bg-gray-500'
+            }`} />
+            {contract.status === 'active' ? 'Contract Active' :
+             contract.status === 'client_signed' ? 'Needs Counter-signature' :
+             contract.status === 'sent' ? 'Awaiting Signature' :
+             'Draft'}
+          </Link>
+        )}
       </div>
 
       {/* Review Link Card */}

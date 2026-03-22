@@ -245,6 +245,19 @@ export interface RevenueEntry {
   created_at: string
 }
 
+export interface ProjectDocument {
+  id: string
+  project_id: string
+  uploaded_by_user_id: string
+  uploaded_by_role: 'developer' | 'client'
+  file_name: string
+  file_url: string
+  file_size: number
+  file_type: string
+  description: string | null
+  created_at: string
+}
+
 export interface ErrorLog {
   id: string
   project_id: string

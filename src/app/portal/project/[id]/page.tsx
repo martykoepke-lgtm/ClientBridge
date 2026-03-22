@@ -5,7 +5,8 @@ import { createClient } from '@/lib/supabase/client'
 import Link from 'next/link'
 import { computeProjectStage } from '@/lib/portal-utils'
 import ScreenshotCapture from '@/components/review/screenshot-capture'
-import type { Project, Feedback, Contract, Milestone, ScopeItem, TimeSession } from '@/lib/types'
+import type { Project, Feedback, Contract, Milestone, ScopeItem, TimeSession, ProjectDocument } from '@/lib/types'
+import DocumentList from '@/components/documents/document-list'
 
 type Tab = 'overview' | 'scope' | 'contract' | 'review' | 'feedback' | 'activity'
 
@@ -41,19 +42,21 @@ export default function PortalProjectPage({ params }: { params: Promise<{ id: st
   const [currentTitle, setCurrentTitle] = useState('')
   const [screenshotData, setScreenshotData] = useState<string | null>(null)
   const [showCapture, setShowCapture] = useState(false)
+  const [projectDocuments, setProjectDocuments] = useState<ProjectDocument[]>([])
 
   useEffect(() => {
     loadData()
   }, [id])
 
   async function loadData() {
-    const [projectRes, feedbackRes, contractRes, inScopeRes, outScopeRes, sessionsRes] = await Promise.all([
+    const [projectRes, feedbackRes, contractRes, inScopeRes, outScopeRes, sessionsRes, docsRes] = await Promise.all([
       supabase.from('projects').select('*').eq('id', id).single(),
       supabase.from('feedback').select('*').eq('project_id', id).order('created_at', { ascending: false }),
       supabase.from('contracts').select('*').eq('project_id', id).in('status', ['active', 'sent', 'client_signed', 'draft']).order('created_at', { ascending: false }).limit(1).single(),
       supabase.from('scope_items').select('*').eq('project_id', id).eq('in_scope', true).order('sort_order'),
       supabase.from('scope_items').select('*').eq('project_id', id).eq('in_scope', false).order('sort_order'),
       supabase.from('time_sessions').select('*').eq('project_id', id).not('duration_minutes', 'is', null).order('start_time', { ascending: false }).limit(20),
+      supabase.from('project_documents').select('*').eq('project_id', id).order('created_at', { ascending: false }),
     ])
 
     if (projectRes.data) setProject(projectRes.data)
@@ -61,6 +64,7 @@ export default function PortalProjectPage({ params }: { params: Promise<{ id: st
     if (inScopeRes.data) setScopeItems(inScopeRes.data)
     if (outScopeRes.data) setOutOfScopeItems(outScopeRes.data)
     if (sessionsRes.data) setSessions(sessionsRes.data)
+    if (docsRes.data) setProjectDocuments(docsRes.data)
 
     if (contractRes.data && !contractRes.error) {
       setContract(contractRes.data)
@@ -177,7 +181,7 @@ export default function PortalProjectPage({ params }: { params: Promise<{ id: st
   const tabs: { id: Tab; label: string; show: boolean }[] = [
     { id: 'overview', label: 'Overview', show: true },
     { id: 'scope', label: `Scope (${scopeItems.length})`, show: scopeItems.length > 0 || outOfScopeItems.length > 0 },
-    { id: 'contract', label: 'Contract', show: !!contract && contract.status !== 'draft' },
+    { id: 'contract', label: 'Contract & Docs', show: !!contract && contract.status !== 'draft' || projectDocuments.length > 0 },
     { id: 'review', label: 'Review App', show: !!project.vercel_url },
     { id: 'feedback', label: `Feedback (${feedback.length})`, show: true },
     { id: 'activity', label: 'Activity', show: true },
@@ -735,6 +739,22 @@ export default function PortalProjectPage({ params }: { params: Promise<{ id: st
               ) : (
                 <p className="text-gray-500 text-center py-8">No contract has been shared yet.</p>
               )}
+
+              {/* Documents Section */}
+              <div className="mt-8">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-sm font-semibold text-gray-300 uppercase tracking-wide">Project Documents</h3>
+                  <span className="text-xs text-gray-500">{projectDocuments.length} document{projectDocuments.length !== 1 ? 's' : ''}</span>
+                </div>
+                <DocumentList
+                  projectId={id}
+                  documents={projectDocuments}
+                  onDocumentsChange={setProjectDocuments}
+                  canUpload={true}
+                  canDelete={(doc) => doc.uploaded_by_role === 'client'}
+                  role="client"
+                />
+              </div>
             </div>
           )}
 
