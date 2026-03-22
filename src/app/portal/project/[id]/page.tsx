@@ -43,6 +43,7 @@ export default function PortalProjectPage({ params }: { params: Promise<{ id: st
   const [screenshotData, setScreenshotData] = useState<string | null>(null)
   const [showCapture, setShowCapture] = useState(false)
   const [projectDocuments, setProjectDocuments] = useState<ProjectDocument[]>([])
+  const [contractCollapsed, setContractCollapsed] = useState(false)
 
   useEffect(() => {
     loadData()
@@ -602,9 +603,15 @@ export default function PortalProjectPage({ params }: { params: Promise<{ id: st
           {activeTab === 'contract' && (
             <div className="max-w-4xl">
               {contract ? (
-                <div className="bg-gray-900 border border-gray-800 rounded-xl p-8">
-                  <div className="flex items-center justify-between mb-6">
-                    <h3 className="text-sm font-semibold text-gray-300 uppercase tracking-wide">Contract Agreement</h3>
+                <div className="bg-gray-900 border border-gray-800 rounded-xl">
+                  <button
+                    onClick={() => setContractCollapsed(!contractCollapsed)}
+                    className="w-full flex items-center justify-between p-6 hover:bg-gray-800/30 transition-colors rounded-xl"
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className={`text-gray-500 transition-transform ${contractCollapsed ? '' : 'rotate-90'}`}>&#9654;</span>
+                      <h3 className="text-sm font-semibold text-gray-300 uppercase tracking-wide">Contract Agreement</h3>
+                    </div>
                     <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${
                       contract.status === 'active' ? 'bg-green-900/50 text-green-300' :
                       contract.status === 'sent' ? 'bg-amber-900/50 text-amber-300' :
@@ -616,7 +623,10 @@ export default function PortalProjectPage({ params }: { params: Promise<{ id: st
                       contract.status === 'active' ? 'Fully Executed' :
                       contract.status
                     }</span>
-                  </div>
+                  </button>
+
+                  {!contractCollapsed && (
+                  <div className="px-8 pb-8">
 
                   <div className="space-y-5 mb-8">
                     {(contract.sections ?? []).map((section: { number: number; title: string; content: string; subsections?: { id: string; title: string; content: string }[] }) => (
@@ -735,6 +745,8 @@ export default function PortalProjectPage({ params }: { params: Promise<{ id: st
                       Download Contract PDF
                     </a>
                   </div>
+                  </div>
+                  )}
                 </div>
               ) : (
                 <p className="text-gray-500 text-center py-8">No contract has been shared yet.</p>
