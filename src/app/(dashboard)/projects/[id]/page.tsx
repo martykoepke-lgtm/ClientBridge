@@ -345,8 +345,9 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
     setScopeItems(scopeItems.filter(s => s.id !== item.id))
   }
 
-  async function markMilestoneStatus(milestoneId: string, status: 'invoiced' | 'paid') {
+  async function markMilestoneStatus(milestoneId: string, status: 'achieved' | 'invoiced' | 'paid') {
     const updates: Partial<Milestone> = { status }
+    if (status === 'achieved') updates.achieved_at = new Date().toISOString()
     if (status === 'paid') updates.paid_at = new Date().toISOString()
     await supabase.from('milestones').update(updates).eq('id', milestoneId)
     setMilestones(milestones.map(m => m.id === milestoneId ? { ...m, ...updates } : m))
@@ -1172,9 +1173,10 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
                         <div className={`w-7 h-7 rounded-full border flex items-center justify-center text-xs font-semibold flex-shrink-0 mt-0.5 ${
                           m.status === 'paid' ? 'bg-green-900/50 border-green-700 text-green-400' :
                           m.status === 'invoiced' ? 'bg-blue-900/50 border-blue-700 text-blue-400' :
+                          m.status === 'achieved' ? 'bg-amber-900/50 border-amber-700 text-amber-400' :
                           'bg-gray-700 border-gray-600 text-gray-400'
                         }`}>
-                          {m.status === 'paid' ? '✓' : i + 1}
+                          {m.status === 'paid' || m.status === 'achieved' ? '✓' : i + 1}
                         </div>
 
                         <div className="flex-1 min-w-0">
@@ -1184,6 +1186,7 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
                               <span className={`text-xs font-medium px-2 py-0.5 rounded-full flex-shrink-0 ${
                                 m.status === 'paid' ? 'bg-green-900/50 text-green-300' :
                                 m.status === 'invoiced' ? 'bg-blue-900/50 text-blue-300' :
+                                m.status === 'achieved' ? 'bg-amber-900/50 text-amber-300' :
                                 'bg-gray-700 text-gray-400'
                               }`}>{m.status}</span>
                             </div>
@@ -1224,6 +1227,11 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
                           {/* Actions */}
                           <div className="flex items-center gap-3">
                             {m.status === 'pending' && (
+                              <button onClick={() => markMilestoneStatus(m.id, 'achieved')} className="text-xs text-amber-400 hover:text-amber-300">
+                                Mark Achieved
+                              </button>
+                            )}
+                            {m.status === 'achieved' && (
                               <button onClick={() => markMilestoneStatus(m.id, 'invoiced')} className="text-xs text-blue-400 hover:text-blue-300">
                                 Mark Invoiced
                               </button>
@@ -1233,7 +1241,7 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
                                 Mark Paid
                               </button>
                             )}
-                            {m.status !== 'paid' && m.amount > 0 && (
+                            {m.status !== 'paid' && m.status !== 'pending' && m.amount > 0 && (
                               <a href={`/api/invoice?milestoneId=${m.id}`} target="_blank" rel="noopener noreferrer" className="text-xs text-gray-400 hover:text-white">
                                 Generate Invoice
                               </a>
