@@ -47,8 +47,9 @@ export default function MilestoneList({ milestones, scopeItems, contractId, onCh
     onChange()
   }
 
-  async function markStatus(id: string, status: 'invoiced' | 'paid') {
+  async function markStatus(id: string, status: 'achieved' | 'invoiced' | 'paid') {
     const updates: Partial<Milestone> = { status }
+    if (status === 'achieved') updates.achieved_at = new Date().toISOString()
     if (status === 'paid') updates.paid_at = new Date().toISOString()
     await supabase.from('milestones').update(updates).eq('id', id)
     onChange()
@@ -144,11 +145,20 @@ export default function MilestoneList({ milestones, scopeItems, contractId, onCh
                     <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${
                       m.status === 'paid' ? 'bg-green-900/50 text-green-300' :
                       m.status === 'invoiced' ? 'bg-blue-900/50 text-blue-300' :
+                      m.status === 'achieved' ? 'bg-amber-900/50 text-amber-300' :
                       'bg-gray-700 text-gray-400'
                     }`}>
                       {m.status}
                     </span>
                     {m.status === 'pending' && (
+                      <button
+                        onClick={() => markStatus(m.id, 'achieved')}
+                        className="text-xs text-amber-400 hover:text-amber-300"
+                      >
+                        Mark Achieved
+                      </button>
+                    )}
+                    {m.status === 'achieved' && (
                       <button
                         onClick={() => markStatus(m.id, 'invoiced')}
                         className="text-xs text-blue-400 hover:text-blue-300"
@@ -164,7 +174,7 @@ export default function MilestoneList({ milestones, scopeItems, contractId, onCh
                         Mark Paid
                       </button>
                     )}
-                    {m.status !== 'paid' && m.amount > 0 && (
+                    {m.status !== 'paid' && m.status !== 'pending' && m.amount > 0 && (
                       <a
                         href={`/api/invoice?milestoneId=${m.id}`}
                         target="_blank"

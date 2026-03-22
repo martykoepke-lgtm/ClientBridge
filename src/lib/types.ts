@@ -207,9 +207,10 @@ export interface Milestone {
   description: string | null
   amount: number
   due_date: string | null
-  status: 'pending' | 'invoiced' | 'paid'
+  status: 'pending' | 'achieved' | 'invoiced' | 'paid'
   sort_order: number
   invoice_id: string | null
+  achieved_at: string | null
   paid_at: string | null
   created_at: string
   updated_at: string

@@ -41,6 +41,7 @@ export default function PortalProjectPage({ params }: { params: Promise<{ id: st
   const [currentTitle, setCurrentTitle] = useState('')
   const [screenshotData, setScreenshotData] = useState<string | null>(null)
   const [showCapture, setShowCapture] = useState(false)
+  const [showAllScope, setShowAllScope] = useState(false)
 
   useEffect(() => {
     loadData()
@@ -496,16 +497,29 @@ export default function PortalProjectPage({ params }: { params: Promise<{ id: st
                     <div className="h-full bg-green-500 rounded-full transition-all" style={{ width: `${scopeItems.length > 0 ? (completedScope / scopeItems.length) * 100 : 0}%` }} />
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-1">
-                    {scopeItems.slice(0, 12).map(item => (
+                    {(showAllScope ? scopeItems : scopeItems.slice(0, 12)).map(item => (
                       <div key={item.id} className="flex items-center gap-2 text-sm">
                         <span className={item.is_complete ? 'text-green-500' : 'text-gray-600'}>{item.is_complete ? '✓' : '○'}</span>
                         <span className={item.is_complete ? 'text-gray-500 line-through' : 'text-gray-300'}>{item.label}</span>
                       </div>
                     ))}
                   </div>
-                  {scopeItems.length > 12 && (
-                    <button onClick={() => setActiveTab('scope')} className="text-xs text-amber-400 hover:text-amber-300 mt-2">
-                      View all {scopeItems.length} items
+                  {showAllScope && outOfScopeItems.length > 0 && (
+                    <div className="mt-4 pt-3 border-t border-gray-800">
+                      <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Out of Scope</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-1">
+                        {outOfScopeItems.map(item => (
+                          <div key={item.id} className="flex items-center gap-2 text-sm">
+                            <span className="text-gray-600">—</span>
+                            <span className="text-gray-500">{item.label}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  {(scopeItems.length > 12 || outOfScopeItems.length > 0) && (
+                    <button onClick={() => setShowAllScope(!showAllScope)} className="text-xs text-amber-400 hover:text-amber-300 mt-2">
+                      {showAllScope ? 'Show less' : `View all ${scopeItems.length + outOfScopeItems.length} items`}
                     </button>
                   )}
                 </div>
@@ -556,8 +570,9 @@ export default function PortalProjectPage({ params }: { params: Promise<{ id: st
                               <span className={`w-6 h-6 rounded-full border flex items-center justify-center text-xs ${
                                 m.status === 'paid' ? 'bg-green-900/50 border-green-700 text-green-400' :
                                 m.status === 'invoiced' ? 'bg-blue-900/50 border-blue-700 text-blue-400' :
+                                m.status === 'achieved' ? 'bg-amber-900/50 border-amber-700 text-amber-400' :
                                 'bg-gray-800 border-gray-700 text-gray-500'
-                              }`}>{m.status === 'paid' ? '✓' : i + 1}</span>
+                              }`}>{m.status === 'paid' || m.status === 'achieved' ? '✓' : i + 1}</span>
                               <div>
                                 <span className="text-sm text-gray-300">{m.title || 'Untitled'}</span>
                                 {assignedScope.length > 0 && (
@@ -570,6 +585,7 @@ export default function PortalProjectPage({ params }: { params: Promise<{ id: st
                               <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${
                                 m.status === 'paid' ? 'bg-green-900/50 text-green-300' :
                                 m.status === 'invoiced' ? 'bg-blue-900/50 text-blue-300' :
+                                m.status === 'achieved' ? 'bg-amber-900/50 text-amber-300' :
                                 'bg-gray-800 text-gray-500'
                               }`}>{m.status}</span>
                             </div>
@@ -705,6 +721,7 @@ export default function PortalProjectPage({ params }: { params: Promise<{ id: st
                                   <span className={`text-xs px-2 py-0.5 rounded-full ${
                                     m.status === 'paid' ? 'bg-green-900/50 text-green-300' :
                                     m.status === 'invoiced' ? 'bg-blue-900/50 text-blue-300' :
+                                    m.status === 'achieved' ? 'bg-amber-900/50 text-amber-300' :
                                     'bg-gray-800 text-gray-500'
                                   }`}>{m.status}</span>
                                 </td>
@@ -864,6 +881,7 @@ export default function PortalProjectPage({ params }: { params: Promise<{ id: st
                           <div className={`w-3 h-3 rounded-full flex-shrink-0 mt-0.5 ${
                             m.status === 'paid' ? 'bg-green-500' :
                             m.status === 'invoiced' ? 'bg-blue-500' :
+                            m.status === 'achieved' ? 'bg-amber-500' :
                             'bg-gray-700'
                           }`} />
                           {i < milestones.length - 1 && <div className="w-px h-8 bg-gray-800 mt-1" />}
@@ -877,12 +895,15 @@ export default function PortalProjectPage({ params }: { params: Promise<{ id: st
                             <span className={`text-xs ${
                               m.status === 'paid' ? 'text-green-400' :
                               m.status === 'invoiced' ? 'text-blue-400' :
+                              m.status === 'achieved' ? 'text-amber-400' :
                               'text-gray-500'
                             }`}>
                               {m.status === 'paid' && m.paid_at
                                 ? `Paid on ${new Date(m.paid_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`
                                 : m.status === 'invoiced'
                                 ? 'Invoiced — awaiting payment'
+                                : m.status === 'achieved'
+                                ? `Achieved${m.achieved_at ? ` on ${new Date(m.achieved_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}` : ''} — ready to invoice`
                                 : m.due_date
                                 ? `Pending — due ${new Date(m.due_date + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`
                                 : 'Pending'}
