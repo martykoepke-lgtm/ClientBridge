@@ -482,14 +482,7 @@ code { font-family:'DM Mono',monospace; background:#F0EDE6; padding:2px 6px; bor
     </table>
   </div>
 
-  <!-- WHAT WE'RE BUILDING — the product plan she's approving -->
-  <div class="card" style="border:2px solid var(--gold);background:var(--gold-light);">
-    <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--gold);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px;">What You're Approving Below</div>
-    <div class="card-title" style="margin-bottom:16px;">Here's What the Product Looks Like in Practice</div>
-    <p style="font-size:14px;color:var(--text-muted);margin-bottom:24px;">The questions below ask you to confirm specific product decisions. Here's the context for each one so you can see exactly what you're signing off on.</p>
-  </div>
-
-  <!-- PRODUCT NAME CONTEXT -->
+  <!-- PRODUCT NAME -->
   <div class="card">
     <div class="card-title">The Name: AESCULA</div>
     <div class="grid-2">
@@ -601,63 +594,6 @@ code { font-family:'DM Mono',monospace; background:#F0EDE6; padding:2px 6px; bor
     <p style="font-size:13px;color:var(--text-muted);margin-top:12px;">After flashcards, the student moves to MCQ practice (board-style questions with full rationale), then the AI Socratic Tutor for deeper reasoning. The system tracks everything and schedules the next review at the optimal moment.</p>
   </div>
 
-  <!-- ANNOTATION -->
-  <div class="annotation" data-section="s1">
-    <div class="annotation-title">Your Review &mdash; Section 01: Product Overview</div>
-    <p style="font-size:13px;color:var(--text-muted);margin-bottom:20px;">Review each element below. <strong>Approve</strong> = correct as stated. <strong>Refine</strong> = directionally right, needs adjustment. <strong>Decline</strong> = incorrect or not aligned.</p>
-
-    <div class="decision-q">
-      <div class="q-text">Product Name: <strong>AESCULA</strong></div>
-      <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px;">The platform is branded as AESCULA (stylized ÆSCULA). Is this the confirmed name?</div>
-      <div class="q-btns"><button onclick="setQ('s1-q1','approve',this)">Approve</button><button onclick="setQ('s1-q1','refine',this)">Refine</button><button onclick="setQ('s1-q1','decline',this)">Decline</button></div>
-    </div>
-
-    <div class="decision-q">
-      <div class="q-text">Module Count: <strong>1,375 AI-generated, SME-reviewed modules</strong></div>
-      <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px;">Derived from the Curriculum Master Index across 26 subdomain content documents. Does this match your curriculum scope?</div>
-      <div class="q-btns"><button onclick="setQ('s1-q2','approve',this)">Approve</button><button onclick="setQ('s1-q2','refine',this)">Refine</button><button onclick="setQ('s1-q2','decline',this)">Decline</button></div>
-    </div>
-
-    <div class="decision-q">
-      <div class="q-text">Market Strategy: <strong>Two markets — institutional licenses + individual subscriptions</strong></div>
-      <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px;">Students can purchase individually or access through a school license. Both paths lead to the same platform experience.</div>
-      <div class="q-btns"><button onclick="setQ('s1-q3','approve',this)">Approve</button><button onclick="setQ('s1-q3','refine',this)">Refine</button><button onclick="setQ('s1-q3','decline',this)">Decline</button></div>
-    </div>
-
-    <div class="decision-q">
-      <div class="q-text">Pedagogical Pillars: <strong>Andragogy + Cognitive Load Theory + Spaced Repetition</strong></div>
-      <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px;">These three evidence-based frameworks drive all content and interaction design. Are these the right foundations?</div>
-      <div class="q-btns"><button onclick="setQ('s1-q4','approve',this)">Approve</button><button onclick="setQ('s1-q4','refine',this)">Refine</button><button onclick="setQ('s1-q4','decline',this)">Decline</button></div>
-    </div>
-
-    <div class="decision-q">
-      <div class="q-text">Bloom's Taxonomy Approach: <strong>Scaffold learners from L1 (Remember) to L6 (Create)</strong></div>
-      <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px;">Flashcards at L1, concept explanations at L2, interactive exercises at L3, MCQs at L4, AI Socratic Tutor at L5-L6. Does this progression match your vision?</div>
-      <div class="q-btns"><button onclick="setQ('s1-q5','approve',this)">Approve</button><button onclick="setQ('s1-q5','refine',this)">Refine</button><button onclick="setQ('s1-q5','decline',this)">Decline</button></div>
-    </div>
-
-    <div class="decision-q">
-      <div class="q-text">Competitive Positioning: <strong>vs Anki, Sketchy/DDx, AMBOSS, UWorld, Boards & Beyond</strong></div>
-      <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px;">The table above describes each competitor's focus and our differentiation. Is this positioning accurate?</div>
-      <div class="q-btns"><button onclick="setQ('s1-q6','approve',this)">Approve</button><button onclick="setQ('s1-q6','refine',this)">Refine</button><button onclick="setQ('s1-q6','decline',this)">Decline</button></div>
-    </div>
-
-    <div class="decision-q">
-      <div class="q-text">Defensible Moat: <strong>Proprietary micromodule framework + content pipeline</strong></div>
-      <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px;">The moat is the rigorously tagged, Bloom's-aligned, NBOME-mapped content library — not the platform technology itself. Is this the right framing?</div>
-      <div class="q-btns"><button onclick="setQ('s1-q7','approve',this)">Approve</button><button onclick="setQ('s1-q7','refine',this)">Refine</button><button onclick="setQ('s1-q7','decline',this)">Decline</button></div>
-    </div>
-
-    <div style="border-top:2px solid var(--border);margin-top:24px;padding-top:20px;">
-      <div class="annotation-title" style="margin-bottom:12px;">Overall Section Status</div>
-      <div class="annotation-status">
-        <button onclick="setStatus('s1','approve',this)">Approve Section</button>
-        <button onclick="setStatus('s1','flag',this)">Flag for Changes</button>
-        <button onclick="setStatus('s1','discuss',this)">Needs Discussion</button>
-      </div>
-      <textarea placeholder="Additional notes on Section 01..." oninput="saveNotes('s1',this.value)"></textarea>
-    </div>
-  </div>
 </div>
 
 <!-- ============================================ -->
