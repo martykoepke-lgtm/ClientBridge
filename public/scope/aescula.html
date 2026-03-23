@@ -482,26 +482,180 @@ code { font-family:'DM Mono',monospace; background:#F0EDE6; padding:2px 6px; bor
     </table>
   </div>
 
+  <!-- WHAT WE'RE BUILDING — the product plan she's approving -->
+  <div class="card" style="border:2px solid var(--gold);background:var(--gold-light);">
+    <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--gold);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px;">What You're Approving Below</div>
+    <div class="card-title" style="margin-bottom:16px;">Here's What the Product Looks Like in Practice</div>
+    <p style="font-size:14px;color:var(--text-muted);margin-bottom:24px;">The questions below ask you to confirm specific product decisions. Here's the context for each one so you can see exactly what you're signing off on.</p>
+  </div>
+
+  <!-- PRODUCT NAME CONTEXT -->
+  <div class="card">
+    <div class="card-title">The Name: AESCULA</div>
+    <div class="grid-2">
+      <div>
+        <p style="font-size:14px;margin-bottom:12px;">The platform is branded <strong>ÆSCULA</strong> — derived from Aesculapius, the Greek god of medicine. This name appears on:</p>
+        <ul style="font-size:13px;padding-left:20px;line-height:2;">
+          <li>The student-facing web app (top bar, login, emails)</li>
+          <li>School-facing marketing and license agreements</li>
+          <li>All documentation and communications</li>
+          <li>The domain name (to be purchased)</li>
+        </ul>
+      </div>
+      <div style="background:var(--navy);border-radius:12px;padding:20px;color:#fff;display:flex;align-items:center;justify-content:center;">
+        <div style="text-align:center;">
+          <div style="font-family:'Playfair Display',serif;font-size:32px;font-weight:700;letter-spacing:3px;"><span style="color:var(--gold);">Æ</span>SCULA</div>
+          <div style="font-size:11px;color:rgba(255,255,255,.5);margin-top:8px;">Medical Microlearning</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODULE COUNT CONTEXT -->
+  <div class="card">
+    <div class="card-title">The Scale: 1,375 Modules</div>
+    <p style="font-size:14px;margin-bottom:16px;">This number comes from your Curriculum Master Index — 26 subdomain content documents mapped to COMLEX Dimension 1 (competency domains) and Dimension 2 (clinical presentations).</p>
+    <div class="grid-3">
+      <div style="background:var(--navy);color:#fff;border-radius:12px;padding:16px;text-align:center;">
+        <div style="font-family:'Playfair Display',serif;font-size:28px;font-weight:700;color:var(--gold);">680</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.6);">Biomedical & Clinical (60% of COMLEX)</div>
+      </div>
+      <div style="background:var(--navy);color:#fff;border-radius:12px;padding:16px;text-align:center;">
+        <div style="font-family:'Playfair Display',serif;font-size:28px;font-weight:700;color:var(--gold);">145</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.6);">Osteopathic Principles (13% of COMLEX)</div>
+      </div>
+      <div style="background:var(--navy);color:#fff;border-radius:12px;padding:16px;text-align:center;">
+        <div style="font-family:'Playfair Display',serif;font-size:28px;font-weight:700;color:var(--gold);">550</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.6);">Remaining domains (Communication, SBP, etc.)</div>
+      </div>
+    </div>
+    <div class="info-box" style="margin-top:16px;">
+      <span class="callout-label">How these get built</span>
+      These are <strong>not</strong> manually authored. Your framework documents feed an AI content pipeline that generates lessons in bulk. You and your SME reviewers approve each batch before students see them. This pipeline is the first thing we build.
+    </div>
+  </div>
+
+  <!-- MARKET STRATEGY CONTEXT -->
+  <div class="card">
+    <div class="card-title">Two Ways Students Get Access</div>
+    <div class="grid-2">
+      <div style="border:2px solid var(--border);border-radius:12px;padding:20px;">
+        <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Path 1: Individual</div>
+        <div style="font-weight:700;font-size:16px;margin-bottom:8px;">Student buys directly</div>
+        <div style="font-size:13px;color:var(--text-muted);line-height:1.8;">
+          1. Goes to website, clicks Sign Up<br>
+          2. FERPA consent screen (required)<br>
+          3. Enters credit card via Stripe<br>
+          4. Account created — starts learning
+        </div>
+      </div>
+      <div style="border:2px solid var(--border);border-radius:12px;padding:20px;">
+        <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--teal);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Path 2: School License</div>
+        <div style="font-weight:700;font-size:16px;margin-bottom:8px;">School provides access code</div>
+        <div style="font-size:13px;color:var(--text-muted);line-height:1.8;">
+          1. Goes to website, clicks Sign Up<br>
+          2. FERPA consent screen (required)<br>
+          3. Enters school access code<br>
+          4. Linked to cohort — faculty can see progress
+        </div>
+      </div>
+    </div>
+    <div style="background:var(--teal-light);border-radius:12px;padding:16px;margin-top:16px;text-align:center;">
+      <strong>Both paths land here: the same student dashboard.</strong><br>
+      <span style="font-size:13px;color:var(--text-muted);">Same platform, same lessons, same experience — just different how they got in.</span>
+    </div>
+  </div>
+
+  <!-- WHAT A LESSON LOOKS LIKE -->
+  <div class="card">
+    <div class="card-title">What a Single Lesson Looks Like for a Student</div>
+    <p style="font-size:14px;color:var(--text-muted);margin-bottom:16px;">Each module is ~5 minutes. One core concept. Three content types. Then the AI tutor pushes them further.</p>
+    <div class="wireframe">
+      <div class="wire-topbar"><span class="brand"><span>AE</span>SCULA</span> <span style="margin-left:auto;font-size:11px;opacity:.6;">Jane Smith — Year 2, Loyola</span></div>
+      <div class="wire-body">
+        <div class="wire-sidebar">
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px;">Cardiovascular</div>
+          <div class="wire-sidebar-item active">Heart failure — patho</div>
+          <div class="wire-sidebar-item">Beta blockers in HF <span style="color:var(--green);margin-left:auto;">✓</span></div>
+          <div class="wire-sidebar-item">Cardiac output <span style="color:var(--gold);margin-left:auto;font-size:9px;">due</span></div>
+          <div class="wire-sidebar-item">Diuretics</div>
+        </div>
+        <div class="wire-content">
+          <h3>Heart failure — pathophysiology</h3>
+          <p style="font-size:11px;color:var(--text-muted);margin-bottom:12px;">Goal: Explain the Frank-Starling mechanism and how it breaks down in systolic heart failure</p>
+          <div style="display:flex;gap:8px;margin-bottom:16px;">
+            <span style="background:var(--navy);color:#fff;padding:4px 12px;border-radius:99px;font-size:12px;font-weight:600;">Flashcards</span>
+            <span style="border:1px solid var(--border);padding:4px 12px;border-radius:99px;font-size:12px;">MCQ practice</span>
+            <span style="border:1px solid var(--border);padding:4px 12px;border-radius:99px;font-size:12px;">AI tutor</span>
+          </div>
+          <div class="wire-flashcard">
+            <div>
+              <div style="font-size:14px;font-weight:600;">What is the Frank-Starling mechanism?</div>
+              <div style="font-size:11px;color:rgba(255,255,255,.5);margin-top:8px;">Tap to reveal answer</div>
+            </div>
+          </div>
+          <div style="text-align:center;font-size:11px;color:var(--text-muted);margin-top:8px;">Card 1 of 3</div>
+        </div>
+      </div>
+    </div>
+    <p style="font-size:13px;color:var(--text-muted);margin-top:12px;">After flashcards, the student moves to MCQ practice (board-style questions with full rationale), then the AI Socratic Tutor for deeper reasoning. The system tracks everything and schedules the next review at the optimal moment.</p>
+  </div>
+
   <!-- ANNOTATION -->
   <div class="annotation" data-section="s1">
-    <div class="annotation-title">Your Review &mdash; Section 01</div>
-    <div class="annotation-status">
-      <button onclick="setStatus('s1','approve',this)">Approve</button>
-      <button onclick="setStatus('s1','flag',this)">Flag</button>
-      <button onclick="setStatus('s1','discuss',this)">Discuss</button>
-    </div>
-    <textarea placeholder="Notes, questions, or feedback on this section..." oninput="saveNotes('s1',this.value)"></textarea>
+    <div class="annotation-title">Your Review &mdash; Section 01: Product Overview</div>
+    <p style="font-size:13px;color:var(--text-muted);margin-bottom:20px;">Review each element below. <strong>Approve</strong> = correct as stated. <strong>Refine</strong> = directionally right, needs adjustment. <strong>Decline</strong> = incorrect or not aligned.</p>
+
     <div class="decision-q">
-      <div class="q-text">Is the 1,375-module count from the Curriculum Master Index the confirmed scope?</div>
-      <div class="q-btns"><button onclick="setQ('s1-q1','yes',this)">Yes</button><button onclick="setQ('s1-q1','no',this)">No</button><button onclick="setQ('s1-q1','discuss',this)">Discuss</button></div>
+      <div class="q-text">Product Name: <strong>AESCULA</strong></div>
+      <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px;">The platform is branded as AESCULA (stylized ÆSCULA). Is this the confirmed name?</div>
+      <div class="q-btns"><button onclick="setQ('s1-q1','approve',this)">Approve</button><button onclick="setQ('s1-q1','refine',this)">Refine</button><button onclick="setQ('s1-q1','decline',this)">Decline</button></div>
     </div>
+
     <div class="decision-q">
-      <div class="q-text">Is AESCULA the confirmed app name?</div>
-      <div class="q-btns"><button onclick="setQ('s1-q2','yes',this)">Yes</button><button onclick="setQ('s1-q2','no',this)">No</button><button onclick="setQ('s1-q2','discuss',this)">Discuss</button></div>
+      <div class="q-text">Module Count: <strong>1,375 AI-generated, SME-reviewed modules</strong></div>
+      <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px;">Derived from the Curriculum Master Index across 26 subdomain content documents. Does this match your curriculum scope?</div>
+      <div class="q-btns"><button onclick="setQ('s1-q2','approve',this)">Approve</button><button onclick="setQ('s1-q2','refine',this)">Refine</button><button onclick="setQ('s1-q2','decline',this)">Decline</button></div>
     </div>
+
     <div class="decision-q">
-      <div class="q-text">Both markets (institutional licenses + individual subscriptions) are in scope from day one?</div>
-      <div class="q-btns"><button onclick="setQ('s1-q3','yes',this)">Yes</button><button onclick="setQ('s1-q3','no',this)">No</button><button onclick="setQ('s1-q3','discuss',this)">Discuss</button></div>
+      <div class="q-text">Market Strategy: <strong>Two markets — institutional licenses + individual subscriptions</strong></div>
+      <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px;">Students can purchase individually or access through a school license. Both paths lead to the same platform experience.</div>
+      <div class="q-btns"><button onclick="setQ('s1-q3','approve',this)">Approve</button><button onclick="setQ('s1-q3','refine',this)">Refine</button><button onclick="setQ('s1-q3','decline',this)">Decline</button></div>
+    </div>
+
+    <div class="decision-q">
+      <div class="q-text">Pedagogical Pillars: <strong>Andragogy + Cognitive Load Theory + Spaced Repetition</strong></div>
+      <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px;">These three evidence-based frameworks drive all content and interaction design. Are these the right foundations?</div>
+      <div class="q-btns"><button onclick="setQ('s1-q4','approve',this)">Approve</button><button onclick="setQ('s1-q4','refine',this)">Refine</button><button onclick="setQ('s1-q4','decline',this)">Decline</button></div>
+    </div>
+
+    <div class="decision-q">
+      <div class="q-text">Bloom's Taxonomy Approach: <strong>Scaffold learners from L1 (Remember) to L6 (Create)</strong></div>
+      <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px;">Flashcards at L1, concept explanations at L2, interactive exercises at L3, MCQs at L4, AI Socratic Tutor at L5-L6. Does this progression match your vision?</div>
+      <div class="q-btns"><button onclick="setQ('s1-q5','approve',this)">Approve</button><button onclick="setQ('s1-q5','refine',this)">Refine</button><button onclick="setQ('s1-q5','decline',this)">Decline</button></div>
+    </div>
+
+    <div class="decision-q">
+      <div class="q-text">Competitive Positioning: <strong>vs Anki, Sketchy/DDx, AMBOSS, UWorld, Boards & Beyond</strong></div>
+      <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px;">The table above describes each competitor's focus and our differentiation. Is this positioning accurate?</div>
+      <div class="q-btns"><button onclick="setQ('s1-q6','approve',this)">Approve</button><button onclick="setQ('s1-q6','refine',this)">Refine</button><button onclick="setQ('s1-q6','decline',this)">Decline</button></div>
+    </div>
+
+    <div class="decision-q">
+      <div class="q-text">Defensible Moat: <strong>Proprietary micromodule framework + content pipeline</strong></div>
+      <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px;">The moat is the rigorously tagged, Bloom's-aligned, NBOME-mapped content library — not the platform technology itself. Is this the right framing?</div>
+      <div class="q-btns"><button onclick="setQ('s1-q7','approve',this)">Approve</button><button onclick="setQ('s1-q7','refine',this)">Refine</button><button onclick="setQ('s1-q7','decline',this)">Decline</button></div>
+    </div>
+
+    <div style="border-top:2px solid var(--border);margin-top:24px;padding-top:20px;">
+      <div class="annotation-title" style="margin-bottom:12px;">Overall Section Status</div>
+      <div class="annotation-status">
+        <button onclick="setStatus('s1','approve',this)">Approve Section</button>
+        <button onclick="setStatus('s1','flag',this)">Flag for Changes</button>
+        <button onclick="setStatus('s1','discuss',this)">Needs Discussion</button>
+      </div>
+      <textarea placeholder="Additional notes on Section 01..." oninput="saveNotes('s1',this.value)"></textarea>
     </div>
   </div>
 </div>
@@ -3340,15 +3494,15 @@ function setQ(qId, value, btn) {
     b.className = '';
   });
   // Apply appropriate style
-  if (value === 'no') btn.className = 'sel-no';
-  else if (value === 'discuss') btn.className = 'sel-discuss';
+  if (value === 'no' || value === 'decline') btn.className = 'sel-no';
+  else if (value === 'discuss' || value === 'refine') btn.className = 'sel-discuss';
   else btn.className = 'sel';
 
   // Show/hide comment thread
   const dq = btn.closest('.decision-q');
   let thread = dq.querySelector('.q-thread');
 
-  if (value === 'no' || value === 'discuss' || value === 'reject' || value === 'missing' || value === 'adjust') {
+  if (value === 'no' || value === 'discuss' || value === 'reject' || value === 'missing' || value === 'adjust' || value === 'refine' || value === 'decline') {
     if (!thread) {
       thread = document.createElement('div');
       thread.className = 'q-thread open';
