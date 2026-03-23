@@ -159,55 +159,91 @@ export default function DocumentList({ projectId, documents, onDocumentsChange, 
       {/* Document list */}
       {documents.length > 0 ? (
         <div className="divide-y divide-gray-800 border border-gray-800 rounded-xl overflow-hidden">
-          {documents.map(doc => (
-            <div key={doc.id} className="flex items-center gap-3 px-4 py-3 bg-gray-900 hover:bg-gray-800/50 transition-colors">
-              {/* File type badge */}
-              <span className="flex-shrink-0 w-10 h-10 rounded-lg bg-gray-800 border border-gray-700 flex items-center justify-center text-[10px] font-bold text-gray-400 uppercase">
-                {getFileIcon(doc.file_type)}
-              </span>
+          {documents.map(doc => {
+            const isScope = doc.document_type === 'scope'
 
-              {/* File info */}
-              <div className="flex-1 min-w-0">
-                <button
-                  onClick={() => handleDownload(doc)}
-                  className="text-sm text-white hover:text-amber-400 transition-colors truncate block text-left"
-                >
-                  {doc.file_name}
-                </button>
-                <div className="flex items-center gap-2 mt-0.5">
-                  <span className="text-[11px] text-gray-500">{formatFileSize(doc.file_size)}</span>
-                  <span className="text-gray-700">·</span>
-                  <span className="text-[11px] text-gray-500">{new Date(doc.created_at).toLocaleDateString()}</span>
-                  <span className="text-gray-700">·</span>
-                  <span className={`text-[11px] px-1.5 py-0.5 rounded-full ${
-                    doc.uploaded_by_role === 'developer'
-                      ? 'bg-blue-900/40 text-blue-400'
-                      : 'bg-purple-900/40 text-purple-400'
-                  }`}>
-                    {doc.uploaded_by_role === 'developer' ? 'Agency' : 'Client'}
-                  </span>
+            return (
+              <div key={doc.id} className="flex items-center gap-3 px-4 py-3 bg-gray-900 hover:bg-gray-800/50 transition-colors">
+                {/* File type badge */}
+                <span className={`flex-shrink-0 w-10 h-10 rounded-lg border flex items-center justify-center text-[10px] font-bold uppercase ${
+                  isScope
+                    ? 'bg-amber-900/30 border-amber-700 text-amber-400'
+                    : 'bg-gray-800 border-gray-700 text-gray-400'
+                }`}>
+                  {isScope ? 'SOW' : getFileIcon(doc.file_type)}
+                </span>
+
+                {/* File info */}
+                <div className="flex-1 min-w-0">
+                  {isScope ? (
+                    <a
+                      href={doc.file_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm text-amber-400 hover:text-amber-300 transition-colors truncate block text-left font-medium"
+                    >
+                      {doc.file_name}
+                      <span className="text-[10px] text-amber-500/60 ml-2">↗ Interactive</span>
+                    </a>
+                  ) : (
+                    <button
+                      onClick={() => handleDownload(doc)}
+                      className="text-sm text-white hover:text-amber-400 transition-colors truncate block text-left"
+                    >
+                      {doc.file_name}
+                    </button>
+                  )}
+                  <div className="flex items-center gap-2 mt-0.5">
+                    {!isScope && <span className="text-[11px] text-gray-500">{formatFileSize(doc.file_size)}</span>}
+                    {!isScope && <span className="text-gray-700">·</span>}
+                    <span className="text-[11px] text-gray-500">{new Date(doc.created_at).toLocaleDateString()}</span>
+                    <span className="text-gray-700">·</span>
+                    <span className={`text-[11px] px-1.5 py-0.5 rounded-full ${
+                      doc.uploaded_by_role === 'developer'
+                        ? 'bg-blue-900/40 text-blue-400'
+                        : 'bg-purple-900/40 text-purple-400'
+                    }`}>
+                      {doc.uploaded_by_role === 'developer' ? 'Agency' : 'Client'}
+                    </span>
+                    {isScope && (
+                      <span className="text-[11px] px-1.5 py-0.5 rounded-full bg-amber-900/40 text-amber-400">
+                        Scope Document
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                {/* Actions */}
+                <div className="flex items-center gap-1 flex-shrink-0">
+                  {isScope ? (
+                    <a
+                      href={doc.file_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-2.5 py-1.5 text-xs text-amber-400 hover:text-amber-300 bg-amber-900/30 hover:bg-amber-900/50 rounded-lg transition-colors"
+                    >
+                      Open
+                    </a>
+                  ) : (
+                    <button
+                      onClick={() => handleDownload(doc)}
+                      className="px-2.5 py-1.5 text-xs text-gray-400 hover:text-white bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors"
+                    >
+                      Download
+                    </button>
+                  )}
+                  {canDelete(doc) && (
+                    <button
+                      onClick={() => handleDelete(doc)}
+                      className="px-2.5 py-1.5 text-xs text-gray-500 hover:text-red-400 transition-colors"
+                    >
+                      Delete
+                    </button>
+                  )}
                 </div>
               </div>
-
-              {/* Actions */}
-              <div className="flex items-center gap-1 flex-shrink-0">
-                <button
-                  onClick={() => handleDownload(doc)}
-                  className="px-2.5 py-1.5 text-xs text-gray-400 hover:text-white bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors"
-                >
-                  Download
-                </button>
-                {canDelete(doc) && (
-                  <button
-                    onClick={() => handleDelete(doc)}
-                    className="px-2.5 py-1.5 text-xs text-gray-500 hover:text-red-400 transition-colors"
-                  >
-                    Delete
-                  </button>
-                )}
-              </div>
-            </div>
-          ))}
+            )
+          })}
         </div>
       ) : (
         <p className="text-sm text-gray-500 text-center py-6">No documents uploaded yet.</p>

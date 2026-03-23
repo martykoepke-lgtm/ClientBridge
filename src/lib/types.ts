@@ -256,6 +256,8 @@ export interface ProjectDocument {
   file_size: number
   file_type: string
   description: string | null
+  document_type: 'file' | 'scope' | 'link'
+  scope_session_id: string | null
   created_at: string
 }
 

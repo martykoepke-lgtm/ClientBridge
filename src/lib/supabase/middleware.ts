@@ -4,6 +4,7 @@ import { NextResponse, type NextRequest } from 'next/server'
 // Routes that never require authentication
 const PUBLIC_ROUTES = [
   '/review',
+  '/scope',
   '/api/proxy',
   '/auth/callback',
   '/auth/reset-password',
@@ -11,6 +12,7 @@ const PUBLIC_ROUTES = [
   '/api/invite-client',
   '/api/portal/accept-invitation',
   '/api/contract-sign',
+  '/api/scope',
 ]
 
 // Portal auth pages (public, no auth needed)
