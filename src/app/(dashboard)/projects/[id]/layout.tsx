@@ -22,16 +22,18 @@ export default function ProjectLayout({
   const subpath = segments.slice(projectsIdx + 2).join('/')
   const activeTab = subpath === 'contract' ? 'contract'
     : subpath === 'documents' ? 'documents'
+    : subpath === 'sprints' || subpath.startsWith('sprints/') ? 'sprints'
     : 'overview'
 
   const tabs = [
     { id: 'overview', label: 'Overview', href: `/projects/${id}` },
     { id: 'contract', label: 'Contract', href: `/projects/${id}/contract` },
     { id: 'documents', label: 'Documents', href: `/projects/${id}/documents` },
+    { id: 'sprints', label: 'Sprints', href: `/projects/${id}/sprints` },
   ]
 
   // Don't render tab bar on nested routes like /feedback/[feedbackId]
-  const isNestedRoute = subpath && !['contract', 'documents'].includes(subpath)
+  const isNestedRoute = subpath && !['contract', 'documents', 'sprints'].includes(subpath) && !subpath.startsWith('sprints/')
 
   return (
     <div>

@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sprint Workspace — ClientBridge Prototype</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@400;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ===== THEME VARIABLES ===== */
+:root {
+  /* Dark theme (ClientBridge) */
+  --bg-root: #09090B;
+  --bg-card: #18181B;
+  --bg-card-hover: #1f1f23;
+  --bg-input: #27272A;
+  --bg-nav: #0C0C0E;
+  --border: #27272A;
+  --border-subtle: #1C1C22;
+  --text: #FAFAFA;
+  --text-muted: #71717A;
+  --text-dim: #52525B;
+  --accent: #F59E0B;
+  --accent-hover: #D97706;
+  --accent-subtle: rgba(245,158,11,0.1);
+  --green: #22C55E;
+  --green-subtle: rgba(34,197,94,0.1);
+  --green-text: #4ADE80;
+  --red: #EF4444;
+  --red-subtle: rgba(239,68,68,0.1);
+  --red-text: #F87171;
+  --blue: #3B82F6;
+  --blue-subtle: rgba(59,130,246,0.1);
+  --blue-text: #60A5FA;
+  --purple: #8B5CF6;
+  --purple-subtle: rgba(139,92,246,0.1);
+  --purple-text: #A78BFA;
+  --amber-text: #FBBF24;
+  --amber-subtle: rgba(251,191,36,0.1);
+  --phase1-color: #8B5CF6;
+  --phase2-color: #3B82F6;
+  --phase3-color: #F59E0B;
+  --phase4-color: #EF4444;
+  --shadow: 0 1px 3px rgba(0,0,0,0.4);
+  --radius: 12px;
+  --font: 'Inter', -apple-system, sans-serif;
+}
+
+[data-theme="light"] {
+  --bg-root: #FAFAF7;
+  --bg-card: #FFFFFF;
+  --bg-card-hover: #F5F5F0;
+  --bg-input: #F0EDE6;
+  --bg-nav: #0F1F38;
+  --border: #E5E3DC;
+  --border-subtle: #EBE9E2;
+  --text: #1a1a1a;
+  --text-muted: #6B7280;
+  --text-dim: #9CA3AF;
+  --accent: #B8860B;
+  --accent-hover: #9A7209;
+  --accent-subtle: rgba(184,134,11,0.08);
+  --green: #1A6B3A;
+  --green-subtle: #E8F8EE;
+  --green-text: #1A6B3A;
+  --red: #C0392B;
+  --red-subtle: #FDEDEC;
+  --red-text: #C0392B;
+  --blue: #2563EB;
+  --blue-subtle: #EFF6FF;
+  --blue-text: #1D4ED8;
+  --purple: #7C3AED;
+  --purple-subtle: #F0EBFF;
+  --purple-text: #6D28D9;
+  --amber-text: #854F0B;
+  --amber-subtle: #FDF6E3;
+  --phase1-color: #7C3AED;
+  --phase2-color: #2563EB;
+  --phase3-color: #B8860B;
+  --phase4-color: #C0392B;
+  --shadow: 0 1px 3px rgba(0,0,0,0.08);
+  --radius: 12px;
+}
+
+/* ===== RESET ===== */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: var(--font); background: var(--bg-root); color: var(--text); line-height: 1.6; min-height: 100vh; }
+
+/* ===== TOP BAR ===== */
+.topbar {
+  position: fixed; top: 0; left: 0; right: 0; height: 56px;
+  background: var(--bg-nav); display: flex; align-items: center;
+  padding: 0 24px; z-index: 100; gap: 16px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.topbar-brand {
+  font-family: 'Inter', sans-serif; color: #fff; font-size: 16px;
+  font-weight: 700; letter-spacing: 0.5px;
+}
+[data-theme="light"] .topbar-brand { font-family: 'Playfair Display', serif; font-size: 18px; letter-spacing: 1.5px; }
+.topbar-brand span { color: var(--accent); }
+.topbar-meta { color: rgba(255,255,255,0.5); font-size: 12px; margin-left: auto; }
+
+/* Theme toggle */
+.theme-toggle {
+  background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
+  color: #fff; padding: 6px 14px; border-radius: 8px; font-size: 12px;
+  font-weight: 500; cursor: pointer; font-family: var(--font); transition: all 0.15s;
+}
+.theme-toggle:hover { background: rgba(255,255,255,0.2); }
+
+/* ===== VIEW TABS ===== */
+.view-tabs {
+  position: fixed; top: 56px; left: 0; right: 0; height: 48px;
+  background: var(--bg-root); display: flex; align-items: center;
+  padding: 0 24px; gap: 4px; z-index: 90;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.view-tab {
+  padding: 8px 20px; border-radius: 8px; font-size: 13px; font-weight: 500;
+  color: var(--text-muted); cursor: pointer; transition: all 0.15s;
+  border: 1px solid transparent; background: transparent;
+  font-family: var(--font);
+}
+.view-tab:hover { color: var(--text); background: var(--bg-card); }
+.view-tab.active {
+  color: var(--text); background: var(--bg-card);
+  border-color: var(--border); font-weight: 600;
+}
+
+/* ===== MAIN ===== */
+.main { margin-top: 104px; padding: 32px 32px 120px; max-width: 1200px; margin-left: auto; margin-right: auto; }
+.view { display: none; }
+.view.active { display: block; }
+
+/* ===== SECTION HEADERS ===== */
+.section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+.section-title { font-size: 24px; font-weight: 700; }
+.section-subtitle { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+
+/* ===== BUTTONS ===== */
+.btn {
+  padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 600;
+  cursor: pointer; border: none; font-family: var(--font); transition: all 0.15s;
+}
+.btn-accent { background: var(--accent); color: #000; }
+.btn-accent:hover { background: var(--accent-hover); }
+.btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--text-muted); }
+.btn-ghost:hover { color: var(--text); border-color: var(--text-muted); }
+.btn-sm { padding: 4px 10px; font-size: 11px; border-radius: 6px; }
+
+/* ===== CARDS ===== */
+.card {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 24px; margin-bottom: 20px;
+  box-shadow: var(--shadow);
+}
+.card-title { font-weight: 700; font-size: 16px; margin-bottom: 8px; }
+.card-subtitle { font-size: 13px; color: var(--text-muted); margin-bottom: 16px; }
+
+/* ===== BADGES ===== */
+.badge {
+  display: inline-block; padding: 2px 10px; border-radius: 99px;
+  font-size: 11px; font-weight: 600; letter-spacing: 0.3px;
+}
+.badge-green { background: var(--green-subtle); color: var(--green-text); }
+.badge-red { background: var(--red-subtle); color: var(--red-text); }
+.badge-amber { background: var(--amber-subtle); color: var(--amber-text); }
+.badge-blue { background: var(--blue-subtle); color: var(--blue-text); }
+.badge-purple { background: var(--purple-subtle); color: var(--purple-text); }
+.badge-dim { background: var(--bg-input); color: var(--text-dim); }
+
+/* ===== PHASE BAR ===== */
+.phase-bar { display: flex; gap: 2px; margin-bottom: 28px; border-radius: 8px; overflow: hidden; }
+.phase-segment {
+  padding: 8px 16px; font-size: 11px; font-weight: 600; color: #fff;
+  text-align: center; cursor: pointer; transition: opacity 0.15s;
+  letter-spacing: 0.3px;
+}
+.phase-segment:hover { opacity: 0.85; }
+
+/* ===== SPRINT GRID ===== */
+.sprint-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
+@media (max-width: 900px) { .sprint-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 600px) { .sprint-grid { grid-template-columns: 1fr; } }
+
+.phase-label {
+  grid-column: 1 / -1; font-size: 11px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-muted);
+  padding: 16px 0 4px; display: flex; align-items: center; gap: 8px;
+}
+.phase-dot { width: 8px; height: 8px; border-radius: 50%; }
+
+/* ===== SPRINT CARDS ===== */
+.sprint-card {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 20px; cursor: pointer;
+  transition: all 0.2s; position: relative;
+}
+.sprint-card:hover { background: var(--bg-card-hover); border-color: var(--text-dim); transform: translateY(-1px); }
+.sprint-card.active-sprint { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent), 0 4px 12px rgba(245,158,11,0.15); }
+.sprint-card.completed { opacity: 0.85; }
+.sprint-card.planned { opacity: 0.55; }
+.sprint-card.planned:hover { opacity: 0.75; }
+
+.sprint-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.sprint-num { font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 600; color: var(--text-muted); }
+.sprint-weeks { font-size: 11px; color: var(--text-dim); }
+.sprint-title { font-weight: 700; font-size: 15px; margin-bottom: 4px; }
+.sprint-desc { font-size: 12px; color: var(--text-muted); margin-bottom: 12px; line-height: 1.5; }
+
+/* Progress bar */
+.progress-bar { height: 6px; background: var(--bg-input); border-radius: 99px; overflow: hidden; margin-bottom: 12px; }
+.progress-fill { height: 100%; border-radius: 99px; transition: width 0.4s ease; }
+.progress-fill.green { background: var(--green); }
+.progress-fill.amber { background: var(--accent); }
+
+/* Sprint stats */
+.sprint-stats { display: flex; gap: 16px; font-size: 11px; color: var(--text-muted); margin-bottom: 12px; }
+.sprint-stat { display: flex; align-items: center; gap: 4px; }
+
+/* Sprint actions */
+.sprint-actions { display: flex; gap: 6px; }
+
+/* Milestone badge on card */
+.milestone-badge {
+  position: absolute; top: 12px; right: 12px; font-size: 10px;
+  font-weight: 700; padding: 2px 8px; border-radius: 4px;
+  background: var(--accent-subtle); color: var(--accent);
+  font-family: 'DM Mono', monospace;
+}
+
+/* ===== ACTIVE STRIP ===== */
+.active-strip {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 16px 24px;
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: 13px; margin-top: 8px;
+}
+.strip-item { display: flex; align-items: center; gap: 6px; }
+.strip-dot { width: 8px; height: 8px; border-radius: 50%; }
+
+/* ===== SPRINT DETAIL ===== */
+.detail-header {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 24px; margin-bottom: 24px;
+}
+.back-link { font-size: 13px; color: var(--text-muted); cursor: pointer; margin-bottom: 16px; display: inline-flex; align-items: center; gap: 6px; }
+.back-link:hover { color: var(--accent); }
+.detail-title { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+.detail-meta { display: flex; align-items: center; gap: 16px; font-size: 13px; color: var(--text-muted); margin-bottom: 16px; }
+.detail-progress { max-width: 400px; }
+
+/* Plan/Summary columns */
+.plan-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+@media (max-width: 700px) { .plan-grid { grid-template-columns: 1fr; } }
+.plan-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; }
+.plan-card h4 { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 12px; }
+.plan-text { font-size: 14px; line-height: 1.7; color: var(--text); }
+.plan-locked { font-size: 13px; color: var(--text-dim); font-style: italic; }
+
+/* Deliverables */
+.deliverable-row {
+  display: flex; align-items: center; gap: 12px; padding: 10px 0;
+  border-bottom: 1px solid var(--border-subtle); font-size: 14px;
+}
+.deliverable-row:last-child { border-bottom: none; }
+.checkbox { width: 18px; height: 18px; border-radius: 4px; border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 11px; }
+.checkbox.checked { background: var(--green); border-color: var(--green); color: #fff; }
+.deliverable-label { flex: 1; }
+.deliverable-label.done { text-decoration: line-through; color: var(--text-muted); }
+
+/* Time table */
+.time-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.time-table th { text-align: left; padding: 8px 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); border-bottom: 1px solid var(--border); }
+.time-table td { padding: 8px 12px; border-bottom: 1px solid var(--border-subtle); }
+.time-table tfoot td { font-weight: 700; border-top: 1px solid var(--border); }
+
+/* Feedback rows */
+.feedback-row { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border-subtle); }
+.feedback-row:last-child { border-bottom: none; }
+.feedback-type { font-size: 10px; font-weight: 700; text-transform: uppercase; padding: 2px 8px; border-radius: 4px; }
+.feedback-type.bug { background: var(--red-subtle); color: var(--red-text); }
+.feedback-type.ux { background: var(--amber-subtle); color: var(--amber-text); }
+.feedback-type.feature { background: var(--green-subtle); color: var(--green-text); }
+.feedback-type.general { background: var(--bg-input); color: var(--text-muted); }
+.feedback-desc { flex: 1; font-size: 13px; }
+.feedback-status { font-size: 11px; font-weight: 600; }
+
+/* Blocker */
+.blocker-item { padding: 16px; background: var(--red-subtle); border: 1px solid var(--red); border-radius: 8px; margin-bottom: 8px; }
+.blocker-item.resolved { background: var(--bg-input); border-color: var(--border); opacity: 0.6; }
+.blocker-label { font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--red-text); margin-bottom: 4px; }
+.blocker-item.resolved .blocker-label { color: var(--text-dim); }
+.blocker-text { font-size: 13px; margin-bottom: 8px; }
+.blocker-meta { font-size: 11px; color: var(--text-muted); }
+
+/* Demo section */
+.demo-card { display: flex; align-items: center; gap: 20px; }
+.demo-date { font-size: 15px; font-weight: 600; }
+.demo-meta { font-size: 13px; color: var(--text-muted); }
+
+/* ===== CLIENT PORTAL ===== */
+.current-sprint-hero {
+  background: var(--bg-card); border: 2px solid var(--accent);
+  border-radius: var(--radius); padding: 28px; margin-bottom: 28px;
+  box-shadow: 0 0 0 1px var(--accent), 0 4px 16px rgba(245,158,11,0.1);
+}
+.hero-title { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+.hero-phase { font-size: 13px; color: var(--text-muted); margin-bottom: 16px; }
+.hero-progress { margin-bottom: 20px; }
+.hero-label { font-size: 12px; color: var(--text-muted); margin-bottom: 4px; }
+
+.what-building { margin-bottom: 20px; }
+.what-building h4 { font-size: 13px; font-weight: 600; color: var(--text-muted); margin-bottom: 8px; }
+.what-building li { font-size: 14px; padding: 3px 0; list-style: none; }
+.what-building li::before { content: '\2022'; color: var(--accent); margin-right: 8px; }
+
+.action-needed {
+  background: var(--amber-subtle); border: 1px solid var(--accent);
+  border-radius: 8px; padding: 16px; margin-bottom: 20px;
+}
+.action-needed-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--amber-text); margin-bottom: 8px; }
+.action-text { font-size: 13px; margin-bottom: 10px; }
+.action-buttons { display: flex; gap: 8px; }
+
+.demo-box { background: var(--bg-input); border-radius: 8px; padding: 14px 18px; margin-bottom: 20px; display: flex; align-items: center; gap: 16px; }
+.demo-box-label { font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--text-muted); }
+.demo-box-date { font-size: 14px; font-weight: 600; }
+.demo-box-notes { font-size: 12px; color: var(--text-muted); }
+
+/* Client timeline */
+.timeline-phase { margin-bottom: 24px; }
+.timeline-phase-label { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+.timeline-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+@media (max-width: 600px) { .timeline-grid { grid-template-columns: 1fr; } }
+
+.timeline-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; }
+.timeline-card.active { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+.timeline-card.completed { opacity: 0.8; }
+.timeline-card.upcoming { opacity: 0.5; }
+.timeline-card-title { font-weight: 600; font-size: 14px; margin-bottom: 4px; }
+.timeline-card-dates { font-size: 12px; color: var(--text-muted); margin-bottom: 8px; }
+.delivered-list { font-size: 12px; color: var(--text-muted); }
+.delivered-list li { padding: 2px 0; list-style: none; }
+.delivered-list li::before { content: '\2713'; color: var(--green-text); margin-right: 6px; font-weight: 700; }
+
+/* Payment milestones */
+.milestone-row { display: flex; align-items: center; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--border-subtle); }
+.milestone-row:last-child { border-bottom: none; }
+.milestone-name { flex: 1; font-size: 14px; font-weight: 500; }
+.milestone-amount { font-family: 'DM Mono', monospace; font-size: 14px; font-weight: 600; }
+.milestone-sprint { font-size: 12px; color: var(--text-muted); }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="topbar-brand">Client<span>Bridge</span></div>
+  <div style="display:flex;gap:4px;margin-left:24px;">
+    <span class="view-tab active" onclick="switchView('board')" id="tab-board">Sprint Board</span>
+    <span class="view-tab" onclick="switchView('detail')" id="tab-detail">Sprint Detail</span>
+    <span class="view-tab" onclick="switchView('portal')" id="tab-portal">Client Portal</span>
+  </div>
+  <div class="topbar-meta">Prototype &middot; Aescula LMS</div>
+  <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">Switch to Light</button>
+</div>
+
+<!-- SPACER -->
+<div style="height:56px;"></div>
+
+<div class="main">
+
+<!-- ===== VIEW 1: SPRINT BOARD ===== -->
+<div class="view active" id="view-board">
+  <div class="section-header">
+    <div>
+      <div class="section-title">Sprints</div>
+      <div class="section-subtitle">Aescula LMS &mdash; 9 sprints across 4 phases</div>
+    </div>
+    <button class="btn btn-accent">+ New Sprint</button>
+  </div>
+
+  <!-- Phase bar -->
+  <div class="phase-bar">
+    <div class="phase-segment" style="flex:2;background:var(--phase1-color);">Phase 1: Foundation</div>
+    <div class="phase-segment" style="flex:3;background:var(--phase2-color);">Phase 2: Core Platform</div>
+    <div class="phase-segment" style="flex:2;background:var(--phase3-color);">Phase 3: Pipeline & Payments</div>
+    <div class="phase-segment" style="flex:2;background:var(--phase4-color);">Phase 4: MVP Delivery</div>
+  </div>
+
+  <!-- Sprint cards -->
+  <div class="sprint-grid">
+    <!-- Phase 1 -->
+    <div class="phase-label"><div class="phase-dot" style="background:var(--phase1-color);"></div> Phase 1: Foundation &mdash; Months 1-2</div>
+
+    <div class="sprint-card completed" onclick="openDetail(0)">
+      <div class="sprint-card-header">
+        <span class="sprint-num">Sprint 1</span>
+        <span class="sprint-weeks">Wk 1-2</span>
+      </div>
+      <div class="sprint-title">Setup + Database Design</div>
+      <div class="sprint-desc">Supabase, Vercel, GitHub accounts. Schema designed. FERPA audit table.</div>
+      <div class="progress-bar"><div class="progress-fill green" style="width:100%;"></div></div>
+      <div class="sprint-stats">
+        <span class="sprint-stat">38.5h logged</span>
+        <span class="sprint-stat">3 feedback</span>
+        <span class="sprint-stat">0 blockers</span>
+      </div>
+      <div class="sprint-actions">
+        <span class="badge badge-green">Completed</span>
+        <button class="btn btn-ghost btn-sm" style="margin-left:auto;">Plan</button>
+        <button class="btn btn-ghost btn-sm">Summary</button>
+      </div>
+    </div>
+
+    <div class="sprint-card completed" onclick="openDetail(1)">
+      <div class="sprint-card-header">
+        <span class="sprint-num">Sprint 2</span>
+        <span class="sprint-weeks">Wk 3-4</span>
+      </div>
+      <div class="sprint-title">Auth + User Roles</div>
+      <div class="sprint-desc">Student signup, FERPA consent, role-based access, admin & student working.</div>
+      <div class="progress-bar"><div class="progress-fill green" style="width:100%;"></div></div>
+      <div class="sprint-stats">
+        <span class="sprint-stat">42.0h logged</span>
+        <span class="sprint-stat">5 feedback</span>
+        <span class="sprint-stat">0 blockers</span>
+      </div>
+      <div class="sprint-actions">
+        <span class="badge badge-green">Completed</span>
+        <button class="btn btn-ghost btn-sm" style="margin-left:auto;">Plan</button>
+        <button class="btn btn-ghost btn-sm">Summary</button>
+      </div>
+    </div>
+
+    <!-- Spacer for 3-col grid -->
+    <div></div>
+
+    <!-- Phase 2 -->
+    <div class="phase-label"><div class="phase-dot" style="background:var(--phase2-color);"></div> Phase 2: Core Platform &mdash; Months 2-3</div>
+
+    <div class="sprint-card completed" onclick="openDetail(2)">
+      <div class="sprint-card-header">
+        <span class="sprint-num">Sprint 3</span>
+        <span class="sprint-weeks">Wk 5-6</span>
+      </div>
+      <div class="sprint-title">Lesson Structure + Flashcards</div>
+      <div class="sprint-desc">Module pages, flashcard flip, known/still learning, progress saved.</div>
+      <div class="progress-bar"><div class="progress-fill green" style="width:100%;"></div></div>
+      <div class="sprint-stats">
+        <span class="sprint-stat">36.0h logged</span>
+        <span class="sprint-stat">4 feedback</span>
+        <span class="sprint-stat">0 blockers</span>
+      </div>
+      <div class="sprint-actions">
+        <span class="badge badge-green">Completed</span>
+        <button class="btn btn-ghost btn-sm" style="margin-left:auto;">Plan</button>
+        <button class="btn btn-ghost btn-sm">Summary</button>
+      </div>
+    </div>
+
+    <div class="sprint-card completed" onclick="openDetail(3)">
+      <div class="sprint-card-header">
+        <span class="sprint-num">Sprint 4</span>
+        <span class="sprint-weeks">Wk 7-8</span>
+      </div>
+      <div class="sprint-title">MCQs + Response Time</div>
+      <div class="sprint-desc">MCQ engine, timer, explanations, per-attempt time tracking.</div>
+      <div class="progress-bar"><div class="progress-fill green" style="width:100%;"></div></div>
+      <div class="sprint-stats">
+        <span class="sprint-stat">40.0h logged</span>
+        <span class="sprint-stat">6 feedback</span>
+        <span class="sprint-stat">1 blocker</span>
+      </div>
+      <div class="sprint-actions">
+        <span class="badge badge-green">Completed</span>
+        <button class="btn btn-ghost btn-sm" style="margin-left:auto;">Plan</button>
+        <button class="btn btn-ghost btn-sm">Summary</button>
+      </div>
+    </div>
+
+    <div class="sprint-card active-sprint" onclick="openDetail(4)">
+      <div class="sprint-card-header">
+        <span class="sprint-num">Sprint 5</span>
+        <span class="sprint-weeks">Wk 9-10</span>
+      </div>
+      <div class="sprint-title">Spaced Rep + AI Tutor</div>
+      <div class="sprint-desc">SM-2 algorithm, review queue, AI tutor grounded in lesson content.</div>
+      <div class="progress-bar"><div class="progress-fill amber" style="width:65%;"></div></div>
+      <div class="sprint-stats">
+        <span class="sprint-stat">28.5h logged</span>
+        <span class="sprint-stat">4 feedback</span>
+        <span class="sprint-stat">1 blocker</span>
+      </div>
+      <div class="sprint-actions">
+        <span class="badge badge-amber">Active</span>
+        <button class="btn btn-ghost btn-sm" style="margin-left:auto;">Plan</button>
+      </div>
+    </div>
+
+    <!-- Phase 3 -->
+    <div class="phase-label"><div class="phase-dot" style="background:var(--phase3-color);"></div> Phase 3: Pipeline & Payments &mdash; Months 3-4</div>
+
+    <div class="sprint-card planned" onclick="openDetail(5)">
+      <div class="sprint-card-header">
+        <span class="sprint-num">Sprint 6</span>
+        <span class="sprint-weeks">Wk 11-12</span>
+      </div>
+      <div class="sprint-title">AI Generation Pipeline</div>
+      <div class="sprint-desc">Prompt engineering, batch generation, auto QA checks, admin dashboard.</div>
+      <div class="sprint-actions">
+        <span class="badge badge-dim">Planned</span>
+      </div>
+    </div>
+
+    <div class="sprint-card planned" onclick="openDetail(6)">
+      <div class="milestone-badge">$4,000</div>
+      <div class="sprint-card-header">
+        <span class="sprint-num">Sprint 7</span>
+        <span class="sprint-weeks">Wk 13-14</span>
+      </div>
+      <div class="sprint-title">Stripe + Version Control</div>
+      <div class="sprint-desc">Billing live, lesson version tracking, ClientBridge for SME review.</div>
+      <div class="sprint-actions">
+        <span class="badge badge-dim">Planned</span>
+      </div>
+    </div>
+
+    <div></div>
+
+    <!-- Phase 4 -->
+    <div class="phase-label"><div class="phase-dot" style="background:var(--phase4-color);"></div> Phase 4: MVP Delivery &mdash; Months 4-5</div>
+
+    <div class="sprint-card planned" onclick="openDetail(7)">
+      <div class="sprint-card-header">
+        <span class="sprint-num">Sprint 8</span>
+        <span class="sprint-weeks">Wk 15-16</span>
+      </div>
+      <div class="sprint-title">20 Lessons End-to-End + QA</div>
+      <div class="sprint-desc">Full pipeline run, SME review, published, real-user QA walkthrough.</div>
+      <div class="sprint-actions">
+        <span class="badge badge-dim">Planned</span>
+      </div>
+    </div>
+
+    <div class="sprint-card planned" onclick="openDetail(8)">
+      <div class="milestone-badge">$4,000</div>
+      <div class="sprint-card-header">
+        <span class="sprint-num">Sprint 9</span>
+        <span class="sprint-weeks">Wk 17-18</span>
+      </div>
+      <div class="sprint-title">Fixes + Sign-off</div>
+      <div class="sprint-desc">QA issues resolved, acceptance checklist, written sign-off from DIS LLC.</div>
+      <div class="sprint-actions">
+        <span class="badge badge-dim">Planned</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Active strip -->
+  <div class="active-strip">
+    <div class="strip-item"><div class="strip-dot" style="background:var(--accent);"></div> <strong>Sprint 5 Active</strong></div>
+    <div class="strip-item">28.5h logged</div>
+    <div class="strip-item">4 feedback items</div>
+    <div class="strip-item"><span style="color:var(--red-text);">1 blocker</span></div>
+    <div class="strip-item">Next demo: May 16</div>
+    <div class="strip-item" style="color:var(--text-muted);">Sprint 5 of 9</div>
+  </div>
+</div>
+
+<!-- ===== VIEW 2: SPRINT DETAIL ===== -->
+<div class="view" id="view-detail">
+  <div class="detail-header">
+    <div class="back-link" onclick="switchView('board')">&larr; Back to Sprint Board</div>
+    <div style="display:flex;align-items:center;justify-content:space-between;">
+      <div class="detail-title">Sprint 5: Spaced Rep + AI Tutor</div>
+      <span class="badge badge-amber" style="font-size:13px;padding:4px 14px;">Active</span>
+    </div>
+    <div class="detail-meta">
+      <span><div class="phase-dot" style="background:var(--phase2-color);display:inline-block;vertical-align:middle;margin-right:4px;"></div> Phase 2: Core Platform</span>
+      <span>Week 9-10</span>
+      <span>Apr 21 &ndash; May 2, 2026</span>
+      <span style="color:var(--accent);">5 days remaining</span>
+    </div>
+    <div class="detail-progress">
+      <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;">
+        <span class="text-muted" style="color:var(--text-muted);">Progress</span>
+        <span style="font-weight:600;">65%</span>
+      </div>
+      <div class="progress-bar" style="height:8px;"><div class="progress-fill amber" style="width:65%;"></div></div>
+    </div>
+  </div>
+
+  <!-- Plan / Summary -->
+  <div class="plan-grid">
+    <div class="plan-card">
+      <h4>Sprint Plan</h4>
+      <div class="plan-text">
+        <strong>Sprint Goal:</strong> Implement the spaced repetition algorithm (SM-2) with a review queue, and connect the AI Socratic tutor grounded in lesson content via system prompts.<br><br>
+        <strong>Key Decisions:</strong><br>
+        &bull; SM-2 algorithm chosen over Leitner for better long-term retention modeling<br>
+        &bull; AI tutor will use Anthropic Claude with lesson content injected as system prompt context<br>
+        &bull; FERPA de-identification layer must be active before any student data touches the AI<br><br>
+        <strong>Dependencies:</strong> Lesson content from Sprint 3, MCQ data from Sprint 4
+      </div>
+      <button class="btn btn-ghost btn-sm" style="margin-top:12px;">Edit Plan</button>
+    </div>
+    <div class="plan-card">
+      <h4>Sprint Summary</h4>
+      <div class="plan-locked">Available after May 2, 2026. Summary is written at the end of each sprint to capture what was delivered, what was deferred, and lessons learned.</div>
+    </div>
+  </div>
+
+  <!-- Deliverables -->
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+      <div class="card-title" style="margin-bottom:0;">Deliverables</div>
+      <span style="font-size:13px;color:var(--text-muted);">4 / 7 complete</span>
+    </div>
+    <div class="deliverable-row"><div class="checkbox checked">&#10003;</div><span class="deliverable-label done">Implement SM-2 algorithm core logic</span><span class="badge badge-green">done</span></div>
+    <div class="deliverable-row"><div class="checkbox checked">&#10003;</div><span class="deliverable-label done">Build spaced repetition review queue UI</span><span class="badge badge-green">done</span></div>
+    <div class="deliverable-row"><div class="checkbox checked">&#10003;</div><span class="deliverable-label done">Create FERPA de-identification layer</span><span class="badge badge-green">done</span></div>
+    <div class="deliverable-row"><div class="checkbox checked">&#10003;</div><span class="deliverable-label done">Connect Anthropic API with lesson context injection</span><span class="badge badge-green">done</span></div>
+    <div class="deliverable-row"><div class="checkbox"></div><span class="deliverable-label">Build Socratic dialogue UI with chat interface</span><span class="badge badge-amber">in progress</span></div>
+    <div class="deliverable-row"><div class="checkbox"></div><span class="deliverable-label">Add tutor conversation history + audit logging</span><span class="badge badge-dim">todo</span></div>
+    <div class="deliverable-row"><div class="checkbox"></div><span class="deliverable-label">Integration tests for spaced rep + tutor flows</span><span class="badge badge-dim">todo</span></div>
+    <div style="padding-top:12px;"><button class="btn btn-ghost btn-sm">+ Add Deliverable</button></div>
+  </div>
+
+  <!-- Time Logged -->
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+      <div class="card-title" style="margin-bottom:0;">Time Logged This Sprint</div>
+      <span style="font-size:13px;font-weight:600;">28.5 hrs</span>
+    </div>
+    <table class="time-table">
+      <thead><tr><th>Day</th><th>Category</th><th>Duration</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>Apr 21</td><td>Development</td><td>4.5h</td><td>SM-2 algorithm research + implementation</td></tr>
+        <tr><td>Apr 22</td><td>Development</td><td>6.0h</td><td>Review queue UI + database schema</td></tr>
+        <tr><td>Apr 23</td><td>Development</td><td>5.5h</td><td>FERPA de-id layer + audit trail</td></tr>
+        <tr><td>Apr 24</td><td>Development</td><td>5.0h</td><td>Anthropic API integration + system prompts</td></tr>
+        <tr><td>Apr 25</td><td>Development</td><td>4.0h</td><td>Socratic dialogue UI started</td></tr>
+        <tr><td>Apr 28</td><td>Development</td><td>3.5h</td><td>Chat interface refinement</td></tr>
+      </tbody>
+      <tfoot><tr><td colspan="2">Sprint total: 28.5h</td><td colspan="2">Daily avg: 4.75h</td></tr></tfoot>
+    </table>
+  </div>
+
+  <!-- Feedback -->
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+      <div class="card-title" style="margin-bottom:0;">Feedback Received</div>
+      <span style="font-size:13px;color:var(--text-muted);">4 items</span>
+    </div>
+    <div class="feedback-row">
+      <span class="feedback-type bug">Bug</span>
+      <span class="feedback-desc">"Flashcard review queue shows cards in wrong order after refresh"</span>
+      <span class="feedback-status" style="color:var(--blue-text);">New</span>
+    </div>
+    <div class="feedback-row">
+      <span class="feedback-type ux">UX</span>
+      <span class="feedback-desc">"SM-2 intervals feel too aggressive for new learners"</span>
+      <span class="feedback-status" style="color:var(--text-muted);">Reviewed</span>
+    </div>
+    <div class="feedback-row">
+      <span class="feedback-type feature">Feature</span>
+      <span class="feedback-desc">"Add a 'skip for now' option in the review queue"</span>
+      <span class="feedback-status" style="color:var(--amber-text);">In Progress</span>
+    </div>
+    <div class="feedback-row">
+      <span class="feedback-type general">General</span>
+      <span class="feedback-desc">"The tutor responses feel very natural, nice work"</span>
+      <span class="feedback-status" style="color:var(--text-dim);">Noted</span>
+    </div>
+  </div>
+
+  <!-- Blockers -->
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+      <div class="card-title" style="margin-bottom:0;">Blockers</div>
+      <span style="font-size:13px;color:var(--red-text);">1 active</span>
+    </div>
+    <div class="blocker-item">
+      <div class="blocker-label">Active Blocker</div>
+      <div class="blocker-text">Need sample curriculum data from client to test spaced repetition scheduling at scale. Algorithm tuning requires real content distribution patterns.</div>
+      <div class="blocker-meta">Raised: Apr 25 &middot; Owner: Client &middot; <span style="color:var(--amber-text);">Waiting on Dr. Scariati</span></div>
+      <button class="btn btn-ghost btn-sm" style="margin-top:8px;">Mark Resolved</button>
+    </div>
+    <button class="btn btn-ghost btn-sm" style="margin-top:8px;">+ Add Blocker</button>
+  </div>
+
+  <!-- Demo -->
+  <div class="card">
+    <div class="card-title">Demo</div>
+    <div class="demo-card">
+      <div>
+        <div class="demo-date">May 2, 2026 at 2:00 PM EST</div>
+        <div class="demo-meta">30 minutes &middot; Status: <span style="color:var(--green-text);">Scheduled</span></div>
+        <div class="demo-meta" style="margin-top:4px;">"Will demo spaced rep queue + AI tutor conversation flow"</div>
+      </div>
+      <button class="btn btn-ghost btn-sm" style="margin-left:auto;">Edit Demo Details</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== VIEW 3: CLIENT PORTAL ===== -->
+<div class="view" id="view-portal">
+  <div class="section-header">
+    <div>
+      <div class="section-title">Project Progress</div>
+      <div class="section-subtitle">Aescula LMS &mdash; Your development dashboard</div>
+    </div>
+    <span style="font-size:13px;color:var(--text-muted);">Sprint 5 of 9</span>
+  </div>
+
+  <!-- Current Sprint Hero -->
+  <div class="current-sprint-hero">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+      <div>
+        <div class="hero-title">Spaced Repetition + AI Tutor</div>
+        <div class="hero-phase"><div class="phase-dot" style="background:var(--phase2-color);display:inline-block;vertical-align:middle;margin-right:4px;"></div> Phase 2: Core Platform &middot; Apr 21 &ndash; May 2, 2026</div>
+      </div>
+      <span class="badge badge-amber" style="font-size:13px;padding:4px 14px;">Active</span>
+    </div>
+
+    <div class="hero-progress">
+      <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;">
+        <span style="color:var(--text-muted);">Progress</span>
+        <span style="font-weight:600;">4 of 7 deliverables &middot; 65%</span>
+      </div>
+      <div class="progress-bar" style="height:8px;"><div class="progress-fill amber" style="width:65%;"></div></div>
+    </div>
+
+    <div class="what-building">
+      <h4>What's being built this sprint:</h4>
+      <ul>
+        <li>SM-2 spaced repetition algorithm for optimal review scheduling</li>
+        <li>Review queue showing cards at the right time based on learning data</li>
+        <li>AI Socratic tutor grounded in your lesson content</li>
+        <li>FERPA-compliant de-identification for AI interactions</li>
+      </ul>
+    </div>
+
+    <!-- Demo box -->
+    <div class="demo-box">
+      <div>
+        <div class="demo-box-label">Next Demo</div>
+        <div class="demo-box-date">May 2 at 2:00 PM EST &middot; 30 min</div>
+        <div class="demo-box-notes">"Spaced rep queue + AI tutor conversation flow"</div>
+      </div>
+    </div>
+
+    <!-- Action needed -->
+    <div class="action-needed">
+      <div class="action-needed-title">Action Needed From You &middot; 1 item</div>
+      <div class="action-text">Please provide sample curriculum data for spaced repetition testing. Marty needs this to validate scheduling at scale. <span style="color:var(--text-muted);">Raised Apr 25</span></div>
+      <div class="action-buttons">
+        <button class="btn btn-accent btn-sm">I've Sent This</button>
+        <button class="btn btn-ghost btn-sm">Ask a Question</button>
+      </div>
+    </div>
+
+    <button class="btn btn-accent">Give Feedback on Current Sprint</button>
+  </div>
+
+  <!-- Sprint Timeline -->
+  <div class="card">
+    <div class="card-title">Sprint Timeline</div>
+
+    <!-- Phase 1 -->
+    <div class="timeline-phase">
+      <div class="timeline-phase-label"><div class="phase-dot" style="background:var(--phase1-color);"></div> Phase 1: Foundation</div>
+      <div class="timeline-grid">
+        <div class="timeline-card completed">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div class="timeline-card-title">Setup + Database Design</div>
+            <span class="badge badge-green" style="font-size:10px;">Completed</span>
+          </div>
+          <div class="timeline-card-dates">Sprint 1 &middot; Mar 24 &ndash; Apr 4</div>
+          <ul class="delivered-list">
+            <li>Supabase database with full schema</li>
+            <li>Vercel deployment pipeline</li>
+            <li>FERPA-compliant audit logging</li>
+          </ul>
+        </div>
+        <div class="timeline-card completed">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div class="timeline-card-title">Auth + User Roles</div>
+            <span class="badge badge-green" style="font-size:10px;">Completed</span>
+          </div>
+          <div class="timeline-card-dates">Sprint 2 &middot; Apr 7 &ndash; Apr 18</div>
+          <ul class="delivered-list">
+            <li>Student signup (both paths)</li>
+            <li>FERPA consent capture</li>
+            <li>Role-based access control</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Phase 2 -->
+    <div class="timeline-phase">
+      <div class="timeline-phase-label"><div class="phase-dot" style="background:var(--phase2-color);"></div> Phase 2: Core Platform <span class="badge badge-amber" style="margin-left:8px;font-size:10px;">Current</span></div>
+      <div class="timeline-grid">
+        <div class="timeline-card completed">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div class="timeline-card-title">Lessons + Flashcards</div>
+            <span class="badge badge-green" style="font-size:10px;">Completed</span>
+          </div>
+          <div class="timeline-card-dates">Sprint 3 &middot; Wk 5-6</div>
+          <ul class="delivered-list">
+            <li>Module page structure</li>
+            <li>Flashcard flip mechanic</li>
+            <li>Progress tracking</li>
+          </ul>
+        </div>
+        <div class="timeline-card completed">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div class="timeline-card-title">MCQs + Response Time</div>
+            <span class="badge badge-green" style="font-size:10px;">Completed</span>
+          </div>
+          <div class="timeline-card-dates">Sprint 4 &middot; Wk 7-8</div>
+          <ul class="delivered-list">
+            <li>MCQ engine with timer</li>
+            <li>Answer explanations</li>
+            <li>Per-attempt tracking</li>
+          </ul>
+        </div>
+        <div class="timeline-card active">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div class="timeline-card-title">Spaced Rep + AI Tutor</div>
+            <span class="badge badge-amber" style="font-size:10px;">Active &middot; 65%</span>
+          </div>
+          <div class="timeline-card-dates">Sprint 5 &middot; Wk 9-10</div>
+          <div class="progress-bar" style="margin-top:8px;"><div class="progress-fill amber" style="width:65%;"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Phase 3 -->
+    <div class="timeline-phase">
+      <div class="timeline-phase-label"><div class="phase-dot" style="background:var(--phase3-color);"></div> Phase 3: Pipeline & Payments</div>
+      <div class="timeline-grid">
+        <div class="timeline-card upcoming">
+          <div class="timeline-card-title">AI Generation Pipeline</div>
+          <div class="timeline-card-dates">Sprint 6 &middot; Wk 11-12</div>
+          <span class="badge badge-dim" style="font-size:10px;">Upcoming</span>
+        </div>
+        <div class="timeline-card upcoming">
+          <div class="timeline-card-title">Stripe + Version Control</div>
+          <div class="timeline-card-dates">Sprint 7 &middot; Wk 13-14</div>
+          <span class="badge badge-dim" style="font-size:10px;">Upcoming</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Phase 4 -->
+    <div class="timeline-phase">
+      <div class="timeline-phase-label"><div class="phase-dot" style="background:var(--phase4-color);"></div> Phase 4: MVP Delivery</div>
+      <div class="timeline-grid">
+        <div class="timeline-card upcoming">
+          <div class="timeline-card-title">20 Lessons End-to-End + QA</div>
+          <div class="timeline-card-dates">Sprint 8 &middot; Wk 15-16</div>
+          <span class="badge badge-dim" style="font-size:10px;">Upcoming</span>
+        </div>
+        <div class="timeline-card upcoming">
+          <div class="timeline-card-title">Fixes + Sign-off</div>
+          <div class="timeline-card-dates">Sprint 9 &middot; Wk 17-18</div>
+          <span class="badge badge-dim" style="font-size:10px;">Upcoming</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Payment Milestones -->
+  <div class="card">
+    <div class="card-title">Payment Milestones</div>
+    <div class="milestone-row">
+      <div class="milestone-name">1st Installment &mdash; Upon contract execution</div>
+      <div class="milestone-amount">$4,000</div>
+      <div class="milestone-sprint">Contract signed</div>
+      <span class="badge badge-green">Paid</span>
+    </div>
+    <div class="milestone-row">
+      <div class="milestone-name">2nd Installment &mdash; MVP Delivery</div>
+      <div class="milestone-amount">$4,000</div>
+      <div class="milestone-sprint">After Sprint 9</div>
+      <span class="badge badge-amber">Pending</span>
+    </div>
+    <div class="milestone-row">
+      <div class="milestone-name">3rd Installment &mdash; Full Product</div>
+      <div class="milestone-amount">$7,000</div>
+      <div class="milestone-sprint">Post-MVP phases</div>
+      <span class="badge badge-dim">Upcoming</span>
+    </div>
+  </div>
+
+  <!-- Sprint Feedback -->
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+      <div class="card-title" style="margin-bottom:0;">Your Feedback This Sprint</div>
+      <span style="font-size:13px;color:var(--text-muted);">4 items submitted</span>
+    </div>
+    <div class="feedback-row">
+      <span class="feedback-type bug">Bug</span>
+      <span class="feedback-desc">"Flashcard review queue shows cards in wrong order after refresh"</span>
+      <span class="feedback-status" style="color:var(--blue-text);">New</span>
+    </div>
+    <div class="feedback-row">
+      <span class="feedback-type ux">UX</span>
+      <span class="feedback-desc">"SM-2 intervals feel too aggressive for new learners"</span>
+      <span class="feedback-status" style="color:var(--text-muted);">Reviewed</span>
+    </div>
+    <div class="feedback-row">
+      <span class="feedback-type feature">Feature</span>
+      <span class="feedback-desc">"Add a 'skip for now' option in the review queue"</span>
+      <span class="feedback-status" style="color:var(--amber-text);">In Progress</span>
+    </div>
+    <div class="feedback-row">
+      <span class="feedback-type general">General</span>
+      <span class="feedback-desc">"The tutor responses feel very natural, nice work"</span>
+      <span class="feedback-status" style="color:var(--text-dim);">Noted</span>
+    </div>
+    <div style="margin-top:16px;">
+      <button class="btn btn-accent">Submit New Feedback</button>
+    </div>
+  </div>
+</div>
+
+</div><!-- /main -->
+
+<script>
+// View switching
+function switchView(view) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.topbar .view-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('view-' + view).classList.add('active');
+  document.getElementById('tab-' + view).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+// Open sprint detail
+function openDetail(index) {
+  switchView('detail');
+}
+
+// Theme toggle
+function toggleTheme() {
+  const html = document.documentElement;
+  const btn = document.getElementById('themeBtn');
+  if (html.getAttribute('data-theme') === 'dark') {
+    html.setAttribute('data-theme', 'light');
+    btn.textContent = 'Switch to Dark';
+  } else {
+    html.setAttribute('data-theme', 'dark');
+    btn.textContent = 'Switch to Light';
+  }
+}
+</script>
+
+</body>
+</html>

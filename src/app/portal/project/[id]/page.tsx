@@ -5,10 +5,12 @@ import { createClient } from '@/lib/supabase/client'
 import Link from 'next/link'
 import { computeProjectStage } from '@/lib/portal-utils'
 import ScreenshotCapture from '@/components/review/screenshot-capture'
-import type { Project, Feedback, Contract, Milestone, ScopeItem, TimeSession, ProjectDocument } from '@/lib/types'
+import type { Project, Feedback, Contract, Milestone, ScopeItem, TimeSession, ProjectDocument, DocumentLink, Sprint, ProjectPhase, SprintDeliverable, SprintBlocker } from '@/lib/types'
 import DocumentList from '@/components/documents/document-list'
+import DocumentLinksSection from '@/components/documents/document-links-section'
+import PortalSprintView from '@/components/sprints/portal-sprint-view'
 
-type Tab = 'overview' | 'scope' | 'contract' | 'review' | 'feedback' | 'activity'
+type Tab = 'overview' | 'scope' | 'contract' | 'review' | 'feedback' | 'sprints' | 'activity'
 
 export default function PortalProjectPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params)
@@ -44,14 +46,19 @@ export default function PortalProjectPage({ params }: { params: Promise<{ id: st
   const [showCapture, setShowCapture] = useState(false)
   const [showAllScope, setShowAllScope] = useState(false)
   const [projectDocuments, setProjectDocuments] = useState<ProjectDocument[]>([])
+  const [documentLinks, setDocumentLinks] = useState<DocumentLink[]>([])
   const [contractCollapsed, setContractCollapsed] = useState(false)
+  const [sprintPhases, setSprintPhases] = useState<ProjectPhase[]>([])
+  const [sprints, setSprints] = useState<Sprint[]>([])
+  const [sprintDeliverables, setSprintDeliverables] = useState<SprintDeliverable[]>([])
+  const [sprintBlockers, setSprintBlockers] = useState<SprintBlocker[]>([])
 
   useEffect(() => {
     loadData()
   }, [id])
 
   async function loadData() {
-    const [projectRes, feedbackRes, contractRes, inScopeRes, outScopeRes, sessionsRes, docsRes] = await Promise.all([
+    const [projectRes, feedbackRes, contractRes, inScopeRes, outScopeRes, sessionsRes, docsRes, linksRes] = await Promise.all([
       supabase.from('projects').select('*').eq('id', id).single(),
       supabase.from('feedback').select('*').eq('project_id', id).order('created_at', { ascending: false }),
       supabase.from('contracts').select('*').eq('project_id', id).in('status', ['active', 'sent', 'client_signed', 'draft']).order('created_at', { ascending: false }).limit(1).single(),
@@ -59,6 +66,7 @@ export default function PortalProjectPage({ params }: { params: Promise<{ id: st
       supabase.from('scope_items').select('*').eq('project_id', id).eq('in_scope', false).order('sort_order'),
       supabase.from('time_sessions').select('*').eq('project_id', id).not('duration_minutes', 'is', null).order('start_time', { ascending: false }).limit(20),
       supabase.from('project_documents').select('*').eq('project_id', id).order('created_at', { ascending: false }),
+      supabase.from('project_document_links').select('*').eq('project_id', id).order('created_at', { ascending: false }),
     ])
 
     if (projectRes.data) setProject(projectRes.data)
@@ -67,11 +75,31 @@ export default function PortalProjectPage({ params }: { params: Promise<{ id: st
     if (outScopeRes.data) setOutOfScopeItems(outScopeRes.data)
     if (sessionsRes.data) setSessions(sessionsRes.data)
     if (docsRes.data) setProjectDocuments(docsRes.data)
+    if (linksRes.data) setDocumentLinks(linksRes.data)
 
     if (contractRes.data && !contractRes.error) {
       setContract(contractRes.data)
       const { data: ms } = await supabase.from('milestones').select('*').eq('contract_id', contractRes.data.id).order('sort_order')
       if (ms) setMilestones(ms)
+    }
+
+    // Load sprint data
+    const [sprintPhasesRes, sprintsRes] = await Promise.all([
+      supabase.from('project_phases').select('*').eq('project_id', id).order('phase_number'),
+      supabase.from('sprints').select('*').eq('project_id', id).order('sprint_number'),
+    ])
+    if (sprintPhasesRes.data) setSprintPhases(sprintPhasesRes.data)
+    if (sprintsRes.data) {
+      setSprints(sprintsRes.data)
+      const sprintIds = sprintsRes.data.map(s => s.id)
+      if (sprintIds.length > 0) {
+        const [delRes, blkRes] = await Promise.all([
+          supabase.from('sprint_deliverables').select('*').in('sprint_id', sprintIds).order('sort_order'),
+          supabase.from('sprint_blockers').select('*').in('sprint_id', sprintIds),
+        ])
+        if (delRes.data) setSprintDeliverables(delRes.data)
+        if (blkRes.data) setSprintBlockers(blkRes.data)
+      }
     }
 
     setLoading(false)
@@ -183,9 +211,10 @@ export default function PortalProjectPage({ params }: { params: Promise<{ id: st
   const tabs: { id: Tab; label: string; show: boolean }[] = [
     { id: 'overview', label: 'Overview', show: true },
     { id: 'scope', label: `Scope (${scopeItems.length})`, show: scopeItems.length > 0 || outOfScopeItems.length > 0 },
-    { id: 'contract', label: 'Contract & Docs', show: !!contract && contract.status !== 'draft' || projectDocuments.length > 0 },
+    { id: 'contract', label: 'Contract & Docs', show: !!contract && contract.status !== 'draft' || projectDocuments.length > 0 || documentLinks.length > 0 },
     { id: 'review', label: 'Review App', show: !!project.vercel_url },
     { id: 'feedback', label: `Feedback (${feedback.length})`, show: true },
+    { id: 'sprints', label: 'Sprints', show: sprints.length > 0 },
     { id: 'activity', label: 'Activity', show: true },
   ]
   const visibleTabs = tabs.filter(t => t.show)
@@ -836,6 +865,17 @@ export default function PortalProjectPage({ params }: { params: Promise<{ id: st
                   role="client"
                 />
               </div>
+
+              {/* Document Links Section */}
+              <div className="mt-8">
+                <DocumentLinksSection
+                  projectId={id}
+                  links={documentLinks}
+                  onLinksChange={setDocumentLinks}
+                  canEdit={false}
+                  role="client"
+                />
+              </div>
             </div>
           )}
 
@@ -875,6 +915,17 @@ export default function PortalProjectPage({ params }: { params: Promise<{ id: st
           )}
 
           {/* Activity Tab */}
+          {activeTab === 'sprints' && (
+            <PortalSprintView
+              sprints={sprints}
+              phases={sprintPhases}
+              deliverables={sprintDeliverables}
+              blockers={sprintBlockers}
+              milestones={milestones}
+              projectId={id}
+            />
+          )}
+
           {activeTab === 'activity' && (
             <div className="space-y-6">
               <div className="bg-gray-900 border border-gray-800 rounded-xl p-6">

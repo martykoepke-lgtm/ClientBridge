@@ -278,3 +278,69 @@ export interface ErrorLog {
   // Joined fields
   project?: Project
 }
+
+export interface DocumentLink {
+  id: string
+  project_id: string
+  created_by_user_id: string
+  created_by_role: 'developer' | 'client'
+  name: string
+  url: string
+  document_type: 'design' | 'spec' | 'spreadsheet' | 'document' | 'presentation' | 'video' | 'other'
+  created_at: string
+  updated_at: string
+}
+
+export interface ProjectPhase {
+  id: string
+  project_id: string
+  name: string
+  color: string
+  phase_number: number
+  created_at: string
+}
+
+export interface Sprint {
+  id: string
+  project_id: string
+  developer_id: string
+  phase_id: string | null
+  sprint_number: number
+  title: string
+  description: string | null
+  start_date: string
+  end_date: string
+  status: 'planned' | 'active' | 'completed'
+  progress_percent: number
+  sprint_plan: string | null
+  sprint_summary: string | null
+  demo_date: string | null
+  demo_status: 'not_scheduled' | 'scheduled' | 'completed'
+  demo_notes: string | null
+  milestone_id: string | null
+  created_at: string
+  updated_at: string
+  // Joined fields
+  phase?: ProjectPhase
+  deliverables?: SprintDeliverable[]
+  blockers?: SprintBlocker[]
+}
+
+export interface SprintDeliverable {
+  id: string
+  sprint_id: string
+  label: string
+  status: 'todo' | 'in_progress' | 'done'
+  sort_order: number
+  created_at: string
+}
+
+export interface SprintBlocker {
+  id: string
+  sprint_id: string
+  description: string
+  owner: 'developer' | 'client'
+  status: 'active' | 'resolved'
+  raised_at: string
+  resolved_at: string | null
+}
