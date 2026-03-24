@@ -91,28 +91,41 @@ export default function SprintsPage({ params }: { params: Promise<{ id: string }
     setLoading(false)
   }
 
-  async function createPhase() {
-    if (!newPhaseName.trim()) return
-    const { data: user } = await supabase.auth.getUser()
-    if (!user.user) return
+  const [phaseError, setPhaseError] = useState<string | null>(null)
 
-    await supabase.from('project_phases').insert({
+  async function createPhase() {
+    setPhaseError(null)
+    if (!newPhaseName.trim()) { setPhaseError('Name is required'); return }
+
+    const { error } = await supabase.from('project_phases').insert({
       project_id: id,
       name: newPhaseName.trim(),
       color: newPhaseColor,
       phase_number: phases.length + 1,
     })
+
+    if (error) {
+      setPhaseError(error.message)
+      return
+    }
+
     setNewPhaseName('')
     setShowAddPhase(false)
     loadData()
   }
 
-  async function createSprint() {
-    if (!newSprintTitle.trim() || !newSprintStart || !newSprintEnd) return
-    const { data: user } = await supabase.auth.getUser()
-    if (!user.user) return
+  const [sprintError, setSprintError] = useState<string | null>(null)
 
-    await supabase.from('sprints').insert({
+  async function createSprint() {
+    setSprintError(null)
+    if (!newSprintTitle.trim()) { setSprintError('Title is required'); return }
+    if (!newSprintStart) { setSprintError('Start date is required'); return }
+    if (!newSprintEnd) { setSprintError('End date is required'); return }
+
+    const { data: user } = await supabase.auth.getUser()
+    if (!user.user) { setSprintError('Not authenticated'); return }
+
+    const { error } = await supabase.from('sprints').insert({
       project_id: id,
       developer_id: user.user.id,
       phase_id: newSprintPhase || null,
@@ -122,6 +135,12 @@ export default function SprintsPage({ params }: { params: Promise<{ id: string }
       start_date: newSprintStart,
       end_date: newSprintEnd,
     })
+
+    if (error) {
+      setSprintError(error.message)
+      return
+    }
+
     setNewSprintTitle('')
     setNewSprintDesc('')
     setNewSprintPhase('')
@@ -207,6 +226,7 @@ export default function SprintsPage({ params }: { params: Promise<{ id: string }
             </div>
             <button onClick={createPhase} className="px-4 py-2 text-sm font-semibold rounded-lg bg-[#F59E0B] hover:bg-[#D97706] text-[#09090B]">Create</button>
             <button onClick={() => setShowAddPhase(false)} className="px-3 py-2 text-sm text-gray-500 hover:text-gray-300">Cancel</button>
+            {phaseError && <span className="text-red-400 text-sm ml-2">{phaseError}</span>}
           </div>
         </div>
       )}
@@ -242,6 +262,7 @@ export default function SprintsPage({ params }: { params: Promise<{ id: string }
               <input type="date" value={newSprintEnd} onChange={e => setNewSprintEnd(e.target.value)} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-gray-600" />
             </div>
           </div>
+          {sprintError && <div className="text-red-400 text-sm mb-2">{sprintError}</div>}
           <div className="flex gap-2">
             <button onClick={createSprint} className="px-4 py-2 text-sm font-semibold rounded-lg bg-[#F59E0B] hover:bg-[#D97706] text-[#09090B]">Create Sprint</button>
             <button onClick={() => setShowAddSprint(false)} className="px-3 py-2 text-sm text-gray-500 hover:text-gray-300">Cancel</button>
