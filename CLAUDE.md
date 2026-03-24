@@ -1,5 +1,18 @@
 # ClientBridge — Claude Code Instructions
 
+## MANDATORY: Read GUARDRAILS.md First
+
+**Before making ANY changes to this project, you MUST read `GUARDRAILS.md` in the project root.** It contains critical protective rules including:
+- Supabase database protection (NEVER wipe, drop, or destructively modify)
+- Protected file zones that require explicit approval to modify
+- Architectural change approval process (describe, wireframe, get approval before coding)
+- Additive-first development rules
+- The decision context log explaining why things are built the way they are
+
+**Failure to follow GUARDRAILS.md has previously resulted in deletion of working application code. These rules exist to prevent that from happening again.**
+
+---
+
 ## Project Overview
 ClientBridge is a client collaboration platform for dev agencies. It includes a lifecycle client portal, embedded contract builder, visual feedback with screenshot capture and markup, and milestone-based Stripe payments.
 

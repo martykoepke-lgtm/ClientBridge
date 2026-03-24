@@ -3,8 +3,9 @@
 import { useState, useEffect, use } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import Link from 'next/link'
-import type { Project, ProjectDocument } from '@/lib/types'
+import type { Project, ProjectDocument, DocumentLink } from '@/lib/types'
 import DocumentList from '@/components/documents/document-list'
+import DocumentLinksSection from '@/components/documents/document-links-section'
 
 export default function ProjectDocumentsPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params)
@@ -12,16 +13,19 @@ export default function ProjectDocumentsPage({ params }: { params: Promise<{ id:
 
   const [project, setProject] = useState<Project | null>(null)
   const [documents, setDocuments] = useState<ProjectDocument[]>([])
+  const [documentLinks, setDocumentLinks] = useState<DocumentLink[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     async function load() {
-      const [projectRes, docsRes] = await Promise.all([
+      const [projectRes, docsRes, linksRes] = await Promise.all([
         supabase.from('projects').select('*, client:clients(*)').eq('id', id).single(),
         supabase.from('project_documents').select('*').eq('project_id', id).order('created_at', { ascending: false }),
+        supabase.from('project_document_links').select('*').eq('project_id', id).order('created_at', { ascending: false }),
       ])
       if (projectRes.data) setProject(projectRes.data)
       if (docsRes.data) setDocuments(docsRes.data)
+      if (linksRes.data) setDocumentLinks(linksRes.data)
       setLoading(false)
     }
     load()
@@ -66,6 +70,17 @@ export default function ProjectDocumentsPage({ params }: { params: Promise<{ id:
         canDelete={() => true}
         role="developer"
       />
+
+      {/* Document Links Section */}
+      <div className="mt-10 pt-8 border-t border-gray-800">
+        <DocumentLinksSection
+          projectId={id}
+          links={documentLinks}
+          onLinksChange={setDocumentLinks}
+          canEdit={true}
+          role="developer"
+        />
+      </div>
     </div>
   )
 }
