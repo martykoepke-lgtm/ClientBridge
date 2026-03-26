@@ -176,6 +176,12 @@ body { font-family:'DM Sans',sans-serif; background:var(--cream); color:var(--te
 .annotation-status button.selected-discuss { background:var(--gold-light); border-color:var(--gold); color:var(--amber); }
 .annotation textarea { width:100%; min-height:80px; border:1px solid var(--border); border-radius:8px; padding:12px; font-family:'DM Sans',sans-serif; font-size:14px; resize:vertical; margin-bottom:16px; }
 .annotation textarea:focus { outline:none; border-color:var(--gold); }
+/* Save status indicator */
+.save-status { position:fixed; bottom:20px; right:20px; padding:8px 16px; border-radius:8px; font-size:12px; font-weight:600; font-family:'DM Sans',sans-serif; z-index:200; transition:opacity .3s, transform .3s; }
+.save-status.save-pending { background:var(--gold-light); color:var(--amber); border:1px solid var(--gold); opacity:1; transform:translateY(0); }
+.save-status.save-ok { background:var(--green-light); color:var(--green); border:1px solid var(--green); opacity:1; transform:translateY(0); }
+.save-status.save-error { background:var(--red-light); color:var(--red); border:1px solid var(--red); opacity:1; transform:translateY(0); }
+.save-status.save-hidden { opacity:0; transform:translateY(10px); pointer-events:none; }
 .decision-q { margin-bottom:20px; padding-bottom:16px; border-bottom:1px solid var(--border); }
 .decision-q:last-child { border-bottom:none; }
 .decision-q .q-text { font-size:14px; font-weight:600; margin-bottom:8px; }
@@ -3828,21 +3834,154 @@ code { font-family:'DM Mono',monospace; background:#F0EDE6; padding:2px 6px; bor
   </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
-// STATE
+// ========================================
+// SUPABASE PERSISTENCE
+// ========================================
+const SUPABASE_URL = 'https://dkzuaotignfocohpegaa.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRrenVhb3RpZ25mb2NvaHBlZ2FhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2MzEyODcsImV4cCI6MjA4OTIwNzI4N30.VII2ZHzqwYXWVmQzQi0MJEMsUeS4lUfiWv_aoGS8hb4';
+const SESSION_TOKEN = 'aescula-sow-v2'; // matches view_token in scope_sessions
+
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+let sessionId = null;
+let dbReady = false;
+let _saveTimer = null;
+
+// Save indicator
+function showSaveStatus(msg, isError) {
+  let el = document.getElementById('save-status');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'save-status';
+    document.body.appendChild(el);
+  }
+  el.textContent = msg;
+  el.className = 'save-status ' + (isError ? 'save-error' : (msg === 'Saved' ? 'save-ok' : 'save-pending'));
+  if (msg === 'Saved') setTimeout(() => { el.className = 'save-status save-hidden'; }, 2000);
+}
+
+async function initSupabase() {
+  try {
+    // Find or create scope session by view_token
+    let { data: session } = await sb.from('scope_sessions').select('id').eq('view_token', SESSION_TOKEN).single();
+    if (session) {
+      sessionId = session.id;
+    } else {
+      // Create session — requires a project_id. Look for AESCULA project.
+      const { data: project } = await sb.from('projects').select('id').ilike('name', '%aescula%').single();
+      if (project) {
+        const { data: newSession } = await sb.from('scope_sessions').insert({
+          project_id: project.id,
+          title: 'AESCULA SOW Working Session',
+          view_token: SESSION_TOKEN,
+          reviewer_name: 'Dr. Scariati'
+        }).select('id').single();
+        if (newSession) sessionId = newSession.id;
+      }
+    }
+    if (!sessionId) { console.warn('Supabase: no session, using localStorage only'); return; }
+
+    // Load section reviews (statuses + notes)
+    const { data: reviews } = await sb.from('scope_section_reviews').select('*').eq('session_id', sessionId);
+    if (reviews) {
+      reviews.forEach(r => {
+        if (r.status) state.statuses[r.section_id] = r.status;
+        if (r.notes) state.notes[r.section_id] = r.notes;
+      });
+    }
+
+    // Load decisions
+    const { data: decisions } = await sb.from('scope_decisions').select('*').eq('session_id', sessionId);
+    if (decisions) {
+      decisions.forEach(d => {
+        if (d.answer) state.questions[d.question_id] = d.answer;
+      });
+    }
+
+    // Load decision comments
+    const { data: comments } = await sb.from('scope_decision_comments').select('*').eq('session_id', sessionId).order('created_at', { ascending: true });
+    if (comments) {
+      if (!state.comments) state.comments = {};
+      comments.forEach(c => {
+        if (!state.comments[c.question_id]) state.comments[c.question_id] = [];
+        // Avoid duplicates
+        if (!state.comments[c.question_id].find(x => x.id === c.id)) {
+          state.comments[c.question_id].push({ id: c.id, author: c.author_name, role: c.author_role, text: c.content, ts: c.created_at });
+        }
+      });
+    }
+
+    dbReady = true;
+    // Save merged state back to localStorage
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    updateUI();
+    showSaveStatus('Saved', false);
+  } catch(e) {
+    console.warn('Supabase init error, using localStorage:', e);
+  }
+}
+
+// Debounced persist to Supabase
+function persistToSupabase() {
+  if (!dbReady || !sessionId) return;
+  clearTimeout(_saveTimer);
+  showSaveStatus('Saving...', false);
+  _saveTimer = setTimeout(async () => {
+    try {
+      // Upsert section reviews (statuses + notes)
+      const sections = ['s1','s2','s3','s4','s5','s6','s7','s8','s9','s10','s11'];
+      const sectionLabels = {s1:'Product Overview',s2:'Users & Compliance',s3:'AI Content Pipeline',s4:'SME Review Workflow',s5:'Student Experience',s6:'AI Tutor Architecture',s7:'Institutional Dashboard',s8:'Tech Stack & Database',s9:'MVP Definition',s10:'Timeline & Working Style',s11:'Next Steps & Decisions'};
+      const reviewRows = sections.filter(s => state.statuses[s] || state.notes[s]).map(s => ({
+        session_id: sessionId,
+        section_id: s,
+        section_title: sectionLabels[s] || s,
+        status: state.statuses[s] || null,
+        notes: state.notes[s] || null,
+        reviewed_at: state.statuses[s] ? new Date().toISOString() : null
+      }));
+      if (reviewRows.length) {
+        await sb.from('scope_section_reviews').upsert(reviewRows, { onConflict: 'session_id,section_id' });
+      }
+
+      // Upsert decisions
+      const decisionRows = Object.entries(state.questions).map(([qId, answer]) => ({
+        session_id: sessionId,
+        section_id: qId.split('-')[0],
+        question_id: qId,
+        answer: answer
+      }));
+      if (decisionRows.length) {
+        await sb.from('scope_decisions').upsert(decisionRows, { onConflict: 'session_id,question_id' });
+      }
+
+      showSaveStatus('Saved', false);
+    } catch(e) {
+      console.error('Supabase save error:', e);
+      showSaveStatus('Save failed — retrying...', true);
+      // Retry once after 3s
+      setTimeout(() => persistToSupabase(), 3000);
+    }
+  }, 800);
+}
+
+// ========================================
+// LOCAL STATE (localStorage as fallback/cache)
+// ========================================
 const STORAGE_KEY = 'aescula_sow_session_v2';
 let state = loadState();
 
 function loadState() {
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
-    return saved ? JSON.parse(saved) : { statuses:{}, notes:{}, questions:{} };
-  } catch(e) { return { statuses:{}, notes:{}, questions:{} }; }
+    return saved ? JSON.parse(saved) : { statuses:{}, notes:{}, questions:{}, comments:{} };
+  } catch(e) { return { statuses:{}, notes:{}, questions:{}, comments:{} }; }
 }
 
 function save() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
   updateUI();
+  persistToSupabase();
 }
 
 // STATUS
@@ -4320,6 +4459,9 @@ function showArchTab(tabId) {
 const startPage = state.currentPage || 'overview';
 showPage(startPage);
 updateUI();
+
+// Load from Supabase (merges with localStorage, then re-renders)
+initSupabase();
 </script>
 
 </body>
