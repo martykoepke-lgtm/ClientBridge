@@ -252,6 +252,12 @@ code { font-family:'DM Mono',monospace; background:#F0EDE6; padding:2px 6px; bor
 .section { display:none; }
 .section.active-page { display:block; }
 
+/* Architecture tabs */
+.arch-tab { padding:10px 20px; border:1.5px solid var(--border); border-radius:10px; background:#fff; color:var(--text); font-size:13px; font-weight:600; cursor:pointer; transition:all .15s; font-family:'DM Sans',sans-serif; }
+.arch-tab:hover { border-color:var(--gold); background:var(--gold-light); }
+.arch-tab-active { background:var(--navy)!important; color:#fff!important; border-color:var(--navy)!important; }
+.arch-panel { display:none; }
+
 /* Page transition */
 .section.active-page { animation: fadeIn 0.2s ease-in; }
 @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
@@ -294,6 +300,7 @@ code { font-family:'DM Mono',monospace; background:#F0EDE6; padding:2px 6px; bor
     <span class="sidebar-dot" id="dot-overview"></span>
   </a>
   <div class="sidebar-section">SOW Sections</div>
+  <div class="sidebar-section">SOW Sections</div>
   <a class="sidebar-item" data-section="s1">
     <span class="sidebar-num">01</span> Product overview
     <span class="sidebar-dot" id="dot-s1"></span>
@@ -315,24 +322,29 @@ code { font-family:'DM Mono',monospace; background:#F0EDE6; padding:2px 6px; bor
     <span class="sidebar-dot" id="dot-s5"></span>
   </a>
   <a class="sidebar-item" data-section="s6">
-    <span class="sidebar-num">06</span> Institutional dashboard
+    <span class="sidebar-num">06</span> AI Tutor Architecture
     <span class="sidebar-dot" id="dot-s6"></span>
   </a>
+  <div class="sidebar-section">Summary</div>
   <a class="sidebar-item" data-section="s7">
-    <span class="sidebar-num">07</span> Tech stack & database
+    <span class="sidebar-num">07</span> Institutional dashboard
     <span class="sidebar-dot" id="dot-s7"></span>
   </a>
   <a class="sidebar-item" data-section="s8">
-    <span class="sidebar-num">08</span> MVP definition
+    <span class="sidebar-num">08</span> Tech stack & database
     <span class="sidebar-dot" id="dot-s8"></span>
   </a>
   <a class="sidebar-item" data-section="s9">
-    <span class="sidebar-num">09</span> Timeline & working style
+    <span class="sidebar-num">09</span> MVP definition
     <span class="sidebar-dot" id="dot-s9"></span>
   </a>
   <a class="sidebar-item" data-section="s10">
-    <span class="sidebar-num">10</span> Next steps & decisions
+    <span class="sidebar-num">10</span> Timeline & working style
     <span class="sidebar-dot" id="dot-s10"></span>
+  </a>
+  <a class="sidebar-item" data-section="s11">
+    <span class="sidebar-num">11</span> Next steps & decisions
+    <span class="sidebar-dot" id="dot-s11"></span>
   </a>
   <div class="sidebar-section">Summary</div>
   <a class="sidebar-item" data-section="summary">
@@ -482,118 +494,28 @@ code { font-family:'DM Mono',monospace; background:#F0EDE6; padding:2px 6px; bor
     </table>
   </div>
 
-  <!-- PRODUCT NAME -->
-  <div class="card">
-    <div class="card-title">The Name: AESCULA</div>
-    <div class="grid-2">
-      <div>
-        <p style="font-size:14px;margin-bottom:12px;">The platform is branded <strong>ÆSCULA</strong> — derived from Aesculapius, the Greek god of medicine. This name appears on:</p>
-        <ul style="font-size:13px;padding-left:20px;line-height:2;">
-          <li>The student-facing web app (top bar, login, emails)</li>
-          <li>School-facing marketing and license agreements</li>
-          <li>All documentation and communications</li>
-          <li>The domain name (to be purchased)</li>
-        </ul>
-      </div>
-      <div style="background:var(--navy);border-radius:12px;padding:20px;color:#fff;display:flex;align-items:center;justify-content:center;">
-        <div style="text-align:center;">
-          <div style="font-family:'Playfair Display',serif;font-size:32px;font-weight:700;letter-spacing:3px;"><span style="color:var(--gold);">Æ</span>SCULA</div>
-          <div style="font-size:11px;color:rgba(255,255,255,.5);margin-top:8px;">Medical Microlearning</div>
-        </div>
-      </div>
+  <!-- ANNOTATION -->
+  <div class="annotation" data-section="s1">
+    <div class="annotation-title">Your Review &mdash; Section 01</div>
+    <div class="annotation-status">
+      <button onclick="setStatus('s1','approve',this)">Approve</button>
+      <button onclick="setStatus('s1','flag',this)">Flag</button>
+      <button onclick="setStatus('s1','discuss',this)">Discuss</button>
+    </div>
+    <textarea placeholder="Notes, questions, or feedback on this section..." oninput="saveNotes('s1',this.value)"></textarea>
+    <div class="decision-q">
+      <div class="q-text">Is the 1,375-module count from the Curriculum Master Index the confirmed scope?</div>
+      <div class="q-btns"><button onclick="setQ('s1-q1','yes',this)">Yes</button><button onclick="setQ('s1-q1','no',this)">No</button><button onclick="setQ('s1-q1','discuss',this)">Discuss</button></div>
+    </div>
+    <div class="decision-q">
+      <div class="q-text">Is AESCULA the confirmed app name?</div>
+      <div class="q-btns"><button onclick="setQ('s1-q2','yes',this)">Yes</button><button onclick="setQ('s1-q2','no',this)">No</button><button onclick="setQ('s1-q2','discuss',this)">Discuss</button></div>
+    </div>
+    <div class="decision-q">
+      <div class="q-text">Both markets (institutional licenses + individual subscriptions) are in scope from day one?</div>
+      <div class="q-btns"><button onclick="setQ('s1-q3','yes',this)">Yes</button><button onclick="setQ('s1-q3','no',this)">No</button><button onclick="setQ('s1-q3','discuss',this)">Discuss</button></div>
     </div>
   </div>
-
-  <!-- MODULE COUNT CONTEXT -->
-  <div class="card">
-    <div class="card-title">The Scale: 1,375 Modules</div>
-    <p style="font-size:14px;margin-bottom:16px;">This number comes from your Curriculum Master Index — 26 subdomain content documents mapped to COMLEX Dimension 1 (competency domains) and Dimension 2 (clinical presentations).</p>
-    <div class="grid-3">
-      <div style="background:var(--navy);color:#fff;border-radius:12px;padding:16px;text-align:center;">
-        <div style="font-family:'Playfair Display',serif;font-size:28px;font-weight:700;color:var(--gold);">680</div>
-        <div style="font-size:11px;color:rgba(255,255,255,.6);">Biomedical & Clinical (60% of COMLEX)</div>
-      </div>
-      <div style="background:var(--navy);color:#fff;border-radius:12px;padding:16px;text-align:center;">
-        <div style="font-family:'Playfair Display',serif;font-size:28px;font-weight:700;color:var(--gold);">145</div>
-        <div style="font-size:11px;color:rgba(255,255,255,.6);">Osteopathic Principles (13% of COMLEX)</div>
-      </div>
-      <div style="background:var(--navy);color:#fff;border-radius:12px;padding:16px;text-align:center;">
-        <div style="font-family:'Playfair Display',serif;font-size:28px;font-weight:700;color:var(--gold);">550</div>
-        <div style="font-size:11px;color:rgba(255,255,255,.6);">Remaining domains (Communication, SBP, etc.)</div>
-      </div>
-    </div>
-    <div class="info-box" style="margin-top:16px;">
-      <span class="callout-label">How these get built</span>
-      These are <strong>not</strong> manually authored. Your framework documents feed an AI content pipeline that generates lessons in bulk. You and your SME reviewers approve each batch before students see them. This pipeline is the first thing we build.
-    </div>
-  </div>
-
-  <!-- MARKET STRATEGY CONTEXT -->
-  <div class="card">
-    <div class="card-title">Two Ways Students Get Access</div>
-    <div class="grid-2">
-      <div style="border:2px solid var(--border);border-radius:12px;padding:20px;">
-        <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Path 1: Individual</div>
-        <div style="font-weight:700;font-size:16px;margin-bottom:8px;">Student buys directly</div>
-        <div style="font-size:13px;color:var(--text-muted);line-height:1.8;">
-          1. Goes to website, clicks Sign Up<br>
-          2. FERPA consent screen (required)<br>
-          3. Enters credit card via Stripe<br>
-          4. Account created — starts learning
-        </div>
-      </div>
-      <div style="border:2px solid var(--border);border-radius:12px;padding:20px;">
-        <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--teal);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Path 2: School License</div>
-        <div style="font-weight:700;font-size:16px;margin-bottom:8px;">School provides access code</div>
-        <div style="font-size:13px;color:var(--text-muted);line-height:1.8;">
-          1. Goes to website, clicks Sign Up<br>
-          2. FERPA consent screen (required)<br>
-          3. Enters school access code<br>
-          4. Linked to cohort — faculty can see progress
-        </div>
-      </div>
-    </div>
-    <div style="background:var(--teal-light);border-radius:12px;padding:16px;margin-top:16px;text-align:center;">
-      <strong>Both paths land here: the same student dashboard.</strong><br>
-      <span style="font-size:13px;color:var(--text-muted);">Same platform, same lessons, same experience — just different how they got in.</span>
-    </div>
-  </div>
-
-  <!-- WHAT A LESSON LOOKS LIKE -->
-  <div class="card">
-    <div class="card-title">What a Single Lesson Looks Like for a Student</div>
-    <p style="font-size:14px;color:var(--text-muted);margin-bottom:16px;">Each module is ~5 minutes. One core concept. Three content types. Then the AI tutor pushes them further.</p>
-    <div class="wireframe">
-      <div class="wire-topbar"><span class="brand"><span>AE</span>SCULA</span> <span style="margin-left:auto;font-size:11px;opacity:.6;">Jane Smith — Year 2, Loyola</span></div>
-      <div class="wire-body">
-        <div class="wire-sidebar">
-          <div style="font-size:10px;font-weight:700;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px;">Cardiovascular</div>
-          <div class="wire-sidebar-item active">Heart failure — patho</div>
-          <div class="wire-sidebar-item">Beta blockers in HF <span style="color:var(--green);margin-left:auto;">✓</span></div>
-          <div class="wire-sidebar-item">Cardiac output <span style="color:var(--gold);margin-left:auto;font-size:9px;">due</span></div>
-          <div class="wire-sidebar-item">Diuretics</div>
-        </div>
-        <div class="wire-content">
-          <h3>Heart failure — pathophysiology</h3>
-          <p style="font-size:11px;color:var(--text-muted);margin-bottom:12px;">Goal: Explain the Frank-Starling mechanism and how it breaks down in systolic heart failure</p>
-          <div style="display:flex;gap:8px;margin-bottom:16px;">
-            <span style="background:var(--navy);color:#fff;padding:4px 12px;border-radius:99px;font-size:12px;font-weight:600;">Flashcards</span>
-            <span style="border:1px solid var(--border);padding:4px 12px;border-radius:99px;font-size:12px;">MCQ practice</span>
-            <span style="border:1px solid var(--border);padding:4px 12px;border-radius:99px;font-size:12px;">AI tutor</span>
-          </div>
-          <div class="wire-flashcard">
-            <div>
-              <div style="font-size:14px;font-weight:600;">What is the Frank-Starling mechanism?</div>
-              <div style="font-size:11px;color:rgba(255,255,255,.5);margin-top:8px;">Tap to reveal answer</div>
-            </div>
-          </div>
-          <div style="text-align:center;font-size:11px;color:var(--text-muted);margin-top:8px;">Card 1 of 3</div>
-        </div>
-      </div>
-    </div>
-    <p style="font-size:13px;color:var(--text-muted);margin-top:12px;">After flashcards, the student moves to MCQ practice (board-style questions with full rationale), then the AI Socratic Tutor for deeper reasoning. The system tracks everything and schedules the next review at the optimal moment.</p>
-  </div>
-
 </div>
 
 <!-- ============================================ -->
@@ -2036,7 +1958,627 @@ code { font-family:'DM Mono',monospace; background:#F0EDE6; padding:2px 6px; bor
 <!-- SECTION 06: INSTITUTIONAL DASHBOARD -->
 <!-- ============================================ -->
 <div class="section" id="s6">
-  <div class="section-eyebrow">Section 06 &middot; 10 minutes</div>
+  <div class="section-eyebrow">Section 06 &middot; Deep Dive</div>
+  <div class="section-title">AI Tutor Architecture</div>
+  <div class="section-subtitle">How medical knowledge, FERPA compliance, adaptive learning, and gamification connect into one system. Click any tab to explore.</div>
+  <div class="section-divider"></div>
+
+  <!-- Architecture Tab Navigation -->
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:32px;" id="archTabs">
+    <button onclick="showArchTab('big-picture')" class="arch-tab arch-tab-active" data-tab="big-picture" style="background:var(--navy);color:#fff;">Big Picture</button>
+    <button onclick="showArchTab('knowledge')" class="arch-tab" data-tab="knowledge">Medical Knowledge</button>
+    <button onclick="showArchTab('tutor')" class="arch-tab" data-tab="tutor">AI Tutor</button>
+    <button onclick="showArchTab('ferpa')" class="arch-tab" data-tab="ferpa">FERPA Privacy</button>
+    <button onclick="showArchTab('gamification')" class="arch-tab" data-tab="gamification">Gamification</button>
+    <button onclick="showArchTab('database')" class="arch-tab" data-tab="database">Database</button>
+  </div>
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- TAB: BIG PICTURE -->
+  <!-- ═══════════════════════════════════════ -->
+  <div class="arch-panel" id="panel-big-picture" style="display:block;">
+    <div class="card" style="border:2px solid var(--navy);text-align:center;padding:40px 28px;">
+      <div style="font-size:32px;margin-bottom:8px;">🏗️</div>
+      <h3 style="font-family:'Playfair Display',serif;font-size:26px;margin-bottom:8px;">System Architecture — Complete View</h3>
+      <p style="color:var(--text-muted);font-size:14px;max-width:600px;margin:0 auto 32px;">Five pillars working together to create an adaptive, evidence-based, FERPA-compliant Socratic medical tutor. Click any block to jump to that section.</p>
+
+      <!-- Student Entry -->
+      <div style="display:inline-block;background:linear-gradient(135deg,var(--navy),var(--navy-light));color:#fff;padding:14px 36px;border-radius:14px;font-weight:700;font-size:17px;margin-bottom:8px;">
+        Student Opens App
+      </div>
+      <div style="font-size:24px;color:var(--text-muted);">↓</div>
+
+      <!-- FERPA Strip -->
+      <div onclick="showArchTab('ferpa')" style="cursor:pointer;border:2px dashed var(--teal);background:var(--teal-light);border-radius:12px;padding:12px 24px;margin:8px auto;max-width:600px;">
+        <span style="color:var(--teal);font-weight:700;font-size:14px;">🔒 FERPA Privacy Layer — Real identity stripped, token UUID assigned</span>
+      </div>
+      <div style="font-size:24px;color:var(--text-muted);">↓</div>
+      <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px;">Token + Learning Profile only</div>
+
+      <!-- AI Tutor Center -->
+      <div onclick="showArchTab('tutor')" style="cursor:pointer;background:linear-gradient(135deg,rgba(26,122,110,.08),rgba(15,31,56,.08));border:2px solid var(--navy-mid);border-radius:20px;padding:28px 40px;margin:8px auto;max-width:560px;box-shadow:0 4px 24px rgba(15,31,56,.08);">
+        <div style="font-size:40px;">🧠</div>
+        <div style="font-weight:800;font-size:22px;color:var(--navy);margin-top:6px;">AI Socratic Tutor (Claude)</div>
+        <div style="color:var(--text-muted);font-size:13px;margin-top:8px;">Receives session briefing → Checks prerequisites → Guides with Socratic questions → Records mastery</div>
+      </div>
+
+      <!-- Three feeds -->
+      <div class="grid-3" style="margin-top:24px;gap:16px;">
+        <div onclick="showArchTab('knowledge')" style="cursor:pointer;background:#fff;border:2px solid var(--gold);border-radius:14px;padding:20px;transition:box-shadow .2s;">
+          <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px;">↑ Evidence chunks</div>
+          <div style="font-size:28px;">📚</div>
+          <div style="font-weight:700;color:var(--gold);margin-top:6px;">Medical Knowledge</div>
+          <ul style="text-align:left;font-size:12px;color:var(--text-muted);margin-top:8px;padding-left:16px;">
+            <li>PubMed / Cochrane APIs</li>
+            <li>Chunked & embedded</li>
+            <li>Weekly auto-refresh</li>
+            <li>Vector similarity search</li>
+          </ul>
+        </div>
+        <div onclick="showArchTab('database')" style="cursor:pointer;background:#fff;border:2px solid var(--red);border-radius:14px;padding:20px;transition:box-shadow .2s;">
+          <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px;">↑ Read & Write</div>
+          <div style="font-size:28px;">🗄️</div>
+          <div style="font-weight:700;color:var(--red);margin-top:6px;">Supabase Database</div>
+          <ul style="text-align:left;font-size:12px;color:var(--text-muted);margin-top:8px;padding-left:16px;">
+            <li>pgvector embeddings</li>
+            <li>Student progress</li>
+            <li>Concept prerequisite map</li>
+            <li>Session history</li>
+          </ul>
+        </div>
+        <div onclick="showArchTab('gamification')" style="cursor:pointer;background:#fff;border:2px solid var(--amber);border-radius:14px;padding:20px;transition:box-shadow .2s;">
+          <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px;">↑ Engagement loop</div>
+          <div style="font-size:28px;">🎮</div>
+          <div style="font-weight:700;color:var(--amber);margin-top:6px;">Gamification Engine</div>
+          <ul style="text-align:left;font-size:12px;color:var(--text-muted);margin-top:8px;padding-left:16px;">
+            <li>Spaced repetition (SM-2)</li>
+            <li>Streaks & XP</li>
+            <li>Concept mastery levels</li>
+            <li>Adaptive difficulty</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Three Actions -->
+      <div style="margin-top:28px;display:flex;gap:16px;justify-content:center;flex-wrap:wrap;">
+        <div style="background:var(--red-light);border:1.5px solid rgba(192,57,43,.3);border-radius:12px;padding:14px 22px;text-align:center;min-width:180px;">
+          <div style="font-size:22px;">⬅️</div>
+          <div style="color:var(--red);font-weight:700;font-size:14px;margin-top:4px;">Pull Back</div>
+          <div style="color:var(--text-muted);font-size:11px;margin-top:2px;">Reinforce prerequisite concepts</div>
+        </div>
+        <div style="background:rgba(15,31,56,.05);border:1.5px solid rgba(15,31,56,.2);border-radius:12px;padding:14px 22px;text-align:center;min-width:180px;">
+          <div style="font-size:22px;">➡️</div>
+          <div style="color:var(--navy);font-weight:700;font-size:14px;margin-top:4px;">Guide Forward</div>
+          <div style="color:var(--text-muted);font-size:11px;margin-top:2px;">Socratic questions on new material</div>
+        </div>
+        <div style="background:var(--green-light);border:1.5px solid rgba(26,107,58,.3);border-radius:12px;padding:14px 22px;text-align:center;min-width:180px;">
+          <div style="font-size:22px;">✅</div>
+          <div style="color:var(--green);font-weight:700;font-size:14px;margin-top:4px;">Record Mastery</div>
+          <div style="color:var(--text-muted);font-size:11px;margin-top:2px;">Update progress, schedule review</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- TAB: MEDICAL KNOWLEDGE -->
+  <!-- ═══════════════════════════════════════ -->
+  <div class="arch-panel" id="panel-knowledge" style="display:none;">
+    <div class="card" style="border-left:4px solid var(--gold);">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;">
+        <span style="font-size:32px;">📚</span>
+        <div>
+          <h3 style="font-family:'Playfair Display',serif;font-size:24px;">Medical Knowledge Pipeline</h3>
+          <p style="color:var(--text-muted);font-size:14px;margin-top:4px;">How evidence-based content flows from trusted sources into the tutor's brain — and stays current.</p>
+        </div>
+      </div>
+
+      <!-- Sources -->
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;">
+        <span style="background:var(--gold-light);border:1px solid var(--gold);border-radius:8px;padding:8px 16px;font-size:13px;font-weight:600;color:var(--amber);">PubMed (35M+ articles)</span>
+        <span style="background:var(--gold-light);border:1px solid var(--gold);border-radius:8px;padding:8px 16px;font-size:13px;font-weight:600;color:var(--amber);">Cochrane Reviews</span>
+        <span style="background:var(--gold-light);border:1px solid var(--gold);border-radius:8px;padding:8px 16px;font-size:13px;font-weight:600;color:var(--amber);">Semantic Scholar</span>
+        <span style="background:var(--gold-light);border:1px solid var(--gold);border-radius:8px;padding:8px 16px;font-size:13px;font-weight:600;color:var(--amber);">Clinical Guidelines (FHIR)</span>
+      </div>
+      <div style="text-align:center;font-size:22px;color:var(--gold);margin:12px 0;">↓ REST APIs fetch articles by topic</div>
+
+      <!-- Pipeline steps -->
+      <div class="pipeline" style="margin:24px 0;">
+        <div class="pipeline-step" style="background:var(--gold-light);border-radius:12px 0 0 12px;">
+          <div class="step-num">1</div>
+          <div class="step-label">Fetch</div>
+          <div class="step-desc">Pull articles from APIs by curriculum topic (50–100 topics)</div>
+        </div>
+        <div class="pipeline-step" style="background:var(--gold-light);">
+          <div class="step-num">2</div>
+          <div class="step-label">Chunk</div>
+          <div class="step-desc">Split each article into ~500 token passages with overlap</div>
+        </div>
+        <div class="pipeline-step" style="background:var(--gold-light);">
+          <div class="step-num">3</div>
+          <div class="step-label">Embed</div>
+          <div class="step-desc">Convert text chunks to 1536-dimension vector embeddings</div>
+        </div>
+        <div class="pipeline-step" style="background:var(--gold-light);border-radius:0 12px 12px 0;">
+          <div class="step-num">4</div>
+          <div class="step-label">Store</div>
+          <div class="step-desc">Save in Supabase pgvector with metadata & citations</div>
+        </div>
+      </div>
+
+      <!-- Retrieval -->
+      <div class="card" style="background:var(--cream);margin-top:20px;">
+        <div class="card-title">🔍 Retrieval at Query Time</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;">
+          <div style="flex:1;min-width:200px;background:#fff;border:1px solid var(--border);border-radius:10px;padding:14px;">
+            <div style="font-weight:700;color:var(--navy);font-size:13px;">Student asks a question</div>
+            <div style="color:var(--text-muted);font-size:12px;margin-top:4px;">"Why do we use beta blockers in heart failure?"</div>
+          </div>
+          <div style="display:flex;align-items:center;font-size:20px;color:var(--gold);">→</div>
+          <div style="flex:1;min-width:200px;background:#fff;border:1px solid var(--border);border-radius:10px;padding:14px;">
+            <div style="font-weight:700;color:var(--navy);font-size:13px;">Question → Embedding</div>
+            <div style="color:var(--text-muted);font-size:12px;margin-top:4px;">Converted to vector, cosine similarity search</div>
+          </div>
+          <div style="display:flex;align-items:center;font-size:20px;color:var(--gold);">→</div>
+          <div style="flex:1;min-width:200px;background:#fff;border:1px solid var(--border);border-radius:10px;padding:14px;">
+            <div style="font-weight:700;color:var(--navy);font-size:13px;">Top 5 chunks returned</div>
+            <div style="color:var(--text-muted);font-size:12px;margin-top:4px;">With title, DOI, URL — passed to Claude as grounded context</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Refresh -->
+      <div style="margin-top:20px;background:var(--gold-light);border:1.5px dashed var(--gold);border-radius:12px;padding:16px;text-align:center;">
+        <span style="color:var(--amber);font-weight:700;font-size:14px;">🔄 Weekly Auto-Refresh (Vercel Cron)</span>
+        <div style="color:var(--text-muted);font-size:12px;margin-top:6px;">Checks all sources for new publications since last sync · Ingests new articles · Re-indexes · Admin can also trigger on-demand for new topics</div>
+      </div>
+
+      <!-- Scale -->
+      <div style="display:flex;gap:20px;flex-wrap:wrap;justify-content:center;margin-top:24px;">
+        <div style="text-align:center;"><div style="font-weight:800;font-size:20px;color:var(--navy);">20K–50K</div><div style="font-size:11px;color:var(--text-muted);">Articles ingested</div></div>
+        <div style="text-align:center;"><div style="font-weight:800;font-size:20px;color:var(--navy);">80K–200K</div><div style="font-size:11px;color:var(--text-muted);">Chunks stored</div></div>
+        <div style="text-align:center;"><div style="font-weight:800;font-size:20px;color:var(--navy);">2–5 GB</div><div style="font-size:11px;color:var(--text-muted);">Storage</div></div>
+        <div style="text-align:center;"><div style="font-weight:800;font-size:20px;color:var(--navy);">&lt; 50ms</div><div style="font-size:11px;color:var(--text-muted);">Retrieval speed</div></div>
+        <div style="text-align:center;"><div style="font-weight:800;font-size:20px;color:var(--navy);">$5–15</div><div style="font-size:11px;color:var(--text-muted);">Embedding cost (one-time)</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- TAB: AI TUTOR -->
+  <!-- ═══════════════════════════════════════ -->
+  <div class="arch-panel" id="panel-tutor" style="display:none;">
+    <div class="card" style="border-left:4px solid var(--navy);">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;">
+        <span style="font-size:32px;">🧠</span>
+        <div>
+          <h3 style="font-family:'Playfair Display',serif;font-size:24px;">AI Socratic Tutor</h3>
+          <p style="color:var(--text-muted);font-size:14px;margin-top:4px;">How Claude acts as an adaptive tutor — not just answering questions, but guiding students through reasoning.</p>
+        </div>
+      </div>
+
+      <!-- Session Briefing -->
+      <div style="background:linear-gradient(135deg,rgba(15,31,56,.05),rgba(26,122,110,.05));border:2px solid var(--navy-mid);border-radius:14px;padding:20px;text-align:center;margin-bottom:20px;">
+        <div style="color:var(--navy);font-weight:800;font-size:16px;">Session Briefing (Before Student Types)</div>
+        <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;justify-content:center;">
+          <span style="background:rgba(15,31,56,.08);border-radius:8px;padding:6px 12px;font-size:12px;font-weight:600;">Student mastery scores</span>
+          <span style="background:rgba(15,31,56,.08);border-radius:8px;padding:6px 12px;font-size:12px;font-weight:600;">Known gaps & struggles</span>
+          <span style="background:rgba(15,31,56,.08);border-radius:8px;padding:6px 12px;font-size:12px;font-weight:600;">Last session summary</span>
+          <span style="background:rgba(15,31,56,.08);border-radius:8px;padding:6px 12px;font-size:12px;font-weight:600;">Prerequisite check</span>
+          <span style="background:rgba(15,31,56,.08);border-radius:8px;padding:6px 12px;font-size:12px;font-weight:600;">Socratic behavior rules</span>
+        </div>
+      </div>
+
+      <div style="text-align:center;font-size:22px;color:var(--navy);margin:12px 0;">↓ Claude receives full context</div>
+
+      <!-- Decision Engine -->
+      <div class="card" style="background:var(--cream);">
+        <div class="card-title">⚡ Tutor Decision Engine</div>
+        <ol style="font-size:14px;color:var(--text);padding-left:20px;line-height:1.8;">
+          <li>Student asks a question or responds to a prompt</li>
+          <li>RAG retrieves top 5 evidence chunks from pgvector</li>
+          <li>Claude checks: Does student have prerequisites mastered?</li>
+          <li>If <strong style="color:var(--green);">YES</strong> → Guide forward with Socratic questions using evidence</li>
+          <li>If <strong style="color:var(--red);">NO</strong> → Pull back to reinforce foundation concepts first</li>
+        </ol>
+      </div>
+
+      <div style="text-align:center;font-size:22px;color:var(--navy);margin:16px 0;">↓</div>
+
+      <!-- Three Branches with Examples -->
+      <div class="grid-3" style="gap:14px;">
+        <div style="background:var(--red-light);border:1.5px solid rgba(192,57,43,.25);border-radius:12px;padding:16px;">
+          <div style="color:var(--red);font-weight:700;font-size:14px;">⬅️ Pull Back</div>
+          <div style="color:var(--text-muted);font-size:12px;margin-top:10px;line-height:1.5;font-style:italic;">
+            "Before we discuss beta blockers, let's revisit the Frank-Starling mechanism. Last time we touched on this but didn't fully nail it down. What happens to stroke volume when preload increases?"
+          </div>
+        </div>
+        <div style="background:rgba(15,31,56,.04);border:1.5px solid rgba(15,31,56,.15);border-radius:12px;padding:16px;">
+          <div style="color:var(--navy);font-weight:700;font-size:14px;">➡️ Guide Forward</div>
+          <div style="color:var(--text-muted);font-size:12px;margin-top:10px;line-height:1.5;font-style:italic;">
+            "Good. The evidence shows carvedilol reduces mortality by 65% in mild-to-moderate HF. But why would blocking beta receptors help a failing heart? Think about chronic sympathetic activation..."
+          </div>
+        </div>
+        <div style="background:var(--green-light);border:1.5px solid rgba(26,107,58,.25);border-radius:12px;padding:16px;">
+          <div style="color:var(--green);font-weight:700;font-size:14px;">✅ Record Mastery</div>
+          <div style="color:var(--text-muted);font-size:12px;margin-top:10px;line-height:1.5;font-style:italic;">
+            "Excellent — you've connected cardiac remodeling to the mechanism of action. Updating your progress. This concept is now scheduled for spaced review in 3 days."
+          </div>
+        </div>
+      </div>
+
+      <div style="text-align:center;font-size:22px;color:var(--navy);margin:16px 0;">↓ After each exchange</div>
+
+      <!-- Post-session -->
+      <div style="background:var(--cream);border:1.5px solid var(--border);border-radius:12px;padding:20px;">
+        <div style="font-weight:700;font-size:15px;margin-bottom:10px;">📝 End-of-Session Summary</div>
+        <ul style="font-size:13px;color:var(--text-muted);padding-left:20px;line-height:1.8;">
+          <li>Claude generates structured JSON: concepts covered, scores updated, struggles noted</li>
+          <li>Progress written to student_progress table (de-identified)</li>
+          <li>Spaced repetition schedule updated for reviewed concepts</li>
+          <li>Recommended next topic stored for future session briefing</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- TAB: FERPA PRIVACY -->
+  <!-- ═══════════════════════════════════════ -->
+  <div class="arch-panel" id="panel-ferpa" style="display:none;">
+    <div class="card" style="border-left:4px solid var(--teal);">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;">
+        <span style="font-size:32px;">🔒</span>
+        <div>
+          <h3 style="font-family:'Playfair Display',serif;font-size:24px;">FERPA De-Identification</h3>
+          <p style="color:var(--text-muted);font-size:14px;margin-top:4px;">How the student stays anonymous to the AI while still getting a fully personalized learning experience.</p>
+        </div>
+      </div>
+
+      <!-- Student Login -->
+      <div style="text-align:center;margin-bottom:16px;">
+        <div style="display:inline-block;background:var(--teal-light);border:1.5px solid var(--teal);border-radius:10px;padding:10px 24px;">
+          <span style="color:var(--teal);font-weight:700;">Student Logs In</span>
+          <div style="color:var(--text-muted);font-size:12px;margin-top:2px;">jane.doe@medschool.edu</div>
+        </div>
+        <div style="font-size:22px;color:var(--teal);margin:8px 0;">↓ App server (YOUR code)</div>
+      </div>
+
+      <!-- Two sides -->
+      <div style="display:flex;gap:16px;align-items:stretch;">
+        <!-- Left: Identity -->
+        <div style="flex:1;background:var(--red-light);border:2px solid rgba(192,57,43,.3);border-radius:14px;padding:20px;">
+          <div style="color:var(--red);font-weight:800;font-size:15px;margin-bottom:14px;">🚫 Identity Side (Never Sent to AI)</div>
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <div style="background:rgba(192,57,43,.08);border-radius:8px;padding:8px 12px;font-size:12px;color:var(--red);">Name: Jane Doe</div>
+            <div style="background:rgba(192,57,43,.08);border-radius:8px;padding:8px 12px;font-size:12px;color:var(--red);">Email: jane.doe@medschool.edu</div>
+            <div style="background:rgba(192,57,43,.08);border-radius:8px;padding:8px 12px;font-size:12px;color:var(--red);">Institution: ABC Medical School</div>
+            <div style="background:rgba(192,57,43,.08);border-radius:8px;padding:8px 12px;font-size:12px;color:var(--red);">DOB: 1998-03-15</div>
+            <div style="background:rgba(192,57,43,.08);border-radius:8px;padding:8px 12px;font-size:12px;color:var(--red);">Enrollment: Year 2, Active</div>
+            <div style="background:rgba(192,57,43,.08);border-radius:8px;padding:8px 12px;font-size:12px;color:var(--red);">Grades: Protected by FERPA</div>
+          </div>
+          <div style="margin-top:12px;background:#fff;border-radius:8px;padding:12px;">
+            <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--text-muted);">
+              identity_map table<br>
+              token_id: a3f7bc12-...<br>
+              real_id: [encrypted at rest]<br>
+              ⚠️ Access logged & role-restricted
+            </div>
+          </div>
+        </div>
+
+        <!-- Firewall Divider -->
+        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:0 4px;">
+          <div style="width:3px;flex:1;background:repeating-linear-gradient(to bottom,var(--teal),var(--teal) 8px,transparent 8px,transparent 16px);"></div>
+          <div style="background:var(--teal);border-radius:8px;padding:6px 10px;writing-mode:vertical-rl;text-orientation:mixed;">
+            <span style="color:#fff;font-weight:800;font-size:11px;letter-spacing:1px;">FIREWALL</span>
+          </div>
+          <div style="width:3px;flex:1;background:repeating-linear-gradient(to bottom,var(--teal),var(--teal) 8px,transparent 8px,transparent 16px);"></div>
+        </div>
+
+        <!-- Right: Token side -->
+        <div style="flex:1;background:var(--teal-light);border:2px solid rgba(26,122,110,.3);border-radius:14px;padding:20px;">
+          <div style="color:var(--teal);font-weight:800;font-size:15px;margin-bottom:14px;">✅ Token Side (What AI Sees)</div>
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <div style="background:rgba(26,122,110,.1);border-radius:8px;padding:8px 12px;font-size:12px;color:var(--teal);">Token: a3f7bc12-9e4d-4c1a-...</div>
+            <div style="background:rgba(26,122,110,.1);border-radius:8px;padding:8px 12px;font-size:12px;color:var(--teal);">Cardiology mastery: 0.7</div>
+            <div style="background:rgba(26,122,110,.1);border-radius:8px;padding:8px 12px;font-size:12px;color:var(--teal);">Pharmacology mastery: 0.4</div>
+            <div style="background:rgba(26,122,110,.1);border-radius:8px;padding:8px 12px;font-size:12px;color:var(--teal);">Last session: struggled with preload</div>
+            <div style="background:rgba(26,122,110,.1);border-radius:8px;padding:8px 12px;font-size:12px;color:var(--teal);">Year in program: 2 (no school name)</div>
+            <div style="background:rgba(26,122,110,.1);border-radius:8px;padding:8px 12px;font-size:12px;color:var(--teal);">Track: Osteopathic medicine</div>
+          </div>
+          <div style="margin-top:12px;background:#fff;border-radius:8px;padding:12px;">
+            <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--text-muted);">
+              Prompt guardrail:<br>
+              "Never ask for or use student's<br>
+              name, email, or institution.<br>
+              If volunteered, do not store it."
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Data Table -->
+      <table class="role-table" style="margin-top:24px;">
+        <thead>
+          <tr>
+            <th>Data</th>
+            <th>Sent to AI?</th>
+            <th>Reason</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Token UUID</td><td style="color:var(--green);font-weight:700;">✅ Yes</td><td>Session continuity</td></tr>
+          <tr><td>Mastery scores</td><td style="color:var(--green);font-weight:700;">✅ Yes</td><td>Core to adaptive tutoring</td></tr>
+          <tr><td>Session summaries</td><td style="color:var(--green);font-weight:700;">✅ Yes</td><td>Builds on prior learning</td></tr>
+          <tr><td>Year / specialty track</td><td style="color:var(--green);font-weight:700;">✅ Yes</td><td>Contextualizes difficulty</td></tr>
+          <tr><td>Name</td><td style="color:var(--red);font-weight:700;">🚫 Never</td><td>Direct PII</td></tr>
+          <tr><td>Email</td><td style="color:var(--red);font-weight:700;">🚫 Never</td><td>Direct PII</td></tr>
+          <tr><td>Institution</td><td style="color:var(--red);font-weight:700;">🚫 Never</td><td>Could identify student</td></tr>
+          <tr><td>Grades</td><td style="color:var(--red);font-weight:700;">🚫 Never</td><td>FERPA protected record</td></tr>
+        </tbody>
+      </table>
+
+      <!-- Admin note -->
+      <div style="margin-top:20px;background:var(--teal-light);border:1.5px dashed var(--teal);border-radius:12px;padding:16px;text-align:center;">
+        <span style="color:var(--teal);font-weight:700;font-size:14px;">👩‍💼 School Admin Dashboard</span>
+        <div style="color:var(--text-muted);font-size:12px;margin-top:6px;">Admins CAN re-link token → identity for academic oversight. This access is logged, audited, and role-restricted. The AI layer never performs this lookup.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- TAB: GAMIFICATION -->
+  <!-- ═══════════════════════════════════════ -->
+  <div class="arch-panel" id="panel-gamification" style="display:none;">
+    <div class="card" style="border-left:4px solid var(--gold);">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;">
+        <span style="font-size:32px;">🎮</span>
+        <div>
+          <h3 style="font-family:'Playfair Display',serif;font-size:24px;">Gamification & Spaced Repetition</h3>
+          <p style="color:var(--text-muted);font-size:14px;margin-top:4px;">The Duolingo-inspired engagement layer — keeping students coming back and ensuring long-term retention.</p>
+        </div>
+      </div>
+
+      <!-- Concept Map -->
+      <div class="card" style="background:var(--cream);">
+        <div class="card-title">🗺️ Prerequisite Concept Map</div>
+        <ul style="font-size:13px;color:var(--text-muted);padding-left:20px;line-height:1.8;">
+          <li>Every concept maps to its prerequisite building blocks</li>
+          <li>If student struggles → tutor walks <strong>backward</strong> through the chain</li>
+          <li>Mastery of prerequisites required before advancing</li>
+        </ul>
+      </div>
+
+      <div style="text-align:center;font-size:22px;color:var(--gold);margin:12px 0;">↓</div>
+
+      <!-- Concept Tree Visual -->
+      <div class="card" style="text-align:center;padding:28px;">
+        <div style="color:var(--amber);font-weight:700;font-size:15px;margin-bottom:16px;">Example: Cardiology Prerequisite Tree</div>
+
+        <!-- Level 4 -->
+        <div style="display:inline-block;background:var(--red-light);border:1.5px solid rgba(192,57,43,.3);border-radius:10px;padding:10px 24px;margin-bottom:4px;">
+          <span style="color:var(--red);font-weight:700;font-size:13px;">HF Drug Management (Level 4)</span>
+        </div>
+        <div style="font-size:18px;color:var(--text-muted);">↑ requires</div>
+
+        <!-- Level 3 -->
+        <div style="display:inline-block;background:var(--gold-light);border:1.5px solid var(--gold);border-radius:10px;padding:10px 24px;margin-bottom:4px;">
+          <span style="color:var(--amber);font-weight:700;font-size:13px;">Frank-Starling Mechanism (Level 3)</span>
+        </div>
+        <div style="font-size:18px;color:var(--text-muted);">↑ requires</div>
+
+        <!-- Level 2 -->
+        <div style="display:flex;gap:10px;justify-content:center;margin-bottom:4px;">
+          <div style="background:rgba(15,31,56,.05);border:1.5px solid rgba(15,31,56,.2);border-radius:10px;padding:8px 18px;">
+            <span style="color:var(--navy);font-weight:600;font-size:12px;">Preload (L2)</span>
+          </div>
+          <div style="background:rgba(15,31,56,.05);border:1.5px solid rgba(15,31,56,.2);border-radius:10px;padding:8px 18px;">
+            <span style="color:var(--navy);font-weight:600;font-size:12px;">Afterload (L2)</span>
+          </div>
+          <div style="background:rgba(15,31,56,.05);border:1.5px solid rgba(15,31,56,.2);border-radius:10px;padding:8px 18px;">
+            <span style="color:var(--navy);font-weight:600;font-size:12px;">Contractility (L2)</span>
+          </div>
+        </div>
+        <div style="font-size:18px;color:var(--text-muted);">↑ requires</div>
+
+        <!-- Level 1 -->
+        <div style="display:flex;gap:10px;justify-content:center;">
+          <div style="background:var(--green-light);border:1.5px solid rgba(26,107,58,.25);border-radius:10px;padding:8px 18px;">
+            <span style="color:var(--green);font-weight:600;font-size:12px;">Cardiac Anatomy (L1)</span>
+          </div>
+          <div style="background:var(--green-light);border:1.5px solid rgba(26,107,58,.25);border-radius:10px;padding:8px 18px;">
+            <span style="color:var(--green);font-weight:600;font-size:12px;">Cardiac Cycle (L1)</span>
+          </div>
+          <div style="background:var(--green-light);border:1.5px solid rgba(26,107,58,.25);border-radius:10px;padding:8px 18px;">
+            <span style="color:var(--green);font-weight:600;font-size:12px;">Basic Hemodynamics (L1)</span>
+          </div>
+        </div>
+      </div>
+
+      <div style="text-align:center;font-size:22px;color:var(--gold);margin:12px 0;">↓ Mastery feeds into...</div>
+
+      <!-- Spaced Repetition -->
+      <div class="card" style="background:var(--gold-light);border:1.5px solid var(--gold);">
+        <div class="card-title" style="color:var(--amber);">🔄 Spaced Repetition Engine (SM-2 Algorithm)</div>
+        <ul style="font-size:13px;color:var(--text);padding-left:20px;line-height:1.8;">
+          <li>When concept mastered → schedule first review in <strong>1 day</strong></li>
+          <li>If recalled correctly → next review at <strong>3 days, then 7, 14, 30...</strong></li>
+          <li>If forgotten → <strong>reset interval</strong>, pull back to prerequisite chain</li>
+          <li>Each session, tutor checks: any concepts due for review today?</li>
+        </ul>
+      </div>
+
+      <div style="text-align:center;font-size:22px;color:var(--gold);margin:12px 0;">↓</div>
+
+      <!-- Engagement Features -->
+      <div class="grid-4" style="gap:14px;">
+        <div style="background:#fff;border:1.5px solid var(--gold);border-radius:12px;padding:18px;text-align:center;">
+          <div style="font-size:32px;">🔥</div>
+          <div style="color:var(--amber);font-weight:700;font-size:14px;margin-top:8px;">Daily Streaks</div>
+          <div style="color:var(--text-muted);font-size:11px;margin-top:6px;line-height:1.4;">Consecutive days of practice. Streak freeze available for sick days.</div>
+        </div>
+        <div style="background:#fff;border:1.5px solid var(--gold);border-radius:12px;padding:18px;text-align:center;">
+          <div style="font-size:32px;">⭐</div>
+          <div style="color:var(--amber);font-weight:700;font-size:14px;margin-top:8px;">XP System</div>
+          <div style="color:var(--text-muted);font-size:11px;margin-top:6px;line-height:1.4;">Points for correct answers, bonus for mastering on first try.</div>
+        </div>
+        <div style="background:#fff;border:1.5px solid var(--gold);border-radius:12px;padding:18px;text-align:center;">
+          <div style="font-size:32px;">🏆</div>
+          <div style="color:var(--amber);font-weight:700;font-size:14px;margin-top:8px;">Mastery Levels</div>
+          <div style="color:var(--text-muted);font-size:11px;margin-top:6px;line-height:1.4;">Bronze → Silver → Gold → Platinum per concept.</div>
+        </div>
+        <div style="background:#fff;border:1.5px solid var(--gold);border-radius:12px;padding:18px;text-align:center;">
+          <div style="font-size:32px;">📊</div>
+          <div style="color:var(--amber);font-weight:700;font-size:14px;margin-top:8px;">Adaptive Difficulty</div>
+          <div style="color:var(--text-muted);font-size:11px;margin-top:6px;line-height:1.4;">Questions get harder as mastery increases. Never too easy.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- TAB: DATABASE -->
+  <!-- ═══════════════════════════════════════ -->
+  <div class="arch-panel" id="panel-database" style="display:none;">
+    <div class="card" style="border-left:4px solid var(--red);">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;">
+        <span style="font-size:32px;">🗄️</span>
+        <div>
+          <h3 style="font-family:'Playfair Display',serif;font-size:24px;">Database Architecture</h3>
+          <p style="color:var(--text-muted);font-size:14px;margin-top:4px;">Nine tables in Supabase that power the entire system — medical knowledge, learning journey, gamification, and privacy.</p>
+        </div>
+      </div>
+
+      <div class="grid-3" style="gap:14px;">
+        <!-- medical_sources -->
+        <div style="background:#fff;border:1px solid var(--border);border-radius:12px;overflow:hidden;">
+          <div style="background:var(--gold-light);padding:10px 14px;border-bottom:1px solid var(--gold);">
+            <div style="color:var(--amber);font-weight:800;font-size:13px;font-family:'DM Mono',monospace;">medical_sources</div>
+            <div style="color:var(--text-muted);font-size:11px;">Where content comes from</div>
+          </div>
+          <div style="padding:10px 14px;font-family:'DM Mono',monospace;font-size:11px;color:var(--text-muted);line-height:1.8;">
+            id uuid PK<br>name text<br>type text<br>base_url text<br>last_synced_at timestamptz
+          </div>
+        </div>
+
+        <!-- medical_documents -->
+        <div style="background:#fff;border:1px solid var(--border);border-radius:12px;overflow:hidden;">
+          <div style="background:var(--gold-light);padding:10px 14px;border-bottom:1px solid var(--gold);">
+            <div style="color:var(--amber);font-weight:800;font-size:13px;font-family:'DM Mono',monospace;">medical_documents</div>
+            <div style="color:var(--text-muted);font-size:11px;">One row per article</div>
+          </div>
+          <div style="padding:10px 14px;font-family:'DM Mono',monospace;font-size:11px;color:var(--text-muted);line-height:1.8;">
+            id uuid PK<br>source_id uuid FK<br>title text<br>authors text[]<br>published_at date<br>doi text<br>specialty_tags text[]
+          </div>
+        </div>
+
+        <!-- document_chunks -->
+        <div style="background:#fff;border:1px solid var(--border);border-radius:12px;overflow:hidden;">
+          <div style="background:var(--gold-light);padding:10px 14px;border-bottom:1px solid var(--gold);">
+            <div style="color:var(--amber);font-weight:800;font-size:13px;font-family:'DM Mono',monospace;">document_chunks</div>
+            <div style="color:var(--text-muted);font-size:11px;">Heart of RAG</div>
+          </div>
+          <div style="padding:10px 14px;font-family:'DM Mono',monospace;font-size:11px;color:var(--text-muted);line-height:1.8;">
+            id uuid PK<br>document_id uuid FK<br>content text (~500 tok)<br>embedding vector(1536)<br>chunk_index int<br>token_count int
+          </div>
+        </div>
+
+        <!-- concepts -->
+        <div style="background:#fff;border:1px solid var(--border);border-radius:12px;overflow:hidden;">
+          <div style="background:var(--gold-light);padding:10px 14px;border-bottom:1px solid var(--gold);">
+            <div style="color:var(--amber);font-weight:800;font-size:13px;font-family:'DM Mono',monospace;">concepts</div>
+            <div style="color:var(--text-muted);font-size:11px;">Curriculum concept tree</div>
+          </div>
+          <div style="padding:10px 14px;font-family:'DM Mono',monospace;font-size:11px;color:var(--text-muted);line-height:1.8;">
+            id uuid PK<br>name text<br>category text<br>difficulty int (1-5)<br>description text
+          </div>
+        </div>
+
+        <!-- concept_prerequisites -->
+        <div style="background:#fff;border:1px solid var(--border);border-radius:12px;overflow:hidden;">
+          <div style="background:var(--gold-light);padding:10px 14px;border-bottom:1px solid var(--gold);">
+            <div style="color:var(--amber);font-weight:800;font-size:13px;font-family:'DM Mono',monospace;">concept_prerequisites</div>
+            <div style="color:var(--text-muted);font-size:11px;">What must be learned first</div>
+          </div>
+          <div style="padding:10px 14px;font-family:'DM Mono',monospace;font-size:11px;color:var(--text-muted);line-height:1.8;">
+            concept_id uuid FK<br>prerequisite_id uuid FK
+          </div>
+        </div>
+
+        <!-- student_progress -->
+        <div style="background:#fff;border:1px solid var(--border);border-radius:12px;overflow:hidden;">
+          <div style="background:rgba(15,31,56,.06);padding:10px 14px;border-bottom:1px solid var(--navy-mid);">
+            <div style="color:var(--navy);font-weight:800;font-size:13px;font-family:'DM Mono',monospace;">student_progress</div>
+            <div style="color:var(--text-muted);font-size:11px;">De-identified journey</div>
+          </div>
+          <div style="padding:10px 14px;font-family:'DM Mono',monospace;font-size:11px;color:var(--text-muted);line-height:1.8;">
+            id uuid PK<br>token_id uuid (NO FK)<br>concept_id uuid FK<br>status text<br>mastery_score numeric<br>attempts int<br>last_seen_at timestamptz
+          </div>
+        </div>
+
+        <!-- spaced_repetition -->
+        <div style="background:#fff;border:1px solid var(--border);border-radius:12px;overflow:hidden;">
+          <div style="background:var(--gold-light);padding:10px 14px;border-bottom:1px solid var(--gold);">
+            <div style="color:var(--amber);font-weight:800;font-size:13px;font-family:'DM Mono',monospace;">spaced_repetition</div>
+            <div style="color:var(--text-muted);font-size:11px;">SM-2 review schedule</div>
+          </div>
+          <div style="padding:10px 14px;font-family:'DM Mono',monospace;font-size:11px;color:var(--text-muted);line-height:1.8;">
+            id uuid PK<br>token_id uuid<br>concept_id uuid FK<br>interval_days int<br>ease_factor numeric<br>next_review_at date
+          </div>
+        </div>
+
+        <!-- session_summaries -->
+        <div style="background:#fff;border:1px solid var(--border);border-radius:12px;overflow:hidden;">
+          <div style="background:rgba(15,31,56,.06);padding:10px 14px;border-bottom:1px solid var(--navy-mid);">
+            <div style="color:var(--navy);font-weight:800;font-size:13px;font-family:'DM Mono',monospace;">session_summaries</div>
+            <div style="color:var(--text-muted);font-size:11px;">Claude's session observations</div>
+          </div>
+          <div style="padding:10px 14px;font-family:'DM Mono',monospace;font-size:11px;color:var(--text-muted);line-height:1.8;">
+            id uuid PK<br>token_id uuid<br>summary text<br>concepts_covered uuid[]<br>progress_updates jsonb<br>recommended_next uuid FK
+          </div>
+        </div>
+
+        <!-- identity_map -->
+        <div style="background:#fff;border:1px solid var(--border);border-radius:12px;overflow:hidden;">
+          <div style="background:var(--red-light);padding:10px 14px;border-bottom:1px solid rgba(192,57,43,.3);">
+            <div style="color:var(--red);font-weight:800;font-size:13px;font-family:'DM Mono',monospace;">🔒 identity_map</div>
+            <div style="color:var(--text-muted);font-size:11px;">FERPA — encrypted, separate</div>
+          </div>
+          <div style="padding:10px 14px;font-family:'DM Mono',monospace;font-size:11px;color:var(--text-muted);line-height:1.8;">
+            token_id uuid PK<br>real_id text (encrypted)<br>created_at timestamptz
+          </div>
+        </div>
+      </div>
+
+      <!-- Scale -->
+      <div style="display:flex;gap:24px;flex-wrap:wrap;justify-content:center;margin-top:28px;padding:20px;background:var(--cream);border-radius:12px;">
+        <div style="text-align:center;"><div style="font-weight:800;font-size:22px;color:var(--navy);">20K–50K</div><div style="font-size:11px;color:var(--text-muted);">Articles ingested</div></div>
+        <div style="text-align:center;"><div style="font-weight:800;font-size:22px;color:var(--navy);">80K–200K</div><div style="font-size:11px;color:var(--text-muted);">Chunks stored</div></div>
+        <div style="text-align:center;"><div style="font-weight:800;font-size:22px;color:var(--navy);">2–5 GB</div><div style="font-size:11px;color:var(--text-muted);">Storage</div></div>
+        <div style="text-align:center;"><div style="font-weight:800;font-size:22px;color:var(--navy);">&lt; 50ms</div><div style="font-size:11px;color:var(--text-muted);">Retrieval</div></div>
+        <div style="text-align:center;"><div style="font-weight:800;font-size:22px;color:var(--navy);">Free tier</div><div style="font-size:11px;color:var(--text-muted);">Supabase cost</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Annotation for this section -->
+  <div class="annotation" data-section="s6">
+    <div class="annotation-title">Your Review &mdash; Section 06</div>
+    <div class="annotation-status">
+      <button onclick="setStatus('s6','approve',this)">Approve</button>
+      <button onclick="setStatus('s6','flag',this)">Flag</button>
+      <button onclick="setStatus('s6','discuss',this)">Discuss</button>
+    </div>
+    <textarea placeholder="Notes, questions, or feedback on this section..." oninput="saveNotes('s6',this.value)"></textarea>
+  </div>
+</div>
+
+<!-- ============================================ -->
+<!-- SECTION 07: INSTITUTIONAL DASHBOARD & REPORTING -->
+<!-- ============================================ -->
+<div class="section" id="s7">
+  <div class="section-eyebrow">Section 07 &middot; 15 minutes</div>
   <div class="section-title">Institutional Dashboard & Reporting</div>
   <div class="section-subtitle">What medical schools see — cohort analytics, at-risk identification, and FERPA-controlled drill-downs.</div>
   <div class="section-divider"></div>
@@ -2185,34 +2727,34 @@ code { font-family:'DM Mono',monospace; background:#F0EDE6; padding:2px 6px; bor
   </div>
 
   <!-- ANNOTATION -->
-  <div class="annotation" data-section="s6">
-    <div class="annotation-title">Your Review &mdash; Section 06</div>
+  <div class="annotation" data-section="s7">
+    <div class="annotation-title">Your Review &mdash; Section 07</div>
     <div class="annotation-status">
-      <button onclick="setStatus('s6','approve',this)">Approve</button>
-      <button onclick="setStatus('s6','flag',this)">Flag</button>
-      <button onclick="setStatus('s6','discuss',this)">Discuss</button>
+      <button onclick="setStatus('s7','approve',this)">Approve</button>
+      <button onclick="setStatus('s7','flag',this)">Flag</button>
+      <button onclick="setStatus('s7','discuss',this)">Discuss</button>
     </div>
-    <textarea placeholder="Notes on institutional dashboard..." oninput="saveNotes('s6',this.value)"></textarea>
+    <textarea placeholder="Notes on institutional dashboard..." oninput="saveNotes('s7',this.value)"></textarea>
     <div class="decision-q">
       <div class="q-text">Is the institutional dashboard in MVP scope, or deferred to Phase 2/3?</div>
-      <div class="q-btns"><button onclick="setQ('s6-q1','mvp',this)">In MVP</button><button onclick="setQ('s6-q1','deferred',this)">Deferred</button><button onclick="setQ('s6-q1','discuss',this)">Discuss</button></div>
+      <div class="q-btns"><button onclick="setQ('s7-q1','mvp',this)">In MVP</button><button onclick="setQ('s7-q1','deferred',this)">Deferred</button><button onclick="setQ('s7-q1','discuss',this)">Discuss</button></div>
     </div>
     <div class="decision-q">
       <div class="q-text">Institutional billing model: annual license, per-seat, or tiered?</div>
-      <div class="q-btns"><button onclick="setQ('s6-q2','annual',this)">Annual</button><button onclick="setQ('s6-q2','per-seat',this)">Per-Seat</button><button onclick="setQ('s6-q2','discuss',this)">Discuss</button></div>
+      <div class="q-btns"><button onclick="setQ('s7-q2','annual',this)">Annual</button><button onclick="setQ('s7-q2','per-seat',this)">Per-Seat</button><button onclick="setQ('s7-q2','discuss',this)">Discuss</button></div>
     </div>
     <div class="decision-q">
       <div class="q-text">LMS integration (Canvas, Blackboard) — in scope or future phase?</div>
-      <div class="q-btns"><button onclick="setQ('s6-q3','in-scope',this)">In Scope</button><button onclick="setQ('s6-q3','future',this)">Future</button><button onclick="setQ('s6-q3','discuss',this)">Discuss</button></div>
+      <div class="q-btns"><button onclick="setQ('s7-q3','in-scope',this)">In Scope</button><button onclick="setQ('s7-q3','future',this)">Future</button><button onclick="setQ('s7-q3','discuss',this)">Discuss</button></div>
     </div>
   </div>
 </div>
 
 <!-- ============================================ -->
-<!-- SECTION 07: TECH STACK -->
+<!-- SECTION 08: TECH STACK & DATABASE -->
 <!-- ============================================ -->
-<div class="section" id="s7">
-  <div class="section-eyebrow">Section 07 &middot; 10 minutes</div>
+<div class="section" id="s8">
+  <div class="section-eyebrow">Section 08 &middot; 10 minutes</div>
   <div class="section-title">Tech Stack & Database</div>
   <div class="section-subtitle">The tools, services, and architecture that power the platform.</div>
   <div class="section-divider"></div>
@@ -2511,30 +3053,30 @@ code { font-family:'DM Mono',monospace; background:#F0EDE6; padding:2px 6px; bor
   </div>
 
   <!-- ANNOTATION -->
-  <div class="annotation" data-section="s7">
-    <div class="annotation-title">Your Review &mdash; Section 07</div>
+  <div class="annotation" data-section="s8">
+    <div class="annotation-title">Your Review &mdash; Section 08</div>
     <div class="annotation-status">
-      <button onclick="setStatus('s7','approve',this)">Approve</button>
-      <button onclick="setStatus('s7','flag',this)">Flag</button>
-      <button onclick="setStatus('s7','discuss',this)">Discuss</button>
+      <button onclick="setStatus('s8','approve',this)">Approve</button>
+      <button onclick="setStatus('s8','flag',this)">Flag</button>
+      <button onclick="setStatus('s8','discuss',this)">Discuss</button>
     </div>
-    <textarea placeholder="Notes on tech stack..." oninput="saveNotes('s7',this.value)"></textarea>
+    <textarea placeholder="Notes on tech stack..." oninput="saveNotes('s8',this.value)"></textarea>
     <div class="decision-q">
       <div class="q-text">Is this tech stack acceptable, or are there constraints I should know about?</div>
-      <div class="q-btns"><button onclick="setQ('s7-q1','yes',this)">Approved</button><button onclick="setQ('s7-q1','discuss',this)">Discuss</button></div>
+      <div class="q-btns"><button onclick="setQ('s8-q1','yes',this)">Approved</button><button onclick="setQ('s8-q1','discuss',this)">Discuss</button></div>
     </div>
     <div class="decision-q">
       <div class="q-text">Has DIS LLC set up any of these accounts yet (GitHub, Supabase, Vercel)?</div>
-      <div class="q-btns"><button onclick="setQ('s7-q2','yes',this)">Yes</button><button onclick="setQ('s7-q2','no',this)">Not Yet</button><button onclick="setQ('s7-q2','discuss',this)">Discuss</button></div>
+      <div class="q-btns"><button onclick="setQ('s8-q2','yes',this)">Yes</button><button onclick="setQ('s8-q2','no',this)">Not Yet</button><button onclick="setQ('s8-q2','discuss',this)">Discuss</button></div>
     </div>
   </div>
 </div>
 
 <!-- ============================================ -->
-<!-- SECTION 08: MVP DEFINITION -->
+<!-- SECTION 09: MVP DEFINITION -->
 <!-- ============================================ -->
-<div class="section" id="s8">
-  <div class="section-eyebrow">Section 08 &middot; 10 minutes</div>
+<div class="section" id="s9">
+  <div class="section-eyebrow">Section 09 &middot; ~40 minutes</div>
   <div class="section-title">MVP Definition</div>
   <div class="section-subtitle">What's in, what's deferred, and how we know it's done.</div>
   <div class="section-divider"></div>
@@ -2955,25 +3497,25 @@ code { font-family:'DM Mono',monospace; background:#F0EDE6; padding:2px 6px; bor
   </div>
 
   <!-- ANNOTATION -->
-  <div class="annotation" data-section="s8">
-    <div class="annotation-title">Your Review &mdash; Section 08</div>
+  <div class="annotation" data-section="s9">
+    <div class="annotation-title">Your Review &mdash; Section 09</div>
     <div class="annotation-status">
-      <button onclick="setStatus('s8','approve',this)">Approve</button>
-      <button onclick="setStatus('s8','flag',this)">Flag</button>
-      <button onclick="setStatus('s8','discuss',this)">Discuss</button>
+      <button onclick="setStatus('s9','approve',this)">Approve</button>
+      <button onclick="setStatus('s9','flag',this)">Flag</button>
+      <button onclick="setStatus('s9','discuss',this)">Discuss</button>
     </div>
-    <textarea placeholder="Notes on MVP scope..." oninput="saveNotes('s8',this.value)"></textarea>
+    <textarea placeholder="Notes on MVP scope..." oninput="saveNotes('s9',this.value)"></textarea>
     <div class="decision-q">
       <div class="q-text">Does the In/Deferred split match your expectations for MVP?</div>
-      <div class="q-btns"><button onclick="setQ('s8-q1','yes',this)">Yes</button><button onclick="setQ('s8-q1','no',this)">No</button><button onclick="setQ('s8-q1','discuss',this)">Discuss</button></div>
+      <div class="q-btns"><button onclick="setQ('s9-q1','yes',this)">Yes</button><button onclick="setQ('s9-q1','no',this)">No</button><button onclick="setQ('s9-q1','discuss',this)">Discuss</button></div>
     </div>
     <div class="decision-q">
       <div class="q-text">Are these acceptance criteria sufficient for triggering the milestone payment?</div>
-      <div class="q-btns"><button onclick="setQ('s8-q2','yes',this)">Yes</button><button onclick="setQ('s8-q2','no',this)">No</button><button onclick="setQ('s8-q2','discuss',this)">Discuss</button></div>
+      <div class="q-btns"><button onclick="setQ('s9-q2','yes',this)">Yes</button><button onclick="setQ('s9-q2','no',this)">No</button><button onclick="setQ('s9-q2','discuss',this)">Discuss</button></div>
     </div>
     <div class="decision-q">
       <div class="q-text">Is the "tested by a third party" requirement acceptable?</div>
-      <div class="q-btns"><button onclick="setQ('s8-q3','yes',this)">Yes</button><button onclick="setQ('s8-q3','no',this)">No</button><button onclick="setQ('s8-q3','discuss',this)">Discuss</button></div>
+      <div class="q-btns"><button onclick="setQ('s9-q3','yes',this)">Yes</button><button onclick="setQ('s9-q3','no',this)">No</button><button onclick="setQ('s9-q3','discuss',this)">Discuss</button></div>
     </div>
   </div>
 </div>
@@ -2981,8 +3523,8 @@ code { font-family:'DM Mono',monospace; background:#F0EDE6; padding:2px 6px; bor
 <!-- ============================================ -->
 <!-- SECTION 09: TIMELINE -->
 <!-- ============================================ -->
-<div class="section" id="s9">
-  <div class="section-eyebrow">Section 09 &middot; 10 minutes</div>
+<div class="section" id="s10">
+  <div class="section-eyebrow">Section 10 &middot; 10 minutes</div>
   <div class="section-title">Timeline & Working Style</div>
   <div class="section-subtitle">Sprint breakdown, communication cadence, and how we work together.</div>
   <div class="section-divider"></div>
@@ -3154,25 +3696,25 @@ code { font-family:'DM Mono',monospace; background:#F0EDE6; padding:2px 6px; bor
   </div>
 
   <!-- ANNOTATION -->
-  <div class="annotation" data-section="s9">
-    <div class="annotation-title">Your Review &mdash; Section 09</div>
+  <div class="annotation" data-section="s10">
+    <div class="annotation-title">Your Review &mdash; Section 10</div>
     <div class="annotation-status">
-      <button onclick="setStatus('s9','approve',this)">Approve</button>
-      <button onclick="setStatus('s9','flag',this)">Flag</button>
-      <button onclick="setStatus('s9','discuss',this)">Discuss</button>
+      <button onclick="setStatus('s10','approve',this)">Approve</button>
+      <button onclick="setStatus('s10','flag',this)">Flag</button>
+      <button onclick="setStatus('s10','discuss',this)">Discuss</button>
     </div>
-    <textarea placeholder="Notes on timeline and working style..." oninput="saveNotes('s9',this.value)"></textarea>
+    <textarea placeholder="Notes on timeline and working style..." oninput="saveNotes('s10',this.value)"></textarea>
     <div class="decision-q">
       <div class="q-text">Does the 3-installment structure ($4K / $4K / $7K) align with the milestone triggers shown above?</div>
-      <div class="q-btns"><button onclick="setQ('s9-q1','yes',this)">Yes</button><button onclick="setQ('s9-q1','no',this)">No</button><button onclick="setQ('s9-q1','discuss',this)">Discuss</button></div>
+      <div class="q-btns"><button onclick="setQ('s10-q1','yes',this)">Yes</button><button onclick="setQ('s10-q1','no',this)">No</button><button onclick="setQ('s10-q1','discuss',this)">Discuss</button></div>
     </div>
     <div class="decision-q">
       <div class="q-text">Are the proposed "full product" acceptance criteria (7 items) the right definition for the $7,000 trigger?</div>
-      <div class="q-btns"><button onclick="setQ('s9-q2','yes',this)">Yes</button><button onclick="setQ('s9-q2','adjust',this)">Needs Adjustment</button><button onclick="setQ('s9-q2','discuss',this)">Discuss</button></div>
+      <div class="q-btns"><button onclick="setQ('s10-q2','yes',this)">Yes</button><button onclick="setQ('s10-q2','adjust',this)">Needs Adjustment</button><button onclick="setQ('s10-q2','discuss',this)">Discuss</button></div>
     </div>
     <div class="decision-q">
       <div class="q-text">Sprint-based (bi-weekly demos) or async (milestone-based check-ins)?</div>
-      <div class="q-btns"><button onclick="setQ('s9-q3','sprint',this)">Sprints</button><button onclick="setQ('s9-q3','async',this)">Async</button><button onclick="setQ('s9-q3','discuss',this)">Discuss</button></div>
+      <div class="q-btns"><button onclick="setQ('s10-q3','sprint',this)">Sprints</button><button onclick="setQ('s10-q3','async',this)">Async</button><button onclick="setQ('s10-q3','discuss',this)">Discuss</button></div>
     </div>
   </div>
 </div>
@@ -3180,8 +3722,8 @@ code { font-family:'DM Mono',monospace; background:#F0EDE6; padding:2px 6px; bor
 <!-- ============================================ -->
 <!-- SECTION 10: NEXT STEPS -->
 <!-- ============================================ -->
-<div class="section" id="s10">
-  <div class="section-eyebrow">Section 10 &middot; 5 minutes</div>
+<div class="section" id="s11">
+  <div class="section-eyebrow">Section 11 &middot; 5 minutes</div>
   <div class="section-title">Closing & Next Steps</div>
   <div class="section-subtitle">What happens after this session.</div>
   <div class="section-divider"></div>
@@ -3232,27 +3774,27 @@ code { font-family:'DM Mono',monospace; background:#F0EDE6; padding:2px 6px; bor
   </div>
 
   <!-- ANNOTATION -->
-  <div class="annotation" data-section="s10">
-    <div class="annotation-title">Your Review &mdash; Section 10</div>
+  <div class="annotation" data-section="s11">
+    <div class="annotation-title">Your Review &mdash; Section 11</div>
     <div class="annotation-status">
-      <button onclick="setStatus('s10','approve',this)">Approve</button>
-      <button onclick="setStatus('s10','flag',this)">Flag</button>
-      <button onclick="setStatus('s10','discuss',this)">Discuss</button>
+      <button onclick="setStatus('s11','approve',this)">Approve</button>
+      <button onclick="setStatus('s11','flag',this)">Flag</button>
+      <button onclick="setStatus('s11','discuss',this)">Discuss</button>
     </div>
-    <textarea placeholder="Final notes, open questions, anything we missed..." oninput="saveNotes('s10',this.value)"></textarea>
+    <textarea placeholder="Final notes, open questions, anything we missed..." oninput="saveNotes('s11',this.value)"></textarea>
     <div class="decision-q">
       <div class="q-text">Is there a pilot school in discussion within the next 6 months?</div>
-      <div class="q-btns"><button onclick="setQ('s10-q1','yes',this)">Yes</button><button onclick="setQ('s10-q1','no',this)">Not Yet</button><button onclick="setQ('s10-q1','discuss',this)">Discuss</button></div>
+      <div class="q-btns"><button onclick="setQ('s11-q1','yes',this)">Yes</button><button onclick="setQ('s11-q1','no',this)">Not Yet</button><button onclick="setQ('s11-q1','discuss',this)">Discuss</button></div>
     </div>
     <div class="decision-q">
       <div class="q-text">Is there anything we didn't cover that should be in the SOW?</div>
-      <div class="q-btns"><button onclick="setQ('s10-q2','covered',this)">All Covered</button><button onclick="setQ('s10-q2','missing',this)">Missing Items</button><button onclick="setQ('s10-q2','discuss',this)">Discuss</button></div>
+      <div class="q-btns"><button onclick="setQ('s11-q2','covered',this)">All Covered</button><button onclick="setQ('s11-q2','missing',this)">Missing Items</button><button onclick="setQ('s11-q2','discuss',this)">Discuss</button></div>
     </div>
   </div>
 </div>
 
 <!-- ============================================ -->
-<!-- SUMMARY -->
+<!-- SECTION 11: AI TUTOR ARCHITECTURE -->
 <!-- ============================================ -->
 <div class="section" id="summary">
   <div class="section-eyebrow">Review Summary</div>
@@ -3287,124 +3829,20 @@ code { font-family:'DM Mono',monospace; background:#F0EDE6; padding:2px 6px; bor
 </div>
 
 <script>
-// STATE — syncs to both localStorage (offline) and Supabase API (persistent)
+// STATE
 const STORAGE_KEY = 'aescula_sow_session_v2';
-const SCOPE_TOKEN = new URLSearchParams(window.location.search).get('token') || '';
-const API_BASE = window.location.origin + '/api/scope';
 let state = loadState();
-let syncTimer = null;
 
 function loadState() {
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
-    const local = saved ? JSON.parse(saved) : { statuses:{}, notes:{}, questions:{}, comments:{}, finalized:{} };
-    // If we have a token, load from API on next tick
-    if (SCOPE_TOKEN) {
-      loadFromAPI().then(remote => {
-        if (remote) {
-          // Merge remote data into local state
-          if (remote.sectionReviews) remote.sectionReviews.forEach(r => {
-            if (r.status) state.statuses[r.section_id] = r.status;
-            if (r.notes) state.notes[r.section_id] = r.notes;
-          });
-          if (remote.decisions) remote.decisions.forEach(d => {
-            if (d.answer) state.questions[d.question_id] = d.answer;
-            if (d.finalized) {
-              if (!state.finalized) state.finalized = {};
-              state.finalized[d.question_id] = { decision: d.finalized_decision, time: d.finalized_at };
-            }
-          });
-          if (remote.comments) {
-            if (!state.comments) state.comments = {};
-            remote.comments.forEach(c => {
-              if (!state.comments[c.question_id]) state.comments[c.question_id] = [];
-              // Avoid duplicates
-              const exists = state.comments[c.question_id].some(x => x.text === c.content && x.time === c.created_at);
-              if (!exists) {
-                state.comments[c.question_id].push({
-                  author: c.author_role,
-                  text: c.content,
-                  time: c.created_at,
-                  remoteId: c.id
-                });
-              }
-            });
-          }
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-          updateUI();
-          renderThreads();
-        }
-      });
-    }
-    return local;
-  } catch(e) { return { statuses:{}, notes:{}, questions:{}, comments:{}, finalized:{} }; }
-}
-
-async function loadFromAPI() {
-  if (!SCOPE_TOKEN) return null;
-  try {
-    const res = await fetch(API_BASE + '?token=' + SCOPE_TOKEN);
-    if (!res.ok) return null;
-    const data = await res.json();
-    return data.feedback;
-  } catch(e) { return null; }
+    return saved ? JSON.parse(saved) : { statuses:{}, notes:{}, questions:{} };
+  } catch(e) { return { statuses:{}, notes:{}, questions:{} }; }
 }
 
 function save() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
   updateUI();
-  // Debounced sync to API
-  if (SCOPE_TOKEN) {
-    clearTimeout(syncTimer);
-    syncTimer = setTimeout(syncToAPI, 500);
-  }
-}
-
-async function syncToAPI() {
-  if (!SCOPE_TOKEN) return;
-  // Sync section statuses and notes
-  for (const [section, status] of Object.entries(state.statuses || {})) {
-    fetch(API_BASE, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        action: 'review_section',
-        token: SCOPE_TOKEN,
-        section_id: section,
-        section_title: section,
-        status: status,
-        notes: state.notes?.[section] || ''
-      })
-    }).catch(() => {});
-  }
-  // Sync question answers
-  for (const [qId, answer] of Object.entries(state.questions || {})) {
-    const sectionId = qId.split('-')[0];
-    fetch(API_BASE, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        action: 'answer_decision',
-        token: SCOPE_TOKEN,
-        question_id: qId,
-        section_id: sectionId,
-        answer: answer
-      })
-    }).catch(() => {});
-  }
-  // Sync finalized decisions
-  for (const [qId, data] of Object.entries(state.finalized || {})) {
-    fetch(API_BASE, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        action: 'finalize_decision',
-        token: SCOPE_TOKEN,
-        question_id: qId,
-        finalized_decision: data.decision
-      })
-    }).catch(() => {});
-  }
 }
 
 // STATUS
@@ -3430,15 +3868,15 @@ function setQ(qId, value, btn) {
     b.className = '';
   });
   // Apply appropriate style
-  if (value === 'no' || value === 'decline') btn.className = 'sel-no';
-  else if (value === 'discuss' || value === 'refine') btn.className = 'sel-discuss';
+  if (value === 'no') btn.className = 'sel-no';
+  else if (value === 'discuss') btn.className = 'sel-discuss';
   else btn.className = 'sel';
 
   // Show/hide comment thread
   const dq = btn.closest('.decision-q');
   let thread = dq.querySelector('.q-thread');
 
-  if (value === 'no' || value === 'discuss' || value === 'reject' || value === 'missing' || value === 'adjust' || value === 'refine' || value === 'decline') {
+  if (value === 'no' || value === 'discuss' || value === 'reject' || value === 'missing' || value === 'adjust') {
     if (!thread) {
       thread = document.createElement('div');
       thread.className = 'q-thread open';
@@ -3554,7 +3992,7 @@ function renderThreads() {
 
 // UI UPDATE
 function updateUI() {
-  const sections = ['s1','s2','s3','s4','s5','s6','s7','s8','s9','s10'];
+  const sections = ['s1','s2','s3','s4','s5','s6','s7','s8','s9','s10','s11'];
   let approved=0, flagged=0, discussed=0, reviewed=0;
 
   sections.forEach(s => {
@@ -3576,7 +4014,7 @@ function updateUI() {
   document.getElementById('progressFill').style.width = pct + '%';
 
   // Summary table
-  const labels = {s1:'Product Overview',s2:'Users & Compliance',s3:'AI Pipeline',s4:'SME Review',s5:'Student Experience',s6:'Institutional Dashboard',s7:'Tech Stack',s8:'MVP Definition',s9:'Timeline',s10:'Next Steps'};
+  const labels = {s1:'Product Overview',s2:'Users & Compliance',s3:'AI Pipeline',s4:'SME Review',s5:'Student Experience',s6:'AI Tutor Architecture',s7:'Institutional Dashboard',s8:'Tech Stack',s9:'MVP Definition',s10:'Timeline',s11:'Next Steps'};
   let html = '<table class="role-table"><tr><th>Section</th><th>Status</th><th>Notes</th></tr>';
   sections.forEach(s => {
     const st = state.statuses[s] || 'pending';
@@ -3644,13 +4082,13 @@ function updateUI() {
 // ========================================
 // PAGE NAVIGATION (replaces scroll)
 // ========================================
-const PAGE_ORDER = ['overview','s1','s2','s3','s4','s5','s6','s7','s8','s9','s10','summary'];
+const PAGE_ORDER = ['overview','s1','s2','s3','s4','s5','s6','s7','s8','s9','s10','s11','summary'];
 const PAGE_LABELS = {
   overview:'How to Use This Document',
   s1:'Product Overview', s2:'Users & Compliance', s3:'AI Content Pipeline',
-  s4:'SME Review Workflow', s5:'Student Experience', s6:'Institutional Dashboard',
-  s7:'Tech Stack & Database', s8:'MVP Definition', s9:'Timeline & Working Style',
-  s10:'Next Steps & Decisions', summary:'Your Feedback'
+  s4:'SME Review Workflow', s5:'Student Experience', s6:'AI Tutor Architecture',
+  s7:'Institutional Dashboard', s8:'Tech Stack & Database', s9:'MVP Definition',
+  s10:'Timeline & Working Style', s11:'Next Steps & Decisions', summary:'Your Feedback'
 };
 let currentPage = 'overview';
 
@@ -3716,7 +4154,7 @@ document.querySelectorAll('.sidebar-item').forEach(item => {
 
 // EXPORT
 function exportFeedback() {
-  const labels = {s1:'01 Product Overview',s2:'02 Users & Compliance',s3:'03 AI Pipeline',s4:'04 SME Review',s5:'05 Student Experience',s6:'06 Institutional Dashboard',s7:'07 Tech Stack',s8:'08 MVP Definition',s9:'09 Timeline',s10:'10 Next Steps'};
+  const labels = {s1:'01 Product Overview',s2:'02 Users & Compliance',s3:'03 AI Pipeline',s4:'04 SME Review',s5:'05 Student Experience',s6:'06 AI Tutor Architecture',s7:'07 Institutional Dashboard',s8:'08 Tech Stack',s9:'09 MVP Definition',s10:'10 Timeline',s11:'11 Next Steps'};
   let text = '=== AESCULA SOW Working Session Feedback ===\n';
   text += 'Date: ' + new Date().toLocaleDateString() + '\n';
   text += 'From: Dr. Scariati / DIS LLC\n';
@@ -3856,6 +4294,27 @@ PAGE_ORDER.forEach(pageId => {
     '<button class="next-btn primary" onclick="nextPage()">Next &rarr;</button>';
   section.appendChild(nav);
 });
+
+// ARCHITECTURE TAB SWITCHING
+function showArchTab(tabId) {
+  // Hide all panels
+  document.querySelectorAll('.arch-panel').forEach(p => p.style.display = 'none');
+  // Show target
+  const target = document.getElementById('panel-' + tabId);
+  if (target) target.style.display = 'block';
+  // Update tab buttons
+  document.querySelectorAll('.arch-tab').forEach(t => {
+    t.classList.remove('arch-tab-active');
+    t.style.background = '#fff';
+    t.style.color = 'var(--text)';
+  });
+  const activeBtn = document.querySelector('.arch-tab[data-tab="' + tabId + '"]');
+  if (activeBtn) {
+    activeBtn.classList.add('arch-tab-active');
+    activeBtn.style.background = 'var(--navy)';
+    activeBtn.style.color = '#fff';
+  }
+}
 
 // INIT
 const startPage = state.currentPage || 'overview';
